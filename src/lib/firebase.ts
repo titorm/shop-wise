@@ -4,13 +4,12 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  "projectId": "shopwise-a0041",
-  "appId": "1:768312687397:web:8236b4c80f63be68a5b8cc",
-  "storageBucket": "shopwise-a0041.firebasestorage.app",
-  "apiKey": "AIzaSyBezn5Yx-ERcqS4ND2eKRwi1fXAYwpmpuU",
-  "authDomain": "shopwise-a0041.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "768312687397"
+  apiKey: "AIzaSyAOrtHuzAVLNTDpzT1cjjfbQiUW1sfPTE8",
+  authDomain: "shopwise-90uxt.firebaseapp.com",
+  projectId: "shopwise-90uxt",
+  storageBucket: "shopwise-90uxt.firebasestorage.app",
+  messagingSenderId: "995876205002",
+  appId: "1:995876205002:web:d2ed7ef1984360e3579f33"
 };
 
 // Initialize Firebase

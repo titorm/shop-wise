@@ -1,16 +1,10 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BarChart, DollarSign, ShoppingBag, TrendingUp } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-
-const chartData = [
-  { month: "Jan", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "Fev", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "Mar", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "Abr", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "Mai", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "Jun", total: Math.floor(Math.random() * 5000) + 1000 },
-];
 
 const chartConfig = {
   total: {
@@ -20,6 +14,19 @@ const chartConfig = {
 };
 
 export default function DashboardPage() {
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  useEffect(() => {
+    setChartData([
+      { month: "Jan", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Fev", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Mar", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Abr", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Mai", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Jun", total: Math.floor(Math.random() * 5000) + 1000 },
+    ]);
+  }, []);
+
   return (
     <div className="space-y-6">
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
