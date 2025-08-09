@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useAuth } from "@/hooks/use-auth";
 
 const menuItems = [
     { href: "/dashboard", label: "Insights", icon: Home },
@@ -25,6 +26,7 @@ const menuItems = [
 
 export function MainNav() {
   const pathname = usePathname();
+  const { user } = useAuth();
 
   return (
     <>
@@ -57,10 +59,10 @@ export function MainNav() {
           <Link href="/settings" legacyBehavior passHref>
             <SidebarMenuButton>
                 <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>U</AvatarFallback>
+                    <AvatarImage src={user?.photoURL ?? "https://placehold.co/100x100.png"} alt="User Avatar" data-ai-hint="user avatar" />
+                    <AvatarFallback>{user?.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
                 </Avatar>
-                <span className="truncate">Usuário</span>
+                <span className="truncate">{user?.displayName ?? 'Usuário'}</span>
             </SidebarMenuButton>
           </Link>
         </div>

@@ -1,10 +1,24 @@
+"use client";
+
 import Link from "next/link";
-import { Bell, ShoppingCart } from "lucide-react";
+import { Bell, LogOut, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
+import { useAuth } from "@/hooks/use-auth";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export function Header() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    router.push('/');
+  }
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
       <div className="flex items-center gap-2 md:hidden">
@@ -27,6 +41,12 @@ export function Header() {
           <Bell className="h-5 w-5" />
           <span className="sr-only">Notificações</span>
         </Button>
+        {user && (
+            <Button variant="ghost" size="icon" onClick={handleSignOut}>
+                <LogOut className="h-5 w-5" />
+                <span className="sr-only">Sair</span>
+            </Button>
+        )}
       </div>
     </header>
   );
