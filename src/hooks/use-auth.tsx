@@ -47,13 +47,14 @@ export const useAuth = () => useContext(AuthContext);
 export const useRequireAuth = () => {
     const { user, loading } = useAuth();
     const router = useRouter();
-    const pathname = usePathname();
 
     useEffect(() => {
+        // We are checking `loading` first to prevent premature redirection.
+        // If loading is false and there's no user, then we can safely redirect.
         if (!loading && !user) {
             router.push('/login');
         }
-    }, [user, loading, router, pathname]);
+    }, [user, loading, router]);
 
     return { user, loading };
 };
