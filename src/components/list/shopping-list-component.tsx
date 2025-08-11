@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -9,28 +10,42 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { suggestMissingItems } from "@/app/(dashboard)/list/actions";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 interface ListItem {
   id: number;
   name: string;
   checked: boolean;
+  quantity: number;
+  unit: string;
 }
 
 export function ShoppingListComponent() {
   const [items, setItems] = useState<ListItem[]>([
-    { id: 1, name: "Leite Integral", checked: false },
-    { id: 2, name: "Pão de Forma", checked: true },
-    { id: 3, name: "Café em pó", checked: false },
+    { id: 1, name: "Leite Integral", checked: false, quantity: 2, unit: "L" },
+    { id: 2, name: "Pão de Forma", checked: true, quantity: 1, unit: "un" },
+    { id: 3, name: "Café em pó", checked: false, quantity: 500, unit: "g" },
   ]);
-  const [newItem, setNewItem] = useState("");
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemQty, setNewItemQty] = useState<number | string>(1);
+  const [newItemUnit, setNewItemUnit] = useState("un");
+
   const [suggestedItems, setSuggestedItems] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleAddItem = () => {
-    if (newItem.trim() !== "") {
-      setItems([...items, { id: Date.now(), name: newItem.trim(), checked: false }]);
-      setNewItem("");
+    if (newItemName.trim() !== "" && Number(newItemQty) > 0) {
+      setItems([...items, { 
+        id: Date.now(), 
+        name: newItemName.trim(), 
+        checked: false,
+        quantity: Number(newItemQty),
+        unit: newItemUnit,
+      }]);
+      setNewItemName("");
+      setNewItemQty(1);
+      setNewItemUnit("un");
     }
   };
 
@@ -65,21 +80,51 @@ export function ShoppingListComponent() {
 
   const addSuggestionToList = (name: string) => {
     if (!items.some(item => item.name.toLowerCase() === name.toLowerCase())) {
-        setItems([...items, { id: Date.now(), name, checked: false }]);
+        setItems([...items, { id: Date.now(), name, checked: false, quantity: 1, unit: 'un' }]);
     }
     setSuggestedItems(suggestedItems.filter(item => item !== name));
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleAddItem();
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <Input
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
+          value={newItemName}
+          onChange={(e) => setNewItemName(e.target.value)}
           placeholder="Adicionar item..."
-          onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
+          className="flex-grow"
+          onKeyDown={handleKeyDown}
         />
-        <Button onClick={handleAddItem}><Plus className="mr-2 h-4 w-4" /> Adicionar</Button>
+        <div className="flex gap-2">
+          <Input
+            type="number"
+            value={newItemQty}
+            onChange={(e) => setNewItemQty(e.target.value)}
+            placeholder="Qtd."
+            className="w-20"
+            min="1"
+            onKeyDown={handleKeyDown}
+          />
+          <Select value={newItemUnit} onValueChange={setNewItemUnit}>
+            <SelectTrigger className="w-24">
+              <SelectValue placeholder="Unidade" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="un">un</SelectItem>
+              <SelectItem value="kg">kg</SelectItem>
+              <SelectItem value="g">g</SelectItem>
+              <SelectItem value="L">L</SelectItem>
+              <SelectItem value="ml">ml</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button onClick={handleAddItem} className="w-full sm:w-auto mt-2 sm:mt-0"><Plus className="mr-2 h-4 w-4" /> Adicionar</Button>
       </div>
       
       <div className="space-y-2">
@@ -92,10 +137,13 @@ export function ShoppingListComponent() {
             />
             <label
               htmlFor={`item-${item.id}`}
-              className={`flex-grow text-sm ${item.checked ? "line-through text-muted-foreground" : ""}`}
+              className={`flex-grow text-sm font-medium ${item.checked ? "line-through text-muted-foreground" : ""}`}
             >
               {item.name}
             </label>
+             <span className={`text-sm ${item.checked ? "text-muted-foreground" : "text-foreground"}`}>
+              {item.quantity} {item.unit}
+            </span>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteItem(item.id)}>
               <Trash2 className="h-4 w-4" />
             </Button>
