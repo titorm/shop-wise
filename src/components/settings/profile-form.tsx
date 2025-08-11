@@ -30,6 +30,7 @@ import { auth, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
+import { Collections } from "@/lib/enums";
 
 const profileSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -81,7 +82,7 @@ export function ProfileForm() {
         await updateProfile(auth.currentUser, { displayName: values.name });
 
         // Save user data to Firestore
-        const userRef = doc(db, "Profile", auth.currentUser.uid);
+        const userRef = doc(db, Collections.Profile, auth.currentUser.uid);
         await setDoc(userRef, {
             name: values.name,
             email: auth.currentUser.email, // email is not editable, so we get it from auth

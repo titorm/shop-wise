@@ -30,6 +30,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "../ui/separator";
+import { Collections } from "@/lib/enums";
 
 const preferencesSchema = z.object({
   adults: z.coerce.number().min(1, { message: "Pelo menos um adulto é necessário." }),
@@ -60,7 +61,7 @@ export function PreferencesForm() {
   useEffect(() => {
     async function fetchPreferences() {
         if (user) {
-            const userRef = doc(db, "Profile", user.uid);
+            const userRef = doc(db, Collections.Profile, user.uid);
             const docSnap = await getDoc(userRef);
             if (docSnap.exists()) {
                 const data = docSnap.data();
@@ -89,7 +90,7 @@ export function PreferencesForm() {
         return;
     }
     try {
-        const userRef = doc(db, "Profile", user.uid);
+        const userRef = doc(db, Collections.Profile, user.uid);
         await setDoc(userRef, values, { merge: true });
         form.reset(values); // This will reset the isDirty state after successful submission
         toast({
