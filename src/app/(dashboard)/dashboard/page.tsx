@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BarChart, DollarSign, ShoppingBag, TrendingUp, PieChart as PieChartIcon, Tag, Weight, Scale, Package, Hash } from "lucide-react";
+import { BarChart, DollarSign, ShoppingBag, TrendingUp, PieChart as PieChartIcon, Tag, Weight, Scale, Package, Hash, Barcode } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Pie, PieChart as RechartsPieChart, Cell } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -48,6 +48,7 @@ const topExpensesData = [
     name: "Picanha",
     category: "Açougue e Peixaria",
     subcategory: "Carnes Bovinas",
+    barcode: "7891234567890",
     quantity: 1,
     volume: "1 kg",
     totalPrice: 89.90,
@@ -57,6 +58,7 @@ const topExpensesData = [
     name: "Salmão Fresco",
     category: "Açougue e Peixaria",
     subcategory: "Peixes e Frutos do Mar",
+    barcode: "7891234567891",
     quantity: 1,
     volume: "800 g",
     totalPrice: 72.00,
@@ -66,6 +68,7 @@ const topExpensesData = [
     name: "Azeite Extra Virgem",
     category: "Mercearia",
     subcategory: "Óleos, Azeites e Vinagres",
+    barcode: "7891234567892",
     quantity: 1,
     volume: "500 ml",
     totalPrice: 45.50,
@@ -75,6 +78,7 @@ const topExpensesData = [
     name: "Vinho Tinto",
     category: "Bebidas",
     subcategory: "Bebidas Alcoólicas",
+    barcode: "7891234567893",
     quantity: 1,
     volume: "750 ml",
     totalPrice: 65.00,
@@ -84,6 +88,7 @@ const topExpensesData = [
     name: "Queijo Parmesão",
     category: "Laticínios e Frios",
     subcategory: "Queijos",
+    barcode: "7891234567894",
     quantity: 1,
     volume: "250 g",
     totalPrice: 38.75,
@@ -93,6 +98,7 @@ const topExpensesData = [
     name: "Alface Crespa",
     category: "Hortifrúti e Ovos",
     subcategory: "Verduras e Folhas",
+    barcode: "7891234567895",
     quantity: 1,
     volume: "un",
     totalPrice: 3.50,
@@ -102,6 +108,7 @@ const topExpensesData = [
     name: "Detergente",
     category: "Limpeza",
     subcategory: "Cozinha",
+    barcode: "7891234567896",
     quantity: 2,
     volume: "un",
     totalPrice: 5.00,
@@ -274,6 +281,7 @@ export default function DashboardPage() {
                         <TableHead><Package className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
                         <TableHead><Tag className="inline-block mr-1 w-4 h-4" /> Categoria</TableHead>
                         <TableHead>Subcategoria</TableHead>
+                        <TableHead><Barcode className="inline-block mr-1 w-4 h-4" /> Código de Barras</TableHead>
                         <TableHead><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
                         <TableHead><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
                         <TableHead className="text-right"><Scale className="inline-block mr-1 w-4 h-4" /> Preço p/ kg/L</TableHead>
@@ -294,6 +302,7 @@ export default function DashboardPage() {
                                     {item.subcategory}
                                 </Badge>
                             </TableCell>
+                            <TableCell className="font-mono">{item.barcode}</TableCell>
                             <TableCell>{item.quantity}</TableCell>
                             <TableCell>{item.volume}</TableCell>
                             <TableCell className="text-right">R$ {item.unitPrice.toFixed(2)}</TableCell>
