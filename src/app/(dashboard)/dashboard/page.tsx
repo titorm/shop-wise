@@ -62,7 +62,7 @@ const topExpensesData = [
     totalPrice: 72.00,
     unitPrice: 90.00,
   },
-    {
+  {
     name: "Azeite Extra Virgem",
     category: "Mercearia",
     subcategory: "Óleos, Azeites e Vinagres",
@@ -88,6 +88,24 @@ const topExpensesData = [
     volume: "250 g",
     totalPrice: 38.75,
     unitPrice: 155.00,
+  },
+  {
+    name: "Alface Crespa",
+    category: "Hortifrúti e Ovos",
+    subcategory: "Verduras e Folhas",
+    quantity: 1,
+    volume: "un",
+    totalPrice: 3.50,
+    unitPrice: 3.50,
+  },
+   {
+    name: "Detergente",
+    category: "Limpeza",
+    subcategory: "Cozinha",
+    quantity: 2,
+    volume: "un",
+    totalPrice: 5.00,
+    unitPrice: 2.50,
   },
 ];
 
@@ -120,7 +138,19 @@ export default function DashboardPage() {
     "Mercearia": "bg-amber-200/50 text-amber-800 border-amber-300/50",
     "Bebidas": "bg-purple-200/50 text-purple-800 border-purple-300/50",
     "Laticínios e Frios": "bg-gray-200/50 text-gray-800 border-gray-300/50",
+    "Hortifrúti e Ovos": "bg-green-200/50 text-green-800 border-green-300/50",
+    "Limpeza": "bg-blue-200/50 text-blue-800 border-blue-300/50",
     "Default": "bg-secondary text-secondary-foreground"
+  };
+
+  const subcategoryColors: { [key: string]: string } = {
+    "Açougue e Peixaria": "bg-red-200/20 text-red-800 border-red-300/20",
+    "Mercearia": "bg-amber-200/20 text-amber-800 border-amber-300/20",
+    "Bebidas": "bg-purple-200/20 text-purple-800 border-purple-300/20",
+    "Laticínios e Frios": "bg-gray-200/20 text-gray-800 border-gray-300/20",
+    "Hortifrúti e Ovos": "bg-green-200/20 text-green-800 border-green-300/20",
+    "Limpeza": "bg-blue-200/20 text-blue-800 border-blue-300/20",
+    "Default": "bg-secondary/50 text-secondary-foreground"
   };
 
   return (
@@ -259,7 +289,11 @@ export default function DashboardPage() {
                                     {item.category}
                                 </Badge>
                             </TableCell>
-                            <TableCell>{item.subcategory}</TableCell>
+                            <TableCell>
+                                <Badge variant="tag" className={subcategoryColors[item.category] || subcategoryColors.Default}>
+                                    {item.subcategory}
+                                </Badge>
+                            </TableCell>
                             <TableCell>{item.quantity}</TableCell>
                             <TableCell>{item.volume}</TableCell>
                             <TableCell className="text-right">R$ {item.unitPrice.toFixed(2)}</TableCell>
