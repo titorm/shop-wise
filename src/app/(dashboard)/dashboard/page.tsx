@@ -16,6 +16,7 @@ const barChartConfig = {
   "Laticínios e Frios": { label: "Laticínios", color: "hsl(var(--chart-3))" },
   "Mercearia": { label: "Mercearia", color: "hsl(var(--chart-4))" },
   "Bebidas": { label: "Bebidas", color: "hsl(var(--chart-5))" },
+  "Limpeza": { label: "Limpeza", color: "hsl(var(--chart-1))" },
 };
 
 const pieChartConfig = {
@@ -41,6 +42,10 @@ const pieChartConfig = {
   "Bebidas": {
     label: "Bebidas",
     color: "hsl(var(--chart-5))",
+  },
+  "Limpeza": {
+    label: "Limpeza",
+    color: "hsl(var(--chart-1))",
   },
 };
 
@@ -124,12 +129,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setBarChartData([
-      { month: "Jan", "Hortifrúti e Ovos": 350, "Açougue e Peixaria": 500, "Laticínios e Frios": 400, "Mercearia": 350, "Bebidas": 200 },
-      { month: "Fev", "Hortifrúti e Ovos": 380, "Açougue e Peixaria": 520, "Laticínios e Frios": 420, "Mercearia": 370, "Bebidas": 230 },
-      { month: "Mar", "Hortifrúti e Ovos": 400, "Açougue e Peixaria": 550, "Laticínios e Frios": 450, "Mercearia": 400, "Bebidas": 250 },
-      { month: "Abr", "Hortifrúti e Ovos": 320, "Açougue e Peixaria": 480, "Laticínios e Frios": 380, "Mercearia": 320, "Bebidas": 180 },
-      { month: "Mai", "Hortifrúti e Ovos": 420, "Açougue e Peixaria": 580, "Laticínios e Frios": 480, "Mercearia": 420, "Bebidas": 280 },
-      { month: "Jun", "Hortifrúti e Ovos": 450, "Açougue e Peixaria": 600, "Laticínios e Frios": 500, "Mercearia": 450, "Bebidas": 300 },
+      { month: "Jan", "Hortifrúti e Ovos": 350, "Açougue e Peixaria": 500, "Laticínios e Frios": 400, "Mercearia": 350, "Bebidas": 200, "Limpeza": 100 },
+      { month: "Fev", "Hortifrúti e Ovos": 380, "Açougue e Peixaria": 520, "Laticínios e Frios": 420, "Mercearia": 370, "Bebidas": 230, "Limpeza": 110 },
+      { month: "Mar", "Hortifrúti e Ovos": 400, "Açougue e Peixaria": 550, "Laticínios e Frios": 450, "Mercearia": 400, "Bebidas": 250, "Limpeza": 120 },
+      { month: "Abr", "Hortifrúti e Ovos": 320, "Açougue e Peixaria": 480, "Laticínios e Frios": 380, "Mercearia": 320, "Bebidas": 180, "Limpeza": 90 },
+      { month: "Mai", "Hortifrúti e Ovos": 420, "Açougue e Peixaria": 580, "Laticínios e Frios": 480, "Mercearia": 420, "Bebidas": 280, "Limpeza": 130 },
+      { month: "Jun", "Hortifrúti e Ovos": 450, "Açougue e Peixaria": 600, "Laticínios e Frios": 500, "Mercearia": 450, "Bebidas": 300, "Limpeza": 150 },
     ]);
 
     setPieChartData([
@@ -138,6 +143,7 @@ export default function DashboardPage() {
         { category: 'Laticínios e Frios', value: 180.00, fill: 'var(--color-Laticínios e Frios)' },
         { category: 'Mercearia', value: 250.25, fill: 'var(--color-Mercearia)' },
         { category: 'Bebidas', value: 120.00, fill: 'var(--color-Bebidas)' },
+        { category: 'Limpeza', value: 50.00, fill: 'var(--color-Limpeza)' },
     ]);
   }, []);
 
@@ -253,7 +259,8 @@ export default function DashboardPage() {
                         <Bar dataKey="Açougue e Peixaria" fill="var(--color-Açougue e Peixaria)" stackId="a" radius={[0, 0, 0, 0]} />
                         <Bar dataKey="Laticínios e Frios" fill="var(--color-Laticínios e Frios)" stackId="a" radius={[0, 0, 0, 0]} />
                         <Bar dataKey="Mercearia" fill="var(--color-Mercearia)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="Bebidas" fill="var(--color-Bebidas)" stackId="a" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Bebidas" fill="var(--color-Bebidas)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="Limpeza" fill="var(--color-Limpeza)" stackId="a" radius={[4, 4, 0, 0]} />
                     </RechartsBarChart>
                 </ResponsiveContainer>
             </ChartContainer>
@@ -332,4 +339,5 @@ export default function DashboardPage() {
   );
 }
 
+    
     
