@@ -40,7 +40,7 @@ const passwordSchema = z.object({
 });
 
 export function ProfileForm() {
-  const { user } = useAuth();
+  const { user, reloadUser } = useAuth();
   const { toast } = useToast();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -75,6 +75,7 @@ export function ProfileForm() {
     if (!auth.currentUser) return;
     try {
         await updateProfile(auth.currentUser, { displayName: values.name });
+        await reloadUser();
         toast({
             title: "Sucesso!",
             description: "Seu perfil foi atualizado.",
