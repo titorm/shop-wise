@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link";
@@ -17,7 +18,6 @@ const menuItems = [
     { href: "/list", label: "Lista de Compras", icon: List },
     { href: "/scan", label: "Escanear Cupom", icon: QrCode },
     { href: "/history", label: "Histórico", icon: History },
-    { href: "/settings", label: "Configurações", icon: Settings },
     { href: "/admin", label: "Admin", icon: Shield },
 ];
 
