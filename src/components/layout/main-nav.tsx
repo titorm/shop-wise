@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, List, QrCode, Settings } from "lucide-react";
+import { Home, List, QrCode, Settings, Shield } from "lucide-react";
 import {
   SidebarContent,
   SidebarHeader,
@@ -17,6 +17,7 @@ const menuItems = [
     { href: "/list", label: "Lista de Compras", icon: List },
     { href: "/scan", label: "Escanear Cupom", icon: QrCode },
     { href: "/settings", label: "Configurações", icon: Settings },
+    { href: "/admin", label: "Admin", icon: Shield },
 ];
 
 export function MainNav() {
@@ -36,7 +37,7 @@ export function MainNav() {
             <SidebarMenuItem key={item.href}>
               <Link href={item.href}>
                 <SidebarMenuButton 
-                  isActive={pathname === item.href}
+                  isActive={pathname.startsWith(item.href)}
                   tooltip={item.label}
                 >
                   <item.icon className="h-5 w-5" />
