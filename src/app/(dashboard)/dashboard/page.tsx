@@ -8,6 +8,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLe
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Pie, PieChart as RechartsPieChart, Cell } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const barChartConfig = {
   total: { label: "Total" },
@@ -147,37 +148,37 @@ export default function DashboardPage() {
     ]);
   }, []);
 
-  const categoryColors: { [key: string]: string } = {
-    "Hortifrúti e Ovos": "bg-[#A5D6A7]/50 dark:bg-[#81C784]/50 text-green-900 dark:text-green-100 border-green-300/50",
-    "Açougue e Peixaria": "bg-[#EF9A9A]/50 dark:bg-[#E57373]/50 text-red-900 dark:text-red-100 border-red-300/50",
-    "Padaria e Confeitaria": "bg-[#FFE082]/50 dark:bg-[#FFD54F]/50 text-amber-900 dark:text-amber-100 border-amber-300/50",
-    "Laticínios e Frios": "bg-[#90CAF9]/50 dark:bg-[#64B5F6]/50 text-blue-900 dark:text-blue-100 border-blue-300/50",
-    "Mercearia": "bg-[#FFCC80]/50 dark:bg-[#FFB74D]/50 text-orange-900 dark:text-orange-100 border-orange-300/50",
-    "Matinais e Doces": "bg-[#F48FB1]/50 dark:bg-[#F06292]/50 text-pink-900 dark:text-pink-100 border-pink-300/50",
-    "Congelados": "bg-[#80DEEA]/50 dark:bg-[#4DD0E1]/50 text-cyan-900 dark:text-cyan-100 border-cyan-300/50",
-    "Bebidas": "bg-[#B39DDB]/50 dark:bg-[#9575CD]/50 text-purple-900 dark:text-purple-100 border-purple-300/50",
-    "Limpeza": "bg-[#80CBC4]/50 dark:bg-[#4DB6AC]/50 text-teal-900 dark:text-teal-100 border-teal-300/50",
-    "Higiene Pessoal": "bg-[#CE93D8]/50 dark:bg-[#BA68C8]/50 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/50",
-    "Bebês e Crianças": "bg-[#FFF59D]/50 dark:bg-[#FFF176]/50 text-yellow-900 dark:text-yellow-100 border-yellow-300/50",
-    "Pet Shop": "bg-[#BCAAA4]/50 dark:bg-[#A1887F]/50 text-stone-900 dark:text-stone-100 border-stone-300/50",
-    "Utilidades e Bazar": "bg-[#B0BEC5]/50 dark:bg-[#90A4AE]/50 text-slate-900 dark:text-slate-100 border-slate-300/50",
+  const categoryClasses: { [key: string]: string } = {
+    "Hortifrúti e Ovos": "bg-category-hortifruti-light/50 dark:bg-category-hortifruti-dark/50 text-green-900 dark:text-green-100 border-green-300/50",
+    "Açougue e Peixaria": "bg-category-acougue-light/50 dark:bg-category-acougue-dark/50 text-red-900 dark:text-red-100 border-red-300/50",
+    "Padaria e Confeitaria": "bg-category-padaria-light/50 dark:bg-category-padaria-dark/50 text-amber-900 dark:text-amber-100 border-amber-300/50",
+    "Laticínios e Frios": "bg-category-laticinios-light/50 dark:bg-category-laticinios-dark/50 text-blue-900 dark:text-blue-100 border-blue-300/50",
+    "Mercearia": "bg-category-mercearia-light/50 dark:bg-category-mercearia-dark/50 text-orange-900 dark:text-orange-100 border-orange-300/50",
+    "Matinais e Doces": "bg-category-matinais-light/50 dark:bg-category-matinais-dark/50 text-pink-900 dark:text-pink-100 border-pink-300/50",
+    "Congelados": "bg-category-congelados-light/50 dark:bg-category-congelados-dark/50 text-cyan-900 dark:text-cyan-100 border-cyan-300/50",
+    "Bebidas": "bg-category-bebidas-light/50 dark:bg-category-bebidas-dark/50 text-purple-900 dark:text-purple-100 border-purple-300/50",
+    "Limpeza": "bg-category-limpeza-light/50 dark:bg-category-limpeza-dark/50 text-teal-900 dark:text-teal-100 border-teal-300/50",
+    "Higiene Pessoal": "bg-category-higiene-light/50 dark:bg-category-higiene-dark/50 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/50",
+    "Bebês e Crianças": "bg-category-bebes-light/50 dark:bg-category-bebes-dark/50 text-yellow-900 dark:text-yellow-100 border-yellow-300/50",
+    "Pet Shop": "bg-category-pet-light/50 dark:bg-category-pet-dark/50 text-stone-900 dark:text-stone-100 border-stone-300/50",
+    "Utilidades e Bazar": "bg-category-utilidades-light/50 dark:bg-category-utilidades-dark/50 text-slate-900 dark:text-slate-100 border-slate-300/50",
     "Default": "bg-secondary text-secondary-foreground"
   };
 
-  const subcategoryColors: { [key: string]: string } = {
-    "Hortifrúti e Ovos": "bg-[#A5D6A7]/30 dark:bg-[#81C784]/30 text-green-900 dark:text-green-100 border-green-300/30",
-    "Açougue e Peixaria": "bg-[#EF9A9A]/30 dark:bg-[#E57373]/30 text-red-900 dark:text-red-100 border-red-300/30",
-    "Padaria e Confeitaria": "bg-[#FFE082]/30 dark:bg-[#FFD54F]/30 text-amber-900 dark:text-amber-100 border-amber-300/30",
-    "Laticínios e Frios": "bg-[#90CAF9]/30 dark:bg-[#64B5F6]/30 text-blue-900 dark:text-blue-100 border-blue-300/30",
-    "Mercearia": "bg-[#FFCC80]/30 dark:bg-[#FFB74D]/30 text-orange-900 dark:text-orange-100 border-orange-300/30",
-    "Matinais e Doces": "bg-[#F48FB1]/30 dark:bg-[#F06292]/30 text-pink-900 dark:text-pink-100 border-pink-300/30",
-    "Congelados": "bg-[#80DEEA]/30 dark:bg-[#4DD0E1]/30 text-cyan-900 dark:text-cyan-100 border-cyan-300/30",
-    "Bebidas": "bg-[#B39DDB]/30 dark:bg-[#9575CD]/30 text-purple-900 dark:text-purple-100 border-purple-300/30",
-    "Limpeza": "bg-[#80CBC4]/30 dark:bg-[#4DB6AC]/30 text-teal-900 dark:text-teal-100 border-teal-300/30",
-    "Higiene Pessoal": "bg-[#CE93D8]/30 dark:bg-[#BA68C8]/30 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/30",
-    "Bebês e Crianças": "bg-[#FFF59D]/30 dark:bg-[#FFF176]/30 text-yellow-900 dark:text-yellow-100 border-yellow-300/30",
-    "Pet Shop": "bg-[#BCAAA4]/30 dark:bg-[#A1887F]/30 text-stone-900 dark:text-stone-100 border-stone-300/30",
-    "Utilidades e Bazar": "bg-[#B0BEC5]/30 dark:bg-[#90A4AE]/30 text-slate-900 dark:text-slate-100 border-slate-300/30",
+  const subcategoryClasses: { [key: string]: string } = {
+    "Hortifrúti e Ovos": "bg-category-hortifruti-light/30 dark:bg-category-hortifruti-dark/30 text-green-900 dark:text-green-100 border-green-300/30",
+    "Açougue e Peixaria": "bg-category-acougue-light/30 dark:bg-category-acougue-dark/30 text-red-900 dark:text-red-100 border-red-300/30",
+    "Padaria e Confeitaria": "bg-category-padaria-light/30 dark:bg-category-padaria-dark/30 text-amber-900 dark:text-amber-100 border-amber-300/30",
+    "Laticínios e Frios": "bg-category-laticinios-light/30 dark:bg-category-laticinios-dark/30 text-blue-900 dark:text-blue-100 border-blue-300/30",
+    "Mercearia": "bg-category-mercearia-light/30 dark:bg-category-mercearia-dark/30 text-orange-900 dark:text-orange-100 border-orange-300/30",
+    "Matinais e Doces": "bg-category-matinais-light/30 dark:bg-category-matinais-dark/30 text-pink-900 dark:text-pink-100 border-pink-300/30",
+    "Congelados": "bg-category-congelados-light/30 dark:bg-category-congelados-dark/30 text-cyan-900 dark:text-cyan-100 border-cyan-300/30",
+    "Bebidas": "bg-category-bebidas-light/30 dark:bg-category-bebidas-dark/30 text-purple-900 dark:text-purple-100 border-purple-300/30",
+    "Limpeza": "bg-category-limpeza-light/30 dark:bg-category-limpeza-dark/30 text-teal-900 dark:text-teal-100 border-teal-300/30",
+    "Higiene Pessoal": "bg-category-higiene-light/30 dark:bg-category-higiene-dark/30 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/30",
+    "Bebês e Crianças": "bg-category-bebes-light/30 dark:bg-category-bebes-dark/30 text-yellow-900 dark:text-yellow-100 border-yellow-300/30",
+    "Pet Shop": "bg-category-pet-light/30 dark:bg-category-pet-dark/30 text-stone-900 dark:text-stone-100 border-stone-300/30",
+    "Utilidades e Bazar": "bg-category-utilidades-light/30 dark:bg-category-utilidades-dark/30 text-slate-900 dark:text-slate-100 border-slate-300/30",
     "Default": "bg-secondary/50 text-secondary-foreground"
   };
 
@@ -316,12 +317,12 @@ export default function DashboardPage() {
                             <TableCell className="font-mono">{item.barcode}</TableCell>
                             <TableCell className="font-medium">{item.name}</TableCell>
                             <TableCell>
-                                <Badge variant="tag" className={categoryColors[item.category] || categoryColors.Default}>
+                                <Badge variant="tag" className={cn(categoryClasses[item.category] || categoryClasses.Default)}>
                                     {item.category}
                                 </Badge>
                             </TableCell>
                             <TableCell>
-                                <Badge variant="tag" className={subcategoryColors[item.category] || subcategoryColors.Default}>
+                                <Badge variant="tag" className={cn(subcategoryClasses[item.category] || subcategoryClasses.Default)}>
                                     {item.subcategory}
                                 </Badge>
                             </TableCell>
