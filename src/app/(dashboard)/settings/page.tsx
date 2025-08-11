@@ -1,18 +1,31 @@
 "use client";
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Users, Bell, Trash2, UserX, Shield } from "lucide-react";
+import { User, Users, Shield, Trash2, UserX } from "lucide-react";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { PreferencesForm } from "@/components/settings/preferences-form";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DeleteConfirmationDialog } from "@/components/settings/delete-confirmation-dialog";
+import { useEffect, useState } from 'react';
 
 
 export default function SettingsPage() {
+    const router = useRouter();
     const searchParams = useSearchParams();
-    const defaultTab = searchParams.get('tab') || 'profile';
+    const tab = searchParams.get('tab') || 'profile';
+    const [activeTab, setActiveTab] = useState(tab);
+
+    useEffect(() => {
+        setActiveTab(tab);
+    }, [tab]);
+
+    const handleTabChange = (value: string) => {
+        setActiveTab(value);
+        // Optional: update URL without reloading the page, for bookmarking/sharing
+        router.push(`/settings?tab=${value}`, { scroll: false });
+    };
 
     const handleDeleteData = async () => {
         // In a real app, you would call your backend to delete user data from the database.
@@ -39,7 +52,7 @@ export default function SettingsPage() {
                     <CardDescription>Gerencie suas informações de perfil e preferências do aplicativo.</CardDescription>
                 </CardHeader>
                 <div className="p-6 pt-0">
-                    <Tabs defaultValue={defaultTab} className="w-full">
+                    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                         <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                             <TabsTrigger value="profile"><User className="mr-2 h-4 w-4" /> Perfil</TabsTrigger>
                             <TabsTrigger value="preferences"><Users className="mr-2 h-4 w-4" /> Família & App</TabsTrigger>
