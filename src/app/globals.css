@@ -32,24 +32,24 @@
   }
 
   .dark {
-    --background: 224 15% 12%; /* M3 Dark Surface */
-    --foreground: 224 10% 90%; /* M3 Dark On Surface */
-    --card: 224 15% 18%; /* M3 Dark Surface Container */
-    --card-foreground: 224 10% 90%;
-    --popover: 224 15% 18%;
-    --popover-foreground: 224 10% 90%;
+    --background: 0 0% 7%; /* #121212 */
+    --foreground: 0 0% 100%; /* #FFFFFF */
+    --card: 0 0% 12%; /* #1E1E1E */
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 100%;
     --primary: 142 65% 75%; /* M3 Dark Primary - Green */
     --primary-foreground: 142 20% 20%; /* M3 Dark On Primary */
     --secondary: 142 30% 35%; /* M3 Dark Secondary Container */
     --secondary-foreground: 142 15% 85%; /* M3 Dark On Secondary Container */
-    --muted: 224 15% 25%;
-    --muted-foreground: 224 10% 65%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 74%; /* #BDBDBD */
     --accent: 142 50% 70%; /* M3 Dark Tertiary - Green */
     --accent-foreground: 142 15% 15%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 224 15% 30%; /* M3 Dark Outline Variant */
-    --input: 224 15% 25%;
+    --border: 0 0% 20%; /* #333333 */
+    --input: 0 0% 20%;
     --ring: 142 65% 75%;
     --radius: 0.8rem;
     --chart-1: 142 70% 50%;
