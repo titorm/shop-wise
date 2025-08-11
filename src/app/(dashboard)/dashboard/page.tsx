@@ -6,12 +6,15 @@ import { BarChart, DollarSign, ShoppingBag, TrendingUp, PieChart as PieChartIcon
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Pie, PieChart as RechartsPieChart, Cell } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 const barChartConfig = {
-  total: {
-    label: "Total",
-    color: "hsl(var(--primary))",
-  },
+  total: { label: "Total" },
+  alimentacao: { label: "Alimentação", color: "hsl(var(--chart-1))" },
+  moradia: { label: "Moradia", color: "hsl(var(--chart-2))" },
+  transporte: { label: "Transporte", color: "hsl(var(--chart-3))" },
+  lazer: { label: "Lazer", color: "hsl(var(--chart-4))" },
+  outros: { label: "Outros", color: "hsl(var(--chart-5))" },
 };
 
 const pieChartConfig = {
@@ -85,12 +88,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setBarChartData([
-      { month: "Jan", total: Math.floor(Math.random() * 5000) + 1000 },
-      { month: "Fev", total: Math.floor(Math.random() * 5000) + 1000 },
-      { month: "Mar", total: Math.floor(Math.random() * 5000) + 1000 },
-      { month: "Abr", total: Math.floor(Math.random() * 5000) + 1000 },
-      { month: "Mai", total: Math.floor(Math.random() * 5000) + 1000 },
-      { month: "Jun", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Jan", alimentacao: 1800, moradia: 800, transporte: 500, lazer: 400, outros: 200 },
+      { month: "Fev", alimentacao: 1900, moradia: 850, transporte: 550, lazer: 450, outros: 250 },
+      { month: "Mar", alimentacao: 2000, moradia: 900, transporte: 600, lazer: 500, outros: 300 },
+      { month: "Abr", alimentacao: 1700, moradia: 750, transporte: 450, lazer: 350, outros: 150 },
+      { month: "Mai", alimentacao: 2100, moradia: 950, transporte: 650, lazer: 550, outros: 350 },
+      { month: "Jun", alimentacao: 2200, moradia: 1000, transporte: 700, lazer: 600, outros: 400 },
     ]);
 
     setPieChartData([
@@ -101,6 +104,15 @@ export default function DashboardPage() {
         { category: 'outros', value: 80.00, fill: 'var(--color-outros)' },
     ]);
   }, []);
+
+  const categoryColors: { [key: string]: string } = {
+    "Carnes": "bg-red-200/50 text-red-800 border-red-300/50",
+    "Peixes": "bg-blue-200/50 text-blue-800 border-blue-300/50",
+    "Mercearia": "bg-amber-200/50 text-amber-800 border-amber-300/50",
+    "Bebidas": "bg-purple-200/50 text-purple-800 border-purple-300/50",
+    "Laticínios": "bg-gray-200/50 text-gray-800 border-gray-300/50",
+    "Default": "bg-secondary text-secondary-foreground"
+  };
 
   return (
     <div className="space-y-6">
@@ -147,16 +159,16 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-        <Card className="lg:col-span-1 xl:col-span-2">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+        <Card>
           <CardHeader>
             <CardTitle>Visão Geral do Consumo</CardTitle>
-            <CardDescription>Seus gastos mensais nos últimos 6 meses.</CardDescription>
+            <CardDescription>Seus gastos mensais nos últimos 6 meses, divididos por categoria.</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
              <ChartContainer config={barChartConfig} className="h-[300px] w-full">
                 <ResponsiveContainer>
-                    <RechartsBarChart data={barChartData}>
+                    <RechartsBarChart data={barChartData} stackOffset="sign">
                         <XAxis
                         dataKey="month"
                         stroke="#888888"
@@ -175,20 +187,25 @@ export default function DashboardPage() {
                             cursor={false}
                             content={<ChartTooltipContent />}
                         />
-                        <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                         <ChartLegend content={<ChartLegendContent />} />
+                        <Bar dataKey="alimentacao" fill="var(--color-alimentacao)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="moradia" fill="var(--color-moradia)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="transporte" fill="var(--color-transporte)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="lazer" fill="var(--color-lazer)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="outros" fill="var(--color-outros)" stackId="a" radius={[4, 4, 0, 0]} />
                     </RechartsBarChart>
                 </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-1 xl:col-span-1 flex flex-col">
+        <Card className="flex flex-col">
            <CardHeader>
                 <CardTitle>Gasto por Categoria</CardTitle>
                 <CardDescription>Distribuição de despesas do último mês.</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
-                <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full w-full">
+                <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full max-h-[300px] w-full">
                     <RechartsPieChart>
                          <ChartTooltip
                             cursor={false}
@@ -226,7 +243,11 @@ export default function DashboardPage() {
                     {topExpensesData.map((item) => (
                         <TableRow key={item.name}>
                             <TableCell className="font-medium">{item.name}</TableCell>
-                            <TableCell>{item.category}</TableCell>
+                            <TableCell>
+                                <Badge variant="tag" className={categoryColors[item.category] || categoryColors.Default}>
+                                    {item.category}
+                                </Badge>
+                            </TableCell>
                             <TableCell>{item.volume}</TableCell>
                             <TableCell className="text-right">R$ {item.totalPrice.toFixed(2)}</TableCell>
                             <TableCell className="text-right">R$ {item.unitPrice.toFixed(2)}</TableCell>
