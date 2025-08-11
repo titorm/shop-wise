@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BarChart, DollarSign, ShoppingBag, TrendingUp, PieChart as PieChartIcon } from "lucide-react";
+import { BarChart, DollarSign, ShoppingBag, TrendingUp, PieChart as PieChartIcon, Tag, Weight, Scale } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Pie, PieChart as RechartsPieChart, Cell } from "recharts";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const barChartConfig = {
   total: {
@@ -38,6 +39,45 @@ const pieChartConfig = {
     color: "hsl(var(--chart-5))",
   },
 };
+
+const topExpensesData = [
+  {
+    name: "Picanha",
+    category: "Carnes",
+    volume: "1 kg",
+    totalPrice: 89.90,
+    unitPrice: 89.90,
+  },
+  {
+    name: "Salmão Fresco",
+    category: "Peixes",
+    volume: "800 g",
+    totalPrice: 72.00,
+    unitPrice: 90.00,
+  },
+    {
+    name: "Azeite Extra Virgem",
+    category: "Mercearia",
+    volume: "500 ml",
+    totalPrice: 45.50,
+    unitPrice: 91.00,
+  },
+  {
+    name: "Vinho Tinto",
+    category: "Bebidas",
+    volume: "750 ml",
+    totalPrice: 65.00,
+    unitPrice: 86.67,
+  },
+  {
+    name: "Queijo Parmesão",
+    category: "Laticínios",
+    volume: "250 g",
+    totalPrice: 38.75,
+    unitPrice: 155.00,
+  },
+];
+
 
 export default function DashboardPage() {
   const [barChartData, setBarChartData] = useState<any[]>([]);
@@ -172,28 +212,28 @@ export default function DashboardPage() {
             <CardDescription>Itens que mais impactaram seu orçamento este mês.</CardDescription>
           </CardHeader>
           <CardContent>
-             <div className="space-y-4">
-              <div className="flex items-center">
-                <p className="text-sm font-medium leading-none">Picanha (1kg)</p>
-                <p className="ml-auto font-medium">R$ 89.90</p>
-              </div>
-              <div className="flex items-center">
-                <p className="text-sm font-medium leading-none">Azeite Extra Virgem</p>
-                <p className="ml-auto font-medium">R$ 45.50</p>
-              </div>
-              <div className="flex items-center">
-                <p className="text-sm font-medium leading-none">Salmão Fresco</p>
-                <p className="ml-auto font-medium">R$ 72.00</p>
-              </div>
-              <div className="flex items-center">
-                <p className="text-sm font-medium leading-none">Vinho Tinto</p>
-                <p className="ml-auto font-medium">R$ 65.00</p>
-              </div>
-               <div className="flex items-center">
-                <p className="text-sm font-medium leading-none">Queijo Parmesão</p>
-                <p className="ml-auto font-medium">R$ 38.75</p>
-              </div>
-            </div>
+             <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Produto</TableHead>
+                        <TableHead><Tag className="inline-block mr-1 w-4 h-4" /> Categoria</TableHead>
+                        <TableHead><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
+                        <TableHead className="text-right"><DollarSign className="inline-block mr-1 w-4 h-4" /> Preço Total</TableHead>
+                        <TableHead className="text-right"><Scale className="inline-block mr-1 w-4 h-4" /> Preço p/ kg/L</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {topExpensesData.map((item) => (
+                        <TableRow key={item.name}>
+                            <TableCell className="font-medium">{item.name}</TableCell>
+                            <TableCell>{item.category}</TableCell>
+                            <TableCell>{item.volume}</TableCell>
+                            <TableCell className="text-right">R$ {item.totalPrice.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">R$ {item.unitPrice.toFixed(2)}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+             </Table>
           </CardContent>
         </Card>
     </div>
