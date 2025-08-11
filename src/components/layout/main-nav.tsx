@@ -40,7 +40,7 @@ export function MainNav() {
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <Link href={item.href} legacyBehavior passHref>
+              <Link href={item.href} passHref>
                 <SidebarMenuButton 
                   isActive={pathname === item.href}
                   tooltip={item.label}
@@ -56,7 +56,7 @@ export function MainNav() {
       <SidebarSeparator />
       <SidebarFooter>
         <div className="p-2">
-          <Link href="/settings" legacyBehavior passHref>
+          <Link href="/settings" passHref>
             <SidebarMenuButton>
                 <Avatar className="h-8 w-8">
                     <AvatarImage src={user?.photoURL ?? "https://placehold.co/100x100.png"} alt="User Avatar" data-ai-hint="user avatar" />
