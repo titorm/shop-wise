@@ -2,28 +2,63 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BarChart, DollarSign, ShoppingBag, TrendingUp } from "lucide-react";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { BarChart, DollarSign, ShoppingBag, TrendingUp, PieChart as PieChartIcon } from "lucide-react";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
+import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Pie, PieChart as RechartsPieChart, Cell } from "recharts";
 
-const chartConfig = {
+const barChartConfig = {
   total: {
     label: "Total",
     color: "hsl(var(--primary))",
   },
 };
 
+const pieChartConfig = {
+  gasto: {
+    label: "Gasto",
+  },
+  alimentacao: {
+    label: "Alimentação",
+    color: "hsl(var(--chart-1))",
+  },
+  moradia: {
+    label: "Moradia",
+    color: "hsl(var(--chart-2))",
+  },
+  transporte: {
+    label: "Transporte",
+    color: "hsl(var(--chart-3))",
+  },
+  lazer: {
+    label: "Lazer",
+    color: "hsl(var(--chart-4))",
+  },
+  outros: {
+    label: "Outros",
+    color: "hsl(var(--chart-5))",
+  },
+};
+
 export default function DashboardPage() {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [barChartData, setBarChartData] = useState<any[]>([]);
+  const [pieChartData, setPieChartData] = useState<any[]>([]);
 
   useEffect(() => {
-    setChartData([
+    setBarChartData([
       { month: "Jan", total: Math.floor(Math.random() * 5000) + 1000 },
       { month: "Fev", total: Math.floor(Math.random() * 5000) + 1000 },
       { month: "Mar", total: Math.floor(Math.random() * 5000) + 1000 },
       { month: "Abr", total: Math.floor(Math.random() * 5000) + 1000 },
       { month: "Mai", total: Math.floor(Math.random() * 5000) + 1000 },
       { month: "Jun", total: Math.floor(Math.random() * 5000) + 1000 },
+    ]);
+
+    setPieChartData([
+        { category: 'alimentacao', value: 450.75, fill: 'var(--color-alimentacao)'},
+        { category: 'moradia', value: 280.50, fill: 'var(--color-moradia)' },
+        { category: 'transporte', value: 120.00, fill: 'var(--color-transporte)' },
+        { category: 'lazer', value: 150.25, fill: 'var(--color-lazer)' },
+        { category: 'outros', value: 80.00, fill: 'var(--color-outros)' },
     ]);
   }, []);
 
@@ -72,16 +107,16 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+        <Card className="lg:col-span-1 xl:col-span-2">
           <CardHeader>
             <CardTitle>Visão Geral do Consumo</CardTitle>
             <CardDescription>Seus gastos mensais nos últimos 6 meses.</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-             <ChartContainer config={chartConfig} className="h-[300px] w-full">
+             <ChartContainer config={barChartConfig} className="h-[300px] w-full">
                 <ResponsiveContainer>
-                    <RechartsBarChart data={chartData}>
+                    <RechartsBarChart data={barChartData}>
                         <XAxis
                         dataKey="month"
                         stroke="#888888"
@@ -106,7 +141,32 @@ export default function DashboardPage() {
             </ChartContainer>
           </CardContent>
         </Card>
-        <Card className="col-span-4 lg:col-span-3">
+
+        <Card className="lg:col-span-1 xl:col-span-1 flex flex-col">
+           <CardHeader>
+                <CardTitle>Gasto por Categoria</CardTitle>
+                <CardDescription>Distribuição de despesas do último mês.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
+                <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full w-full">
+                    <RechartsPieChart>
+                         <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent hideLabel nameKey="category" />}
+                        />
+                        <Pie data={pieChartData} dataKey="value" nameKey="category" innerRadius={60} strokeWidth={5}>
+                             {pieChartData.map((entry) => (
+                                <Cell key={entry.category} fill={entry.fill} />
+                            ))}
+                        </Pie>
+                        <ChartLegend content={<ChartLegendContent nameKey="category" />} />
+                    </RechartsPieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+      </div>
+
+      <Card>
           <CardHeader>
             <CardTitle>Maiores Despesas</CardTitle>
             <CardDescription>Itens que mais impactaram seu orçamento este mês.</CardDescription>
@@ -136,7 +196,6 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }
