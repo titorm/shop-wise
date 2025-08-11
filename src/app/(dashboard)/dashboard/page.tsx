@@ -12,12 +12,12 @@ import { cn } from "@/lib/utils";
 
 const barChartConfig = {
   total: { label: "Total" },
-  "Hortifrúti e Ovos": { label: "Hortifrúti", color: "hsl(var(--category-hortifruti))" },
-  "Açougue e Peixaria": { label: "Carnes", color: "hsl(var(--category-acougue))" },
-  "Laticínios e Frios": { label: "Laticínios", color: "hsl(var(--category-laticinios))" },
-  "Mercearia": { label: "Mercearia", color: "hsl(var(--category-mercearia))" },
-  "Bebidas": { label: "Bebidas", color: "hsl(var(--category-bebidas))" },
-  "Limpeza": { label: "Limpeza", color: "hsl(var(--category-limpeza))" },
+  hortifrutiEOvos: { label: "Hortifrúti", color: "hsl(var(--category-hortifruti))" },
+  acougueEPeixaria: { label: "Carnes", color: "hsl(var(--category-acougue))" },
+  laticiniosEFrios: { label: "Laticínios", color: "hsl(var(--category-laticinios))" },
+  mercearia: { label: "Mercearia", color: "hsl(var(--category-mercearia))" },
+  bebidas: { label: "Bebidas", color: "hsl(var(--category-bebidas))" },
+  limpeza: { label: "Limpeza", color: "hsl(var(--category-limpeza))" },
 };
 
 const pieChartConfig = {
@@ -130,12 +130,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setBarChartData([
-      { month: "Jan", "Hortifrúti e Ovos": 350, "Açougue e Peixaria": 500, "Laticínios e Frios": 400, "Mercearia": 350, "Bebidas": 200, "Limpeza": 100 },
-      { month: "Fev", "Hortifrúti e Ovos": 380, "Açougue e Peixaria": 520, "Laticínios e Frios": 420, "Mercearia": 370, "Bebidas": 230, "Limpeza": 110 },
-      { month: "Mar", "Hortifrúti e Ovos": 400, "Açougue e Peixaria": 550, "Laticínios e Frios": 450, "Mercearia": 400, "Bebidas": 250, "Limpeza": 120 },
-      { month: "Abr", "Hortifrúti e Ovos": 320, "Açougue e Peixaria": 480, "Laticínios e Frios": 380, "Mercearia": 320, "Bebidas": 180, "Limpeza": 90 },
-      { month: "Mai", "Hortifrúti e Ovos": 420, "Açougue e Peixaria": 580, "Laticínios e Frios": 480, "Mercearia": 420, "Bebidas": 280, "Limpeza": 130 },
-      { month: "Jun", "Hortifrúti e Ovos": 450, "Açougue e Peixaria": 600, "Laticínios e Frios": 500, "Mercearia": 450, "Bebidas": 300, "Limpeza": 150 },
+      { month: "Jan", hortifrutiEOvos: 350, acougueEPeixaria: 500, laticiniosEFrios: 400, mercearia: 350, bebidas: 200, limpeza: 100 },
+      { month: "Fev", hortifrutiEOvos: 380, acougueEPeixaria: 520, laticiniosEFrios: 420, mercearia: 370, bebidas: 230, limpeza: 110 },
+      { month: "Mar", hortifrutiEOvos: 400, acougueEPeixaria: 550, laticiniosEFrios: 450, mercearia: 400, bebidas: 250, limpeza: 120 },
+      { month: "Abr", hortifrutiEOvos: 320, acougueEPeixaria: 480, laticiniosEFrios: 380, mercearia: 320, bebidas: 180, limpeza: 90 },
+      { month: "Mai", hortifrutiEOvos: 420, acougueEPeixaria: 580, laticiniosEFrios: 480, mercearia: 420, bebidas: 280, limpeza: 130 },
+      { month: "Jun", hortifrutiEOvos: 450, acougueEPeixaria: 600, laticiniosEFrios: 500, mercearia: 450, bebidas: 300, limpeza: 150 },
     ]);
 
     setPieChartData([
@@ -263,12 +263,12 @@ export default function DashboardPage() {
                             content={<ChartTooltipContent />}
                         />
                          <ChartLegend content={<ChartLegendContent />} />
-                        <Bar dataKey="Hortifrúti e Ovos" fill="var(--color-Hortifrúti e Ovos)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="Açougue e Peixaria" fill="var(--color-Açougue e Peixaria)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="Laticínios e Frios" fill="var(--color-Laticínios e Frios)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="Mercearia" fill="var(--color-Mercearia)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="Bebidas" fill="var(--color-Bebidas)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="Limpeza" fill="var(--color-Limpeza)" stackId="a" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="hortifrutiEOvos" fill="var(--color-hortifrutiEOvos)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="acougueEPeixaria" fill="var(--color-acougueEPeixaria)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="laticiniosEFrios" fill="var(--color-laticiniosEFrios)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="mercearia" fill="var(--color-mercearia)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="bebidas" fill="var(--color-bebidas)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="limpeza" fill="var(--color-limpeza)" stackId="a" radius={[4, 4, 0, 0]} />
                     </RechartsBarChart>
                 </ResponsiveContainer>
             </ChartContainer>
