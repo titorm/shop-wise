@@ -1,9 +1,10 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { QrCode, Camera, History, Store, Calendar, Package, Hash, DollarSign, Edit, Trash2, ShieldCheck, PlusCircle, Pencil, Save, X } from 'lucide-react';
+import { QrCode, Camera, History, Store, Calendar, Package, Hash, DollarSign, Edit, Trash2, ShieldCheck, PlusCircle, Pencil, Save, X, Barcode, Weight } from 'lucide-react';
 import { extractProductData } from '@/app/(dashboard)/scan/actions';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { useToast } from "@/hooks/use-toast";
@@ -16,7 +17,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 interface Product {
     id: number;
+    barcode: string;
     name: string;
+    volume: string;
     quantity: number;
     price: number;
 }
@@ -50,7 +53,12 @@ export function QrScannerComponent() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       setScanResult(mockResult);
-      setProducts(mockResult.products.map((p, i) => ({...p, id: Date.now() + i})));
+      setProducts(mockResult.products.map((p, i) => ({
+          ...p,
+          id: Date.now() + i,
+          barcode: `7890000000${100 + i}`,
+          volume: "1 un",
+      })));
 
     } catch (error) {
       console.error("Failed to extract data:", error);
@@ -85,7 +93,9 @@ export function QrScannerComponent() {
   const handleAddNewItem = () => {
     const newItem: Product = {
         id: Date.now(),
+        barcode: "Novo Código",
         name: "Novo Item",
+        volume: "1 un",
         quantity: 1,
         price: 0.00,
     };
@@ -126,7 +136,9 @@ export function QrScannerComponent() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead className="w-[150px]"><Barcode className="inline-block mr-1 w-4 h-4" /> Cód. de Barras</TableHead>
                                         <TableHead><Package className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
+                                        <TableHead className="text-center w-[100px]"><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
                                         <TableHead className="text-center w-[80px]"><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
                                         <TableHead className="text-right w-[120px]"><DollarSign className="inline-block mr-1 w-4 h-4" /> Preço (R$)</TableHead>
                                         <TableHead className="text-right w-[100px]">Ações</TableHead>
@@ -135,7 +147,9 @@ export function QrScannerComponent() {
                                 <TableBody>
                                     {products.map((product) => (
                                         <TableRow key={product.id}>
+                                            <TableCell className="font-mono text-xs">{product.barcode}</TableCell>
                                             <TableCell className="font-medium">{product.name}</TableCell>
+                                            <TableCell className="text-center">{product.volume}</TableCell>
                                             <TableCell className="text-center">{product.quantity}</TableCell>
                                             <TableCell className="text-right">{product.price.toFixed(2)}</TableCell>
                                             <TableCell className="text-right">
@@ -207,8 +221,16 @@ export function QrScannerComponent() {
                 {editingProduct && (
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="barcode" className="text-right">Cód. Barras</Label>
+                            <Input id="barcode" value={editingProduct.barcode} onChange={(e) => setEditingProduct({...editingProduct, barcode: e.target.value})} className="col-span-3" />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="name" className="text-right">Nome</Label>
                             <Input id="name" value={editingProduct.name} onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})} className="col-span-3" />
+                        </div>
+                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="volume" className="text-right">Volume</Label>
+                            <Input id="volume" value={editingProduct.volume} onChange={(e) => setEditingProduct({...editingProduct, volume: e.target.value})} className="col-span-3" />
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="quantity" className="text-right">Quantidade</Label>

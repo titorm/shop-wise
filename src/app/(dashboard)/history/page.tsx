@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { History, Search, Store, Calendar, ShoppingCart, DollarSign, Lightbulb, TrendingUp, Package, Hash } from 'lucide-react';
+import { History, Search, Store, Calendar, ShoppingCart, DollarSign, Lightbulb, TrendingUp, Package, Hash, Barcode, Weight } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // Mock data, in a real application this would come from a database.
@@ -18,11 +19,11 @@ const mockPurchases = [
     date: '2024-07-28T10:30:00Z',
     total: 125.40,
     items: [
-      { id: 1, name: 'Leite Integral', quantity: 2, price: 5.50 },
-      { id: 2, name: 'Pão de Forma', quantity: 1, price: 7.20 },
-      { id: 3, name: 'Café em pó 500g', quantity: 1, price: 15.99 },
-      { id: 4, name: 'Maçã Fuji (Kg)', quantity: 1.5, price: 9.80 },
-      { id: 5, name: 'Frango (Kg)', quantity: 2, price: 18.90 },
+      { id: 1, barcode: '7890000000011', name: 'Leite Integral', volume: '1L', quantity: 2, price: 5.50 },
+      { id: 2, barcode: '7890000000028', name: 'Pão de Forma', volume: '500g', quantity: 1, price: 7.20 },
+      { id: 3, barcode: '7890000000035', name: 'Café em pó 500g', volume: '500g', quantity: 1, price: 15.99 },
+      { id: 4, barcode: '7890000000042', name: 'Maçã Fuji (Kg)', volume: '1.5kg', quantity: 1.5, price: 9.80 },
+      { id: 5, barcode: '7890000000059', name: 'Frango (Kg)', volume: '2kg', quantity: 2, price: 18.90 },
     ],
   },
   {
@@ -31,9 +32,9 @@ const mockPurchases = [
     date: '2024-07-15T18:00:00Z',
     total: 210.95,
     items: [
-      { id: 1, name: 'Arroz 5kg', quantity: 1, price: 25.50 },
-      { id: 2, name: 'Feijão 1kg', quantity: 2, price: 8.75 },
-      { id: 3, name: 'Óleo de Soja', quantity: 3, price: 6.99 },
+      { id: 1, barcode: '7890000000066', name: 'Arroz 5kg', volume: '5kg', quantity: 1, price: 25.50 },
+      { id: 2, barcode: '7890000000073', name: 'Feijão 1kg', volume: '1kg', quantity: 2, price: 8.75 },
+      { id: 3, barcode: '7890000000080', name: 'Óleo de Soja', volume: '900ml', quantity: 3, price: 6.99 },
     ],
   },
     {
@@ -42,9 +43,9 @@ const mockPurchases = [
     date: '2024-06-20T14:15:00Z',
     total: 88.50,
     items: [
-      { id: 1, name: 'Sabão em pó', quantity: 1, price: 22.00 },
-      { id: 2, name: 'Amaciante', quantity: 1, price: 15.50 },
-      { id: 3, name: 'Detergente', quantity: 4, price: 2.50 },
+      { id: 1, barcode: '7890000000097', name: 'Sabão em pó', volume: '1kg', quantity: 1, price: 22.00 },
+      { id: 2, barcode: '7890000000103', name: 'Amaciante', volume: '2L', quantity: 1, price: 15.50 },
+      { id: 3, barcode: '7890000000110', name: 'Detergente', volume: '500ml', quantity: 4, price: 2.50 },
     ],
   },
    {
@@ -53,8 +54,8 @@ const mockPurchases = [
     date: '2024-02-10T11:00:00Z',
     total: 350.00,
     items: [
-      { id: 1, name: 'Picanha (peça)', quantity: 1, price: 95.50 },
-      { id: 2, name: 'Cerveja Artesanal', quantity: 6, price: 12.75 },
+      { id: 1, barcode: '7890000000127', name: 'Picanha (peça)', volume: '1.2kg', quantity: 1, price: 95.50 },
+      { id: 2, barcode: '7890000000134', name: 'Cerveja Artesanal', volume: '500ml', quantity: 6, price: 12.75 },
     ],
   },
 ];
@@ -200,7 +201,9 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead className="w-[150px]"><Barcode className="inline-block mr-1 w-4 h-4" /> Cód. de Barras</TableHead>
                                 <TableHead><Package className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
+                                <TableHead className="text-center w-[100px]"><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
                                 <TableHead className="text-center w-[80px]"><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
                                 <TableHead className="text-right w-[120px]"><DollarSign className="inline-block mr-1 w-4 h-4" /> Preço (R$)</TableHead>
                             </TableRow>
@@ -208,7 +211,9 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
                         <TableBody>
                             {purchase.items.map((item) => (
                                 <TableRow key={item.id}>
+                                    <TableCell className="font-mono text-xs">{item.barcode}</TableCell>
                                     <TableCell className="font-medium">{item.name}</TableCell>
+                                    <TableCell className="text-center">{item.volume}</TableCell>
                                     <TableCell className="text-center">{item.quantity}</TableCell>
                                     <TableCell className="text-right">{item.price.toFixed(2)}</TableCell>
                                 </TableRow>

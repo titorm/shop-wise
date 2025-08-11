@@ -312,8 +312,8 @@ export default function DashboardPage() {
                         <TableHead><Package className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
                         <TableHead><Tag className="inline-block mr-1 w-4 h-4" /> Categoria</TableHead>
                         <TableHead>Subcategoria</TableHead>
-                        <TableHead><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
                         <TableHead><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
+                        <TableHead><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
                         <TableHead className="text-right"><Scale className="inline-block mr-1 w-4 h-4" /> Preço p/ kg/L</TableHead>
                         <TableHead className="text-right"><DollarSign className="inline-block mr-1 w-4 h-4" /> Preço Total</TableHead>
                     </TableRow>
@@ -333,8 +333,8 @@ export default function DashboardPage() {
                                     {item.subcategory}
                                 </Badge>
                             </TableCell>
-                            <TableCell>{item.quantity}</TableCell>
                             <TableCell>{item.volume}</TableCell>
+                            <TableCell>{item.quantity}</TableCell>
                             <TableCell className="text-right">R$ {item.unitPrice.toFixed(2)}</TableCell>
                             <TableCell className="text-right">R$ {item.totalPrice.toFixed(2)}</TableCell>
                         </TableRow>
