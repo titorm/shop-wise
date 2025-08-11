@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart2, Home, List, QrCode, Settings, User, Shield, LogOut } from "lucide-react";
+import { BarChart2, Home, List, QrCode, Settings, User, Shield, LogOut, Users } from "lucide-react";
 import {
   SidebarContent,
   SidebarFooter,
@@ -26,6 +26,14 @@ const menuItems = [
     { href: "/settings", label: "Configurações", icon: Settings },
 ];
 
+const getUserInitials = (name: string | null | undefined) => {
+    if (!name) return "U";
+    const nameParts = name.split(" ");
+    if (nameParts.length > 1) {
+        return `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`.toUpperCase();
+    }
+    return name.charAt(0).toUpperCase();
+}
 
 export function MainNav() {
   const pathname = usePathname();
@@ -69,10 +77,10 @@ export function MainNav() {
                 <DropdownMenuTrigger asChild>
                     <SidebarMenuButton>
                         <Avatar className="h-8 w-8">
-                            <AvatarImage src={user?.photoURL ?? "https://placehold.co/100x100.png"} alt="User Avatar" data-ai-hint="user avatar" />
-                            <AvatarFallback>{user?.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
+                            <AvatarImage src={user?.photoURL ?? ""} alt="User Avatar" />
+                            <AvatarFallback>{getUserInitials(user?.displayName)}</AvatarFallback>
                         </Avatar>
-                        <span className="truncate">{user?.displayName ?? 'Usuário'}</span>
+                        <span className="truncate">{user?.displayName ?? 'Nome do Usuário'}</span>
                     </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56 mb-2 ml-2" side="top" align="start">
@@ -84,6 +92,12 @@ export function MainNav() {
                         <DropdownMenuItem>
                             <User className="mr-2 h-4 w-4" />
                             <span>Perfil</span>
+                        </DropdownMenuItem>
+                    </Link>
+                     <Link href="/settings?tab=preferences">
+                        <DropdownMenuItem>
+                            <Users className="mr-2 h-4 w-4" />
+                            <span>Preferências</span>
                         </DropdownMenuItem>
                     </Link>
                     <Link href="/settings?tab=privacy">
