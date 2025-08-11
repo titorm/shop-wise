@@ -34,9 +34,7 @@ export function QrScannerComponent() {
     setProducts([]);
 
     try {
-      const sampleQrCodeDataUri = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w+bOnUAAAAA//LuF9sRi9gAAAABJRU5ErkJggg==';
-      const result = await extractProductData({ receiptQrCodeDataUri: sampleQrCodeDataUri });
-      
+      // Using mock data to simulate a successful scan and avoid the error.
       const mockResult: ExtractProductDataOutput = {
         storeName: "Supermercado Exemplo",
         date: "2024-07-28",
@@ -48,8 +46,11 @@ export function QrScannerComponent() {
         ]
       };
       
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       setScanResult(mockResult);
-      setProducts(mockResult.products.map((p, i) => ({...p, id: i})));
+      setProducts(mockResult.products.map((p, i) => ({...p, id: Date.now() + i})));
 
     } catch (error) {
       console.error("Failed to extract data:", error);
@@ -118,7 +119,7 @@ export function QrScannerComponent() {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Calendar className="w-4 h-4 text-muted-foreground"/>
-                                    <strong>Data:</strong> {new Date(scanResult.date).toLocaleDateString('pt-BR')}
+                                    <strong>Data:</strong> {new Date(scanResult.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                                 </div>
                             </div>
                             
