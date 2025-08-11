@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,12 +34,15 @@ export function ForgotPasswordForm() {
     defaultValues: {
       email: "",
     },
+    mode: "onChange",
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     // Here you would handle the password reset logic
   }
+
+  const { isDirty, isValid, isSubmitting } = form.formState;
 
   return (
     <Card>
@@ -64,7 +68,7 @@ export function ForgotPasswordForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={!isDirty || !isValid || isSubmitting}>
               Enviar Link de Recuperação
             </Button>
           </CardContent>

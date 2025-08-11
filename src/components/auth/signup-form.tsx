@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,6 +49,7 @@ export function SignupForm() {
       email: "",
       password: "",
     },
+    mode: "onChange",
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -79,6 +81,8 @@ export function SignupForm() {
         });
     }
   }
+
+  const { isValid, isSubmitting } = form.formState;
 
   return (
     <Card>
@@ -150,7 +154,7 @@ export function SignupForm() {
                     )}
                 />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
               Criar Conta
             </Button>
              <div className="relative">

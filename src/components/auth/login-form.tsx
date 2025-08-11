@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,6 +47,7 @@ export function LoginForm() {
       email: "",
       password: "",
     },
+    mode: "onChange",
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -74,6 +76,8 @@ export function LoginForm() {
         });
     }
   }
+  
+  const { isValid, isSubmitting } = form.formState;
 
   return (
     <Card>
@@ -139,7 +143,7 @@ export function LoginForm() {
                 )}
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
               Entrar
             </Button>
             <div className="relative">

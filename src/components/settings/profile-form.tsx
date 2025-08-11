@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,6 +53,7 @@ export function ProfileForm() {
       name: "",
       email: "",
     },
+    mode: "onChange",
   });
 
   const passwordForm = useForm<z.infer<typeof passwordSchema>>({
@@ -60,6 +62,7 @@ export function ProfileForm() {
         currentPassword: "",
         newPassword: "",
     },
+    mode: "onChange",
   });
 
   useEffect(() => {
@@ -86,6 +89,7 @@ export function ProfileForm() {
 
 
         await reloadUser();
+        profileForm.reset(values); // Resets the dirty state
         toast({
             title: "Sucesso!",
             description: "Seu perfil foi atualizado.",
@@ -102,7 +106,12 @@ export function ProfileForm() {
   function onPasswordSubmit(values: z.infer<typeof passwordSchema>) {
     console.log("Password change requested:", values);
     // Here you would implement password change logic with Firebase Auth
+    passwordForm.reset(); // Resets the form after submission
   }
+
+  const { isDirty: isProfileDirty, isValid: isProfileValid, isSubmitting: isProfileSubmitting } = profileForm.formState;
+  const { isDirty: isPasswordDirty, isValid: isPasswordValid, isSubmitting: isPasswordSubmitting } = passwordForm.formState;
+
 
   return (
     <div className="space-y-8">
@@ -143,7 +152,9 @@ export function ProfileForm() {
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit">Salvar Alterações</Button>
+              <Button type="submit" disabled={!isProfileDirty || !isProfileValid || isProfileSubmitting}>
+                Salvar Alterações
+              </Button>
             </CardFooter>
           </form>
         </Form>
@@ -221,7 +232,9 @@ export function ProfileForm() {
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit">Alterar Senha</Button>
+              <Button type="submit" disabled={!isPasswordDirty || !isPasswordValid || isPasswordSubmitting}>
+                Alterar Senha
+              </Button>
             </CardFooter>
           </form>
         </Form>

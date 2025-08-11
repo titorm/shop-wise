@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,11 +41,17 @@ export function PreferencesForm() {
       theme: "system",
       notifications: true,
     },
+    mode: "onChange",
   });
 
   function onSubmit(values: z.infer<typeof preferencesSchema>) {
     console.log("Preferences updated:", values);
+    // In a real app, you would save these preferences to the user's profile in Firestore
+    form.reset(values); // This will reset the isDirty state after successful submission
   }
+
+  const { isDirty, isValid, isSubmitting } = form.formState;
+
 
   return (
     <Card>
@@ -142,7 +149,9 @@ export function PreferencesForm() {
 
           </CardContent>
           <CardFooter>
-            <Button type="submit">Salvar Preferências</Button>
+            <Button type="submit" disabled={!isDirty || !isValid || isSubmitting}>
+              Salvar Preferências
+            </Button>
           </CardFooter>
         </form>
       </Form>
