@@ -10,35 +10,35 @@ import { Badge } from "@/components/ui/badge";
 
 const barChartConfig = {
   total: { label: "Total" },
-  alimentacao: { label: "Alimentação", color: "hsl(var(--chart-1))" },
-  moradia: { label: "Moradia", color: "hsl(var(--chart-2))" },
-  transporte: { label: "Transporte", color: "hsl(var(--chart-3))" },
-  lazer: { label: "Lazer", color: "hsl(var(--chart-4))" },
-  outros: { label: "Outros", color: "hsl(var(--chart-5))" },
+  "Hortifrúti e Ovos": { label: "Hortifrúti", color: "hsl(var(--chart-1))" },
+  "Açougue e Peixaria": { label: "Carnes", color: "hsl(var(--chart-2))" },
+  "Laticínios e Frios": { label: "Laticínios", color: "hsl(var(--chart-3))" },
+  "Mercearia": { label: "Mercearia", color: "hsl(var(--chart-4))" },
+  "Bebidas": { label: "Bebidas", color: "hsl(var(--chart-5))" },
 };
 
 const pieChartConfig = {
   gasto: {
     label: "Gasto",
   },
-  alimentacao: {
-    label: "Alimentação",
+  "Hortifrúti e Ovos": {
+    label: "Hortifrúti",
     color: "hsl(var(--chart-1))",
   },
-  moradia: {
-    label: "Moradia",
+  "Açougue e Peixaria": {
+    label: "Carnes",
     color: "hsl(var(--chart-2))",
   },
-  transporte: {
-    label: "Transporte",
+  "Laticínios e Frios": {
+    label: "Laticínios",
     color: "hsl(var(--chart-3))",
   },
-  lazer: {
-    label: "Lazer",
+  "Mercearia": {
+    label: "Mercearia",
     color: "hsl(var(--chart-4))",
   },
-  outros: {
-    label: "Outros",
+  "Bebidas": {
+    label: "Bebidas",
     color: "hsl(var(--chart-5))",
   },
 };
@@ -116,20 +116,20 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setBarChartData([
-      { month: "Jan", alimentacao: 1800, moradia: 800, transporte: 500, lazer: 400, outros: 200 },
-      { month: "Fev", alimentacao: 1900, moradia: 850, transporte: 550, lazer: 450, outros: 250 },
-      { month: "Mar", alimentacao: 2000, moradia: 900, transporte: 600, lazer: 500, outros: 300 },
-      { month: "Abr", alimentacao: 1700, moradia: 750, transporte: 450, lazer: 350, outros: 150 },
-      { month: "Mai", alimentacao: 2100, moradia: 950, transporte: 650, lazer: 550, outros: 350 },
-      { month: "Jun", alimentacao: 2200, moradia: 1000, transporte: 700, lazer: 600, outros: 400 },
+      { month: "Jan", "Hortifrúti e Ovos": 350, "Açougue e Peixaria": 500, "Laticínios e Frios": 400, "Mercearia": 350, "Bebidas": 200 },
+      { month: "Fev", "Hortifrúti e Ovos": 380, "Açougue e Peixaria": 520, "Laticínios e Frios": 420, "Mercearia": 370, "Bebidas": 230 },
+      { month: "Mar", "Hortifrúti e Ovos": 400, "Açougue e Peixaria": 550, "Laticínios e Frios": 450, "Mercearia": 400, "Bebidas": 250 },
+      { month: "Abr", "Hortifrúti e Ovos": 320, "Açougue e Peixaria": 480, "Laticínios e Frios": 380, "Mercearia": 320, "Bebidas": 180 },
+      { month: "Mai", "Hortifrúti e Ovos": 420, "Açougue e Peixaria": 580, "Laticínios e Frios": 480, "Mercearia": 420, "Bebidas": 280 },
+      { month: "Jun", "Hortifrúti e Ovos": 450, "Açougue e Peixaria": 600, "Laticínios e Frios": 500, "Mercearia": 450, "Bebidas": 300 },
     ]);
 
     setPieChartData([
-        { category: 'alimentacao', value: 450.75, fill: 'var(--color-alimentacao)'},
-        { category: 'moradia', value: 280.50, fill: 'var(--color-moradia)' },
-        { category: 'transporte', value: 120.00, fill: 'var(--color-transporte)' },
-        { category: 'lazer', value: 150.25, fill: 'var(--color-lazer)' },
-        { category: 'outros', value: 80.00, fill: 'var(--color-outros)' },
+        { category: 'Hortifrúti e Ovos', value: 150.75, fill: 'var(--color-Hortifrúti e Ovos)'},
+        { category: 'Açougue e Peixaria', value: 280.50, fill: 'var(--color-Açougue e Peixaria)' },
+        { category: 'Laticínios e Frios', value: 180.00, fill: 'var(--color-Laticínios e Frios)' },
+        { category: 'Mercearia', value: 250.25, fill: 'var(--color-Mercearia)' },
+        { category: 'Bebidas', value: 120.00, fill: 'var(--color-Bebidas)' },
     ]);
   }, []);
 
@@ -227,11 +227,11 @@ export default function DashboardPage() {
                             content={<ChartTooltipContent />}
                         />
                          <ChartLegend content={<ChartLegendContent />} />
-                        <Bar dataKey="alimentacao" fill="var(--color-alimentacao)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="moradia" fill="var(--color-moradia)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="transporte" fill="var(--color-transporte)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="lazer" fill="var(--color-lazer)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="outros" fill="var(--color-outros)" stackId="a" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Hortifrúti e Ovos" fill="var(--color-Hortifrúti e Ovos)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="Açougue e Peixaria" fill="var(--color-Açougue e Peixaria)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="Laticínios e Frios" fill="var(--color-Laticínios e Frios)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="Mercearia" fill="var(--color-Mercearia)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="Bebidas" fill="var(--color-Bebidas)" stackId="a" radius={[4, 4, 0, 0]} />
                     </RechartsBarChart>
                 </ResponsiveContainer>
             </ChartContainer>
