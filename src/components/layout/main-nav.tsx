@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, List, QrCode, Settings, Shield } from "lucide-react";
+import { Home, List, QrCode, Settings, Shield, History } from "lucide-react";
 import {
   SidebarContent,
   SidebarHeader,
@@ -16,6 +16,7 @@ const menuItems = [
     { href: "/dashboard", label: "Insights", icon: Home },
     { href: "/list", label: "Lista de Compras", icon: List },
     { href: "/scan", label: "Escanear Cupom", icon: QrCode },
+    { href: "/history", label: "Histórico", icon: History },
     { href: "/settings", label: "Configurações", icon: Settings },
     { href: "/admin", label: "Admin", icon: Shield },
 ];
