@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
+import { Noto_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/hooks/use-auth';
 
-const roboto = Roboto({
+const noto_sans = Noto_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '700'],
   variable: '--font-sans',
@@ -26,9 +26,9 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
-      <body className={cn('min-h-screen bg-background font-body antialiased', roboto.variable)}>
+      <body className={cn('min-h-screen bg-background font-body antialiased', noto_sans.variable)}>
         <AuthProvider>
             {children}
             <Toaster />

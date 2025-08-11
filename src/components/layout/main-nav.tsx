@@ -40,7 +40,7 @@ export function MainNav() {
                   isActive={pathname.startsWith(item.href)}
                   tooltip={item.label}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className="h-6 w-6" />
                   <span>{item.label}</span>
                 </SidebarMenuButton>
               </Link>
