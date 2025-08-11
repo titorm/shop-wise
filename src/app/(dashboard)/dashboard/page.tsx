@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -158,19 +159,19 @@ export default function DashboardPage() {
   };
 
   const subcategoryColors: { [key: string]: string } = {
-    "Hortifrúti e Ovos": "bg-[#A5D6A7]/20 dark:bg-[#81C784]/20 text-green-900 dark:text-green-100 border-green-300/20",
-    "Açougue e Peixaria": "bg-[#EF9A9A]/20 dark:bg-[#E57373]/20 text-red-900 dark:text-red-100 border-red-300/20",
-    "Padaria e Confeitaria": "bg-[#FFE082]/20 dark:bg-[#FFD54F]/20 text-amber-900 dark:text-amber-100 border-amber-300/20",
-    "Laticínios e Frios": "bg-[#90CAF9]/20 dark:bg-[#64B5F6]/20 text-blue-900 dark:text-blue-100 border-blue-300/20",
-    "Mercearia": "bg-[#FFCC80]/20 dark:bg-[#FFB74D]/20 text-orange-900 dark:text-orange-100 border-orange-300/20",
-    "Matinais e Doces": "bg-[#F48FB1]/20 dark:bg-[#F06292]/20 text-pink-900 dark:text-pink-100 border-pink-300/20",
-    "Congelados": "bg-[#80DEEA]/20 dark:bg-[#4DD0E1]/20 text-cyan-900 dark:text-cyan-100 border-cyan-300/20",
-    "Bebidas": "bg-[#B39DDB]/20 dark:bg-[#9575CD]/20 text-purple-900 dark:text-purple-100 border-purple-300/20",
-    "Limpeza": "bg-[#80CBC4]/20 dark:bg-[#4DB6AC]/20 text-teal-900 dark:text-teal-100 border-teal-300/20",
-    "Higiene Pessoal": "bg-[#CE93D8]/20 dark:bg-[#BA68C8]/20 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/20",
-    "Bebês e Crianças": "bg-[#FFF59D]/20 dark:bg-[#FFF176]/20 text-yellow-900 dark:text-yellow-100 border-yellow-300/20",
-    "Pet Shop": "bg-[#BCAAA4]/20 dark:bg-[#A1887F]/20 text-stone-900 dark:text-stone-100 border-stone-300/20",
-    "Utilidades e Bazar": "bg-[#B0BEC5]/20 dark:bg-[#90A4AE]/20 text-slate-900 dark:text-slate-100 border-slate-300/20",
+    "Hortifrúti e Ovos": "bg-[#A5D6A7]/30 dark:bg-[#81C784]/30 text-green-900 dark:text-green-100 border-green-300/30",
+    "Açougue e Peixaria": "bg-[#EF9A9A]/30 dark:bg-[#E57373]/30 text-red-900 dark:text-red-100 border-red-300/30",
+    "Padaria e Confeitaria": "bg-[#FFE082]/30 dark:bg-[#FFD54F]/30 text-amber-900 dark:text-amber-100 border-amber-300/30",
+    "Laticínios e Frios": "bg-[#90CAF9]/30 dark:bg-[#64B5F6]/30 text-blue-900 dark:text-blue-100 border-blue-300/30",
+    "Mercearia": "bg-[#FFCC80]/30 dark:bg-[#FFB74D]/30 text-orange-900 dark:text-orange-100 border-orange-300/30",
+    "Matinais e Doces": "bg-[#F48FB1]/30 dark:bg-[#F06292]/30 text-pink-900 dark:text-pink-100 border-pink-300/30",
+    "Congelados": "bg-[#80DEEA]/30 dark:bg-[#4DD0E1]/30 text-cyan-900 dark:text-cyan-100 border-cyan-300/30",
+    "Bebidas": "bg-[#B39DDB]/30 dark:bg-[#9575CD]/30 text-purple-900 dark:text-purple-100 border-purple-300/30",
+    "Limpeza": "bg-[#80CBC4]/30 dark:bg-[#4DB6AC]/30 text-teal-900 dark:text-teal-100 border-teal-300/30",
+    "Higiene Pessoal": "bg-[#CE93D8]/30 dark:bg-[#BA68C8]/30 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/30",
+    "Bebês e Crianças": "bg-[#FFF59D]/30 dark:bg-[#FFF176]/30 text-yellow-900 dark:text-yellow-100 border-yellow-300/30",
+    "Pet Shop": "bg-[#BCAAA4]/30 dark:bg-[#A1887F]/30 text-stone-900 dark:text-stone-100 border-stone-300/30",
+    "Utilidades e Bazar": "bg-[#B0BEC5]/30 dark:bg-[#90A4AE]/30 text-slate-900 dark:text-slate-100 border-slate-300/30",
     "Default": "bg-secondary/50 text-secondary-foreground"
   };
 
@@ -330,3 +331,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
