@@ -141,22 +141,36 @@ export default function DashboardPage() {
   }, []);
 
   const categoryColors: { [key: string]: string } = {
-    "Açougue e Peixaria": "bg-red-200/50 text-red-800 border-red-300/50",
-    "Mercearia": "bg-amber-200/50 text-amber-800 border-amber-300/50",
-    "Bebidas": "bg-purple-200/50 text-purple-800 border-purple-300/50",
-    "Laticínios e Frios": "bg-gray-200/50 text-gray-800 border-gray-300/50",
-    "Hortifrúti e Ovos": "bg-green-200/50 text-green-800 border-green-300/50",
-    "Limpeza": "bg-blue-200/50 text-blue-800 border-blue-300/50",
+    "Hortifrúti e Ovos": "bg-[#A5D6A7]/50 dark:bg-[#81C784]/50 text-green-900 dark:text-green-100 border-green-300/50",
+    "Açougue e Peixaria": "bg-[#EF9A9A]/50 dark:bg-[#E57373]/50 text-red-900 dark:text-red-100 border-red-300/50",
+    "Padaria e Confeitaria": "bg-[#FFE082]/50 dark:bg-[#FFD54F]/50 text-amber-900 dark:text-amber-100 border-amber-300/50",
+    "Laticínios e Frios": "bg-[#90CAF9]/50 dark:bg-[#64B5F6]/50 text-blue-900 dark:text-blue-100 border-blue-300/50",
+    "Mercearia": "bg-[#FFCC80]/50 dark:bg-[#FFB74D]/50 text-orange-900 dark:text-orange-100 border-orange-300/50",
+    "Matinais e Doces": "bg-[#F48FB1]/50 dark:bg-[#F06292]/50 text-pink-900 dark:text-pink-100 border-pink-300/50",
+    "Congelados": "bg-[#80DEEA]/50 dark:bg-[#4DD0E1]/50 text-cyan-900 dark:text-cyan-100 border-cyan-300/50",
+    "Bebidas": "bg-[#B39DDB]/50 dark:bg-[#9575CD]/50 text-purple-900 dark:text-purple-100 border-purple-300/50",
+    "Limpeza": "bg-[#80CBC4]/50 dark:bg-[#4DB6AC]/50 text-teal-900 dark:text-teal-100 border-teal-300/50",
+    "Higiene Pessoal": "bg-[#CE93D8]/50 dark:bg-[#BA68C8]/50 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/50",
+    "Bebês e Crianças": "bg-[#FFF59D]/50 dark:bg-[#FFF176]/50 text-yellow-900 dark:text-yellow-100 border-yellow-300/50",
+    "Pet Shop": "bg-[#BCAAA4]/50 dark:bg-[#A1887F]/50 text-stone-900 dark:text-stone-100 border-stone-300/50",
+    "Utilidades e Bazar": "bg-[#B0BEC5]/50 dark:bg-[#90A4AE]/50 text-slate-900 dark:text-slate-100 border-slate-300/50",
     "Default": "bg-secondary text-secondary-foreground"
   };
 
   const subcategoryColors: { [key: string]: string } = {
-    "Açougue e Peixaria": "bg-red-200/20 text-red-800 border-red-300/20",
-    "Mercearia": "bg-amber-200/20 text-amber-800 border-amber-300/20",
-    "Bebidas": "bg-purple-200/20 text-purple-800 border-purple-300/20",
-    "Laticínios e Frios": "bg-gray-200/20 text-gray-800 border-gray-300/20",
-    "Hortifrúti e Ovos": "bg-green-200/20 text-green-800 border-green-300/20",
-    "Limpeza": "bg-blue-200/20 text-blue-800 border-blue-300/20",
+    "Hortifrúti e Ovos": "bg-[#A5D6A7]/20 dark:bg-[#81C784]/20 text-green-900 dark:text-green-100 border-green-300/20",
+    "Açougue e Peixaria": "bg-[#EF9A9A]/20 dark:bg-[#E57373]/20 text-red-900 dark:text-red-100 border-red-300/20",
+    "Padaria e Confeitaria": "bg-[#FFE082]/20 dark:bg-[#FFD54F]/20 text-amber-900 dark:text-amber-100 border-amber-300/20",
+    "Laticínios e Frios": "bg-[#90CAF9]/20 dark:bg-[#64B5F6]/20 text-blue-900 dark:text-blue-100 border-blue-300/20",
+    "Mercearia": "bg-[#FFCC80]/20 dark:bg-[#FFB74D]/20 text-orange-900 dark:text-orange-100 border-orange-300/20",
+    "Matinais e Doces": "bg-[#F48FB1]/20 dark:bg-[#F06292]/20 text-pink-900 dark:text-pink-100 border-pink-300/20",
+    "Congelados": "bg-[#80DEEA]/20 dark:bg-[#4DD0E1]/20 text-cyan-900 dark:text-cyan-100 border-cyan-300/20",
+    "Bebidas": "bg-[#B39DDB]/20 dark:bg-[#9575CD]/20 text-purple-900 dark:text-purple-100 border-purple-300/20",
+    "Limpeza": "bg-[#80CBC4]/20 dark:bg-[#4DB6AC]/20 text-teal-900 dark:text-teal-100 border-teal-300/20",
+    "Higiene Pessoal": "bg-[#CE93D8]/20 dark:bg-[#BA68C8]/20 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/20",
+    "Bebês e Crianças": "bg-[#FFF59D]/20 dark:bg-[#FFF176]/20 text-yellow-900 dark:text-yellow-100 border-yellow-300/20",
+    "Pet Shop": "bg-[#BCAAA4]/20 dark:bg-[#A1887F]/20 text-stone-900 dark:text-stone-100 border-stone-300/20",
+    "Utilidades e Bazar": "bg-[#B0BEC5]/20 dark:bg-[#90A4AE]/20 text-slate-900 dark:text-slate-100 border-slate-300/20",
     "Default": "bg-secondary/50 text-secondary-foreground"
   };
 
@@ -278,10 +292,10 @@ export default function DashboardPage() {
              <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead><Barcode className="inline-block mr-1 w-4 h-4" /> Código de Barras</TableHead>
                         <TableHead><Package className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
                         <TableHead><Tag className="inline-block mr-1 w-4 h-4" /> Categoria</TableHead>
                         <TableHead>Subcategoria</TableHead>
-                        <TableHead><Barcode className="inline-block mr-1 w-4 h-4" /> Código de Barras</TableHead>
                         <TableHead><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
                         <TableHead><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
                         <TableHead className="text-right"><Scale className="inline-block mr-1 w-4 h-4" /> Preço p/ kg/L</TableHead>
@@ -291,6 +305,7 @@ export default function DashboardPage() {
                 <TableBody>
                     {topExpensesData.map((item) => (
                         <TableRow key={item.name}>
+                            <TableCell className="font-mono">{item.barcode}</TableCell>
                             <TableCell className="font-medium">{item.name}</TableCell>
                             <TableCell>
                                 <Badge variant="tag" className={categoryColors[item.category] || categoryColors.Default}>
@@ -302,7 +317,6 @@ export default function DashboardPage() {
                                     {item.subcategory}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="font-mono">{item.barcode}</TableCell>
                             <TableCell>{item.quantity}</TableCell>
                             <TableCell>{item.volume}</TableCell>
                             <TableCell className="text-right">R$ {item.unitPrice.toFixed(2)}</TableCell>
