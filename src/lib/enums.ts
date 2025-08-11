@@ -1,4 +1,4 @@
 
 export const enum Collections {
-  Profile = "Profile",
+  Profile = "profile",
 }
