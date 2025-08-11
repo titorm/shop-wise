@@ -173,7 +173,7 @@ export function QrScannerComponent() {
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label htmlFor="loyalty-program">Programa de Fidelidade</Label>
-                                    <Select>
+                                    <Select disabled>
                                         <SelectTrigger id="loyalty-program">
                                             <SelectValue placeholder="Selecione um programa" />
                                         </SelectTrigger>
@@ -187,7 +187,7 @@ export function QrScannerComponent() {
                                 </div>
                                  <div>
                                     <Label htmlFor="loyalty-id">Nº de Identificação (CPF/ID)</Label>
-                                    <Input id="loyalty-id" placeholder="Seu número de membro" />
+                                    <Input id="loyalty-id" placeholder="Seu número de membro" disabled />
                                 </div>
                             </div>
                         </CardContent>
