@@ -1,7 +1,8 @@
 "use client";
 
+import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Users, Bell, Trash2, UserX } from "lucide-react";
+import { User, Users, Bell, Trash2, UserX, Shield } from "lucide-react";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { PreferencesForm } from "@/components/settings/preferences-form";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,8 @@ import { DeleteConfirmationDialog } from "@/components/settings/delete-confirmat
 
 
 export default function SettingsPage() {
+    const searchParams = useSearchParams();
+    const defaultTab = searchParams.get('tab') || 'profile';
 
     const handleDeleteData = async () => {
         // In a real app, you would call your backend to delete user data from the database.
@@ -36,11 +39,11 @@ export default function SettingsPage() {
                     <CardDescription>Gerencie suas informações de perfil e preferências do aplicativo.</CardDescription>
                 </CardHeader>
                 <div className="p-6 pt-0">
-                    <Tabs defaultValue="profile" className="w-full">
+                    <Tabs defaultValue={defaultTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                             <TabsTrigger value="profile"><User className="mr-2 h-4 w-4" /> Perfil</TabsTrigger>
                             <TabsTrigger value="preferences"><Users className="mr-2 h-4 w-4" /> Família & App</TabsTrigger>
-                            <TabsTrigger value="data"><Bell className="mr-2 h-4 w-4" /> Privacidade</TabsTrigger>
+                            <TabsTrigger value="privacy"><Shield className="mr-2 h-4 w-4" /> Privacidade</TabsTrigger>
                         </TabsList>
                         <TabsContent value="profile" className="mt-6">
                             <ProfileForm />
@@ -48,7 +51,7 @@ export default function SettingsPage() {
                         <TabsContent value="preferences" className="mt-6">
                             <PreferencesForm />
                         </TabsContent>
-                        <TabsContent value="data" className="mt-6 space-y-8">
+                        <TabsContent value="privacy" className="mt-6 space-y-8">
                            <Card className="border-destructive">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2"><Trash2 className="w-5 h-5 text-destructive" /> Apagar Dados</CardTitle>

@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { BarChart2, Home, List, QrCode, Settings, User } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { BarChart2, Home, List, QrCode, Settings, User, Shield, LogOut } from "lucide-react";
 import {
   SidebarContent,
   SidebarFooter,
@@ -15,6 +15,9 @@ import {
 import { Logo } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const menuItems = [
     { href: "/dashboard", label: "Insights", icon: Home },
@@ -27,6 +30,12 @@ const menuItems = [
 export function MainNav() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    router.push('/');
+  }
 
   return (
     <>
@@ -40,7 +49,7 @@ export function MainNav() {
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <Link href={item.href} passHref>
+              <Link href={item.href}>
                 <SidebarMenuButton 
                   isActive={pathname === item.href}
                   tooltip={item.label}
@@ -56,15 +65,40 @@ export function MainNav() {
       <SidebarSeparator />
       <SidebarFooter>
         <div className="p-2">
-          <Link href="/settings" passHref>
-            <SidebarMenuButton>
-                <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.photoURL ?? "https://placehold.co/100x100.png"} alt="User Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>{user?.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
-                </Avatar>
-                <span className="truncate">{user?.displayName ?? 'Usuário'}</span>
-            </SidebarMenuButton>
-          </Link>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton>
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={user?.photoURL ?? "https://placehold.co/100x100.png"} alt="User Avatar" data-ai-hint="user avatar" />
+                            <AvatarFallback>{user?.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
+                        </Avatar>
+                        <span className="truncate">{user?.displayName ?? 'Usuário'}</span>
+                    </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 mb-2 ml-2" side="top" align="start">
+                    <DropdownMenuLabel>
+                       Minha Conta
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <Link href="/settings?tab=profile">
+                        <DropdownMenuItem>
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Perfil</span>
+                        </DropdownMenuItem>
+                    </Link>
+                    <Link href="/settings?tab=privacy">
+                        <DropdownMenuItem>
+                            <Shield className="mr-2 h-4 w-4" />
+                            <span>Dados e Privacidade</span>
+                        </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Sair</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
       </SidebarFooter>
     </>
