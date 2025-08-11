@@ -25,9 +25,10 @@ import { Separator } from "../ui/separator";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import { updateProfile } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import { doc, setDoc } from "firebase/firestore";
 
 const profileSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -75,6 +76,15 @@ export function ProfileForm() {
     if (!auth.currentUser) return;
     try {
         await updateProfile(auth.currentUser, { displayName: values.name });
+
+        // Save user data to Firestore
+        const userRef = doc(db, "Profile", auth.currentUser.uid);
+        await setDoc(userRef, {
+            name: values.name,
+            email: auth.currentUser.email, // email is not editable, so we get it from auth
+        }, { merge: true });
+
+
         await reloadUser();
         toast({
             title: "Sucesso!",
