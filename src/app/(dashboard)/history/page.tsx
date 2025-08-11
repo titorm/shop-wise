@@ -47,6 +47,16 @@ const mockPurchases = [
       { id: 3, name: 'Detergente', quantity: 4, price: 2.50 },
     ],
   },
+   {
+    id: 4,
+    store: 'Atacarejo Preço Baixo',
+    date: '2024-02-10T11:00:00Z',
+    total: 350.00,
+    items: [
+      { id: 1, name: 'Picanha (peça)', quantity: 1, price: 95.50 },
+      { id: 2, name: 'Cerveja Artesanal', quantity: 6, price: 12.75 },
+    ],
+  },
 ];
 
 type Purchase = typeof mockPurchases[0];
@@ -64,10 +74,14 @@ export default function HistoryPage() {
 
         const matchesStore = selectedStore === 'all' || purchase.store === selectedStore;
         
-        // This is a simplified period filter. A real implementation would use date-fns or similar.
-        const matchesPeriod = selectedPeriod === 'all' || 
-            (selectedPeriod === 'last_month' && new Date(purchase.date) > new Date(new Date().setMonth(new Date().getMonth() - 1))) ||
-            (selectedPeriod === 'last_3_months' && new Date(purchase.date) > new Date(new Date().setMonth(new Date().getMonth() - 3)));
+        const now = new Date();
+        const purchaseDate = new Date(purchase.date);
+        
+        const matchesPeriod = selectedPeriod === 'all' ||
+            (selectedPeriod === 'last_month' && purchaseDate > new Date(new Date().setMonth(now.getMonth() - 1))) ||
+            (selectedPeriod === 'last_3_months' && purchaseDate > new Date(new Date().setMonth(now.getMonth() - 3))) ||
+            (selectedPeriod === 'last_6_months' && purchaseDate > new Date(new Date().setMonth(now.getMonth() - 6))) ||
+            (selectedPeriod === 'last_year' && purchaseDate > new Date(new Date().setFullYear(now.getFullYear() - 1)));
 
         return matchesSearch && matchesStore && matchesPeriod;
     });
@@ -108,6 +122,8 @@ export default function HistoryPage() {
                                 <SelectItem value="all">Todo o Período</SelectItem>
                                 <SelectItem value="last_month">Último Mês</SelectItem>
                                 <SelectItem value="last_3_months">Últimos 3 Meses</SelectItem>
+                                <SelectItem value="last_6_months">Últimos 6 Meses</SelectItem>
+                                <SelectItem value="last_year">Último Ano</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -204,4 +220,3 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
         </Dialog>
     );
 }
-
