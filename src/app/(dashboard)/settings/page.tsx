@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Users, Shield, Trash2, UserX } from "lucide-react";
+import { User, Users, Shield, Trash2, UserX, Settings as SettingsIcon } from "lucide-react";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { PreferencesForm } from "@/components/settings/preferences-form";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,7 +56,7 @@ export default function SettingsPage() {
                     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                         <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                             <TabsTrigger value="profile"><User className="mr-2 h-4 w-4" /> Perfil</TabsTrigger>
-                            <TabsTrigger value="preferences"><Users className="mr-2 h-4 w-4" /> Família & App</TabsTrigger>
+                            <TabsTrigger value="preferences"><SettingsIcon className="mr-2 h-4 w-4" /> Preferências</TabsTrigger>
                             <TabsTrigger value="privacy"><Shield className="mr-2 h-4 w-4" /> Privacidade</TabsTrigger>
                         </TabsList>
                         <TabsContent value="profile" className="mt-6">

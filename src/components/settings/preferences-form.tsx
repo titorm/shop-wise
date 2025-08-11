@@ -24,30 +24,85 @@ import {
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+import { useToast } from "@/hooks/use-toast";
+import { Separator } from "../ui/separator";
 
 const preferencesSchema = z.object({
   adults: z.coerce.number().min(1, { message: "Pelo menos um adulto é necessário." }),
   children: z.coerce.number().min(0),
+  pets: z.coerce.number().min(0),
   theme: z.enum(["system", "light", "dark"]),
   notifications: z.boolean(),
 });
 
+type PreferencesData = z.infer<typeof preferencesSchema>;
+
 export function PreferencesForm() {
-  const form = useForm<z.infer<typeof preferencesSchema>>({
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const form = useForm<PreferencesData>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
       adults: 2,
       children: 1,
+      pets: 0,
       theme: "system",
       notifications: true,
     },
     mode: "onChange",
   });
 
-  function onSubmit(values: z.infer<typeof preferencesSchema>) {
-    console.log("Preferences updated:", values);
-    // In a real app, you would save these preferences to the user's profile in Firestore
-    form.reset(values); // This will reset the isDirty state after successful submission
+  useEffect(() => {
+    async function fetchPreferences() {
+        if (user) {
+            const userRef = doc(db, "Profile", user.uid);
+            const docSnap = await getDoc(userRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const preferences = {
+                    adults: data.adults ?? 2,
+                    children: data.children ?? 1,
+                    pets: data.pets ?? 0,
+                    theme: data.theme ?? "system",
+                    notifications: data.notifications ?? true,
+                }
+                form.reset(preferences);
+            }
+        }
+    }
+    fetchPreferences();
+  }, [user, form]);
+
+
+  async function onSubmit(values: PreferencesData) {
+    if (!user) {
+        toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Você precisa estar logado para salvar as preferências.",
+        });
+        return;
+    }
+    try {
+        const userRef = doc(db, "Profile", user.uid);
+        await setDoc(userRef, values, { merge: true });
+        form.reset(values); // This will reset the isDirty state after successful submission
+        toast({
+            title: "Sucesso!",
+            description: "Suas preferências foram salvas.",
+        });
+    } catch (error: any) {
+        toast({
+            variant: "destructive",
+            title: "Erro ao salvar",
+            description: "Não foi possível salvar suas preferências. Tente novamente.",
+        });
+    }
   }
 
   const { isDirty, isValid, isSubmitting } = form.formState;
@@ -67,7 +122,7 @@ export function PreferencesForm() {
                 <p className="text-sm text-muted-foreground mb-4">
                     Isso ajuda a IA a fazer sugestões de compra mais precisas.
                 </p>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                     <FormField
                         control={form.control}
                         name="adults"
@@ -94,8 +149,23 @@ export function PreferencesForm() {
                         </FormItem>
                         )}
                     />
+                     <FormField
+                        control={form.control}
+                        name="pets"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Pets</FormLabel>
+                            <FormControl>
+                                <Input type="number" min="0" {...field} />
+                            </FormControl>
+                             <FormMessage />
+                        </FormItem>
+                        )}
+                    />
                 </div>
             </div>
+
+            <Separator />
 
             <div>
                 <h4 className="text-base font-medium mb-2">Aparência</h4>
@@ -122,6 +192,8 @@ export function PreferencesForm() {
                     )}
                 />
             </div>
+            
+            <Separator />
             
             <div>
                  <h4 className="text-base font-medium mb-2">Notificações</h4>
@@ -150,7 +222,7 @@ export function PreferencesForm() {
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={!isDirty || !isValid || isSubmitting}>
-              Salvar Preferências
+              {isSubmitting ? "Salvando..." : "Salvar Preferências"}
             </Button>
           </CardFooter>
         </form>
