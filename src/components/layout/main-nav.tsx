@@ -2,22 +2,15 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart2, Home, List, QrCode, Settings, User, Shield, LogOut, Users } from "lucide-react";
+import { Home, List, QrCode, Settings } from "lucide-react";
 import {
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useAuth } from "@/hooks/use-auth";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 
 const menuItems = [
     { href: "/dashboard", label: "Insights", icon: Home },
@@ -26,24 +19,8 @@ const menuItems = [
     { href: "/settings", label: "Configurações", icon: Settings },
 ];
 
-const getUserInitials = (name: string | null | undefined) => {
-    if (!name) return "U";
-    const nameParts = name.split(" ");
-    if (nameParts.length > 1) {
-        return `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`.toUpperCase();
-    }
-    return name.charAt(0).toUpperCase();
-}
-
 export function MainNav() {
   const pathname = usePathname();
-  const { user } = useAuth();
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/');
-  }
 
   return (
     <>
@@ -70,51 +47,6 @@ export function MainNav() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarSeparator />
-      <SidebarFooter>
-        <div className="p-2">
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton>
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src={user?.photoURL ?? ""} alt="User Avatar" />
-                            <AvatarFallback>{getUserInitials(user?.displayName)}</AvatarFallback>
-                        </Avatar>
-                        <span className="truncate">{user?.displayName ?? 'Nome do Usuário'}</span>
-                    </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 mb-2 ml-2" side="top" align="start">
-                    <DropdownMenuLabel>
-                       Minha Conta
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <Link href="/settings?tab=profile">
-                        <DropdownMenuItem>
-                            <User className="mr-2 h-4 w-4" />
-                            <span>Perfil</span>
-                        </DropdownMenuItem>
-                    </Link>
-                     <Link href="/settings?tab=preferences">
-                        <DropdownMenuItem>
-                            <Users className="mr-2 h-4 w-4" />
-                            <span>Preferências</span>
-                        </DropdownMenuItem>
-                    </Link>
-                    <Link href="/settings?tab=privacy">
-                        <DropdownMenuItem>
-                            <Shield className="mr-2 h-4 w-4" />
-                            <span>Dados e Privacidade</span>
-                        </DropdownMenuItem>
-                    </Link>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut}>
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Sair</span>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
-      </SidebarFooter>
     </>
   );
 }

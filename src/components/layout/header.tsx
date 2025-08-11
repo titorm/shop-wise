@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, LogOut, ShoppingCart } from "lucide-react";
+import { Bell, LogOut, ShoppingCart, User, Users, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
@@ -9,6 +9,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getUserInitials } from "@/lib/utils";
 
 export function Header() {
   const { user } = useAuth();
@@ -30,7 +33,7 @@ export function Header() {
         </Link>
         <span className="text-xl font-bold font-headline">ShopWise</span>
       </div>
-      <div className="flex w-full items-center justify-end gap-4">
+      <div className="flex w-full items-center justify-end gap-2">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/list">
             <ShoppingCart className="h-5 w-5" />
@@ -42,10 +45,48 @@ export function Header() {
           <span className="sr-only">Notificações</span>
         </Button>
         {user && (
-            <Button variant="ghost" size="icon" onClick={handleSignOut}>
-                <LogOut className="h-5 w-5" />
-                <span className="sr-only">Sair</span>
-            </Button>
+           <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={user?.photoURL ?? ""} alt={user?.displayName ?? "User Avatar"} />
+                      <AvatarFallback>{getUserInitials(user?.displayName)}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                          <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                      </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <Link href="/settings?tab=profile">
+                      <DropdownMenuItem>
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Perfil</span>
+                      </DropdownMenuItem>
+                  </Link>
+                   <Link href="/settings?tab=preferences">
+                      <DropdownMenuItem>
+                          <Users className="mr-2 h-4 w-4" />
+                          <span>Preferências</span>
+                      </DropdownMenuItem>
+                  </Link>
+                  <Link href="/settings?tab=privacy">
+                      <DropdownMenuItem>
+                          <Shield className="mr-2 h-4 w-4" />
+                          <span>Dados e Privacidade</span>
+                      </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sair</span>
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </header>
