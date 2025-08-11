@@ -82,7 +82,7 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
   return (
-    <div className="bg-card p-6 rounded-lg shadow-sm text-center flex flex-col items-center">
+    <div className="bg-card p-6 rounded-2xl shadow-sm text-center flex flex-col items-center">
       <div className="mb-4">{icon}</div>
       <h4 className="text-xl font-bold font-headline mb-2 text-foreground">{title}</h4>
       <p className="text-muted-foreground">{description}</p>
