@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BarChart, DollarSign, ShoppingBag, TrendingUp, PieChart as PieChartIcon, Tag, Weight, Scale } from "lucide-react";
+import { BarChart, DollarSign, ShoppingBag, TrendingUp, PieChart as PieChartIcon, Tag, Weight, Scale, Package, Hash } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Pie, PieChart as RechartsPieChart, Cell } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -46,14 +46,18 @@ const pieChartConfig = {
 const topExpensesData = [
   {
     name: "Picanha",
-    category: "Carnes",
+    category: "Açougue e Peixaria",
+    subcategory: "Carnes Bovinas",
+    quantity: 1,
     volume: "1 kg",
     totalPrice: 89.90,
     unitPrice: 89.90,
   },
   {
     name: "Salmão Fresco",
-    category: "Peixes",
+    category: "Açougue e Peixaria",
+    subcategory: "Peixes e Frutos do Mar",
+    quantity: 1,
     volume: "800 g",
     totalPrice: 72.00,
     unitPrice: 90.00,
@@ -61,6 +65,8 @@ const topExpensesData = [
     {
     name: "Azeite Extra Virgem",
     category: "Mercearia",
+    subcategory: "Óleos, Azeites e Vinagres",
+    quantity: 1,
     volume: "500 ml",
     totalPrice: 45.50,
     unitPrice: 91.00,
@@ -68,13 +74,17 @@ const topExpensesData = [
   {
     name: "Vinho Tinto",
     category: "Bebidas",
+    subcategory: "Bebidas Alcoólicas",
+    quantity: 1,
     volume: "750 ml",
     totalPrice: 65.00,
     unitPrice: 86.67,
   },
   {
     name: "Queijo Parmesão",
-    category: "Laticínios",
+    category: "Laticínios e Frios",
+    subcategory: "Queijos",
+    quantity: 1,
     volume: "250 g",
     totalPrice: 38.75,
     unitPrice: 155.00,
@@ -106,11 +116,10 @@ export default function DashboardPage() {
   }, []);
 
   const categoryColors: { [key: string]: string } = {
-    "Carnes": "bg-red-200/50 text-red-800 border-red-300/50",
-    "Peixes": "bg-blue-200/50 text-blue-800 border-blue-300/50",
+    "Açougue e Peixaria": "bg-red-200/50 text-red-800 border-red-300/50",
     "Mercearia": "bg-amber-200/50 text-amber-800 border-amber-300/50",
     "Bebidas": "bg-purple-200/50 text-purple-800 border-purple-300/50",
-    "Laticínios": "bg-gray-200/50 text-gray-800 border-gray-300/50",
+    "Laticínios e Frios": "bg-gray-200/50 text-gray-800 border-gray-300/50",
     "Default": "bg-secondary text-secondary-foreground"
   };
 
@@ -232,11 +241,13 @@ export default function DashboardPage() {
              <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Produto</TableHead>
+                        <TableHead><Package className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
                         <TableHead><Tag className="inline-block mr-1 w-4 h-4" /> Categoria</TableHead>
+                        <TableHead>Subcategoria</TableHead>
+                        <TableHead><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
                         <TableHead><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
-                        <TableHead className="text-right"><DollarSign className="inline-block mr-1 w-4 h-4" /> Preço Total</TableHead>
                         <TableHead className="text-right"><Scale className="inline-block mr-1 w-4 h-4" /> Preço p/ kg/L</TableHead>
+                        <TableHead className="text-right"><DollarSign className="inline-block mr-1 w-4 h-4" /> Preço Total</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -248,9 +259,11 @@ export default function DashboardPage() {
                                     {item.category}
                                 </Badge>
                             </TableCell>
+                            <TableCell>{item.subcategory}</TableCell>
+                            <TableCell>{item.quantity}</TableCell>
                             <TableCell>{item.volume}</TableCell>
-                            <TableCell className="text-right">R$ {item.totalPrice.toFixed(2)}</TableCell>
                             <TableCell className="text-right">R$ {item.unitPrice.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">R$ {item.totalPrice.toFixed(2)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
