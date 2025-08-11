@@ -12,12 +12,12 @@ import { cn } from "@/lib/utils";
 
 const barChartConfig = {
   total: { label: "Total" },
-  "Hortifrúti e Ovos": { label: "Hortifrúti", color: "hsl(var(--chart-1))" },
-  "Açougue e Peixaria": { label: "Carnes", color: "hsl(var(--chart-2))" },
-  "Laticínios e Frios": { label: "Laticínios", color: "hsl(var(--chart-3))" },
-  "Mercearia": { label: "Mercearia", color: "hsl(var(--chart-4))" },
-  "Bebidas": { label: "Bebidas", color: "hsl(var(--chart-5))" },
-  "Limpeza": { label: "Limpeza", color: "hsl(var(--chart-1))" },
+  "Hortifrúti e Ovos": { label: "Hortifrúti", color: "hsl(var(--category-hortifruti))" },
+  "Açougue e Peixaria": { label: "Carnes", color: "hsl(var(--category-acougue))" },
+  "Laticínios e Frios": { label: "Laticínios", color: "hsl(var(--category-laticinios))" },
+  "Mercearia": { label: "Mercearia", color: "hsl(var(--category-mercearia))" },
+  "Bebidas": { label: "Bebidas", color: "hsl(var(--category-bebidas))" },
+  "Limpeza": { label: "Limpeza", color: "hsl(var(--category-limpeza))" },
 };
 
 const pieChartConfig = {
@@ -26,27 +26,27 @@ const pieChartConfig = {
   },
   "Hortifrúti e Ovos": {
     label: "Hortifrúti",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--category-hortifruti))",
   },
   "Açougue e Peixaria": {
     label: "Carnes",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(var(--category-acougue))",
   },
   "Laticínios e Frios": {
     label: "Laticínios",
-    color: "hsl(var(--chart-3))",
+    color: "hsl(var(--category-laticinios))",
   },
   "Mercearia": {
     label: "Mercearia",
-    color: "hsl(var(--chart-4))",
+    color: "hsl(var(--category-mercearia))",
   },
   "Bebidas": {
     label: "Bebidas",
-    color: "hsl(var(--chart-5))",
+    color: "hsl(var(--category-bebidas))",
   },
   "Limpeza": {
     label: "Limpeza",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--category-limpeza))",
   },
 };
 
@@ -139,48 +139,55 @@ export default function DashboardPage() {
     ]);
 
     setPieChartData([
-        { category: 'Hortifrúti e Ovos', value: 150.75, fill: 'var(--color-Hortifrúti e Ovos)'},
-        { category: 'Açougue e Peixaria', value: 280.50, fill: 'var(--color-Açougue e Peixaria)' },
-        { category: 'Laticínios e Frios', value: 180.00, fill: 'var(--color-Laticínios e Frios)' },
-        { category: 'Mercearia', value: 250.25, fill: 'var(--color-Mercearia)' },
-        { category: 'Bebidas', value: 120.00, fill: 'var(--color-Bebidas)' },
-        { category: 'Limpeza', value: 50.00, fill: 'var(--color-Limpeza)' },
+        { category: 'Hortifrúti e Ovos', value: 150.75, fill: 'hsl(var(--category-hortifruti))'},
+        { category: 'Açougue e Peixaria', value: 280.50, fill: 'hsl(var(--category-acougue))' },
+        { category: 'Laticínios e Frios', value: 180.00, fill: 'hsl(var(--category-laticinios))' },
+        { category: 'Mercearia', value: 250.25, fill: 'hsl(var(--category-mercearia))' },
+        { category: 'Bebidas', value: 120.00, fill: 'hsl(var(--category-bebidas))' },
+        { category: 'Limpeza', value: 50.00, fill: 'hsl(var(--category-limpeza))' },
     ]);
   }, []);
 
-  const categoryClasses: { [key: string]: string } = {
-    "Hortifrúti e Ovos": "bg-category-hortifruti-light/50 dark:bg-category-hortifruti-dark/50 text-green-900 dark:text-green-100 border-green-300/50",
-    "Açougue e Peixaria": "bg-category-acougue-light/50 dark:bg-category-acougue-dark/50 text-red-900 dark:text-red-100 border-red-300/50",
-    "Padaria e Confeitaria": "bg-category-padaria-light/50 dark:bg-category-padaria-dark/50 text-amber-900 dark:text-amber-100 border-amber-300/50",
-    "Laticínios e Frios": "bg-category-laticinios-light/50 dark:bg-category-laticinios-dark/50 text-blue-900 dark:text-blue-100 border-blue-300/50",
-    "Mercearia": "bg-category-mercearia-light/50 dark:bg-category-mercearia-dark/50 text-orange-900 dark:text-orange-100 border-orange-300/50",
-    "Matinais e Doces": "bg-category-matinais-light/50 dark:bg-category-matinais-dark/50 text-pink-900 dark:text-pink-100 border-pink-300/50",
-    "Congelados": "bg-category-congelados-light/50 dark:bg-category-congelados-dark/50 text-cyan-900 dark:text-cyan-100 border-cyan-300/50",
-    "Bebidas": "bg-category-bebidas-light/50 dark:bg-category-bebidas-dark/50 text-purple-900 dark:text-purple-100 border-purple-300/50",
-    "Limpeza": "bg-category-limpeza-light/50 dark:bg-category-limpeza-dark/50 text-teal-900 dark:text-teal-100 border-teal-300/50",
-    "Higiene Pessoal": "bg-category-higiene-light/50 dark:bg-category-higiene-dark/50 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/50",
-    "Bebês e Crianças": "bg-category-bebes-light/50 dark:bg-category-bebes-dark/50 text-yellow-900 dark:text-yellow-100 border-yellow-300/50",
-    "Pet Shop": "bg-category-pet-light/50 dark:bg-category-pet-dark/50 text-stone-900 dark:text-stone-100 border-stone-300/50",
-    "Utilidades e Bazar": "bg-category-utilidades-light/50 dark:bg-category-utilidades-dark/50 text-slate-900 dark:text-slate-100 border-slate-300/50",
-    "Default": "bg-secondary text-secondary-foreground"
-  };
-
-  const subcategoryClasses: { [key: string]: string } = {
-    "Hortifrúti e Ovos": "bg-category-hortifruti-light/30 dark:bg-category-hortifruti-dark/30 text-green-900 dark:text-green-100 border-green-300/30",
-    "Açougue e Peixaria": "bg-category-acougue-light/30 dark:bg-category-acougue-dark/30 text-red-900 dark:text-red-100 border-red-300/30",
-    "Padaria e Confeitaria": "bg-category-padaria-light/30 dark:bg-category-padaria-dark/30 text-amber-900 dark:text-amber-100 border-amber-300/30",
-    "Laticínios e Frios": "bg-category-laticinios-light/30 dark:bg-category-laticinios-dark/30 text-blue-900 dark:text-blue-100 border-blue-300/30",
-    "Mercearia": "bg-category-mercearia-light/30 dark:bg-category-mercearia-dark/30 text-orange-900 dark:text-orange-100 border-orange-300/30",
-    "Matinais e Doces": "bg-category-matinais-light/30 dark:bg-category-matinais-dark/30 text-pink-900 dark:text-pink-100 border-pink-300/30",
-    "Congelados": "bg-category-congelados-light/30 dark:bg-category-congelados-dark/30 text-cyan-900 dark:text-cyan-100 border-cyan-300/30",
-    "Bebidas": "bg-category-bebidas-light/30 dark:bg-category-bebidas-dark/30 text-purple-900 dark:text-purple-100 border-purple-300/30",
-    "Limpeza": "bg-category-limpeza-light/30 dark:bg-category-limpeza-dark/30 text-teal-900 dark:text-teal-100 border-teal-300/30",
-    "Higiene Pessoal": "bg-category-higiene-light/30 dark:bg-category-higiene-dark/30 text-fuchsia-900 dark:text-fuchsia-100 border-fuchsia-300/30",
-    "Bebês e Crianças": "bg-category-bebes-light/30 dark:bg-category-bebes-dark/30 text-yellow-900 dark:text-yellow-100 border-yellow-300/30",
-    "Pet Shop": "bg-category-pet-light/30 dark:bg-category-pet-dark/30 text-stone-900 dark:text-stone-100 border-stone-300/30",
-    "Utilidades e Bazar": "bg-category-utilidades-light/30 dark:bg-category-utilidades-dark/30 text-slate-900 dark:text-slate-100 border-slate-300/30",
-    "Default": "bg-secondary/50 text-secondary-foreground"
-  };
+  const getCategoryClass = (category: string) => {
+    const categoryMap: { [key: string]: string } = {
+        "Hortifrúti e Ovos": "bg-category-hortifruti/50 text-category-hortifruti-foreground border-category-hortifruti/20",
+        "Açougue e Peixaria": "bg-category-acougue/50 text-category-acougue-foreground border-category-acougue/20",
+        "Padaria e Confeitaria": "bg-category-padaria/50 text-category-padaria-foreground border-category-padaria/20",
+        "Laticínios e Frios": "bg-category-laticinios/50 text-category-laticinios-foreground border-category-laticinios/20",
+        "Mercearia": "bg-category-mercearia/50 text-category-mercearia-foreground border-category-mercearia/20",
+        "Matinais e Doces": "bg-category-matinais/50 text-category-matinais-foreground border-category-matinais/20",
+        "Congelados": "bg-category-congelados/50 text-category-congelados-foreground border-category-congelados/20",
+        "Bebidas": "bg-category-bebidas/50 text-category-bebidas-foreground border-category-bebidas/20",
+        "Limpeza": "bg-category-limpeza/50 text-category-limpeza-foreground border-category-limpeza/20",
+        "Higiene Pessoal": "bg-category-higiene/50 text-category-higiene-foreground border-category-higiene/20",
+        "Bebês e Crianças": "bg-category-bebes/50 text-category-bebes-foreground border-category-bebes/20",
+        "Pet Shop": "bg-category-pet/50 text-category-pet-foreground border-category-pet/20",
+        "Utilidades e Bazar": "bg-category-utilidades/50 text-category-utilidades-foreground border-category-utilidades/20",
+        "Default": "bg-secondary text-secondary-foreground"
+    };
+    return categoryMap[category] || categoryMap.Default;
+  }
+  
+  const getSubcategoryClass = (category: string) => {
+    const subcategoryMap: { [key: string]: string } = {
+        "Hortifrúti e Ovos": "bg-category-hortifruti/30 text-category-hortifruti-foreground border-category-hortifruti/10",
+        "Açougue e Peixaria": "bg-category-acougue/30 text-category-acougue-foreground border-category-acougue/10",
+        "Padaria e Confeitaria": "bg-category-padaria/30 text-category-padaria-foreground border-category-padaria/10",
+        "Laticínios e Frios": "bg-category-laticinios/30 text-category-laticinios-foreground border-category-laticinios/10",
+        "Mercearia": "bg-category-mercearia/30 text-category-mercearia-foreground border-category-mercearia/10",
+        "Matinais e Doces": "bg-category-matinais/30 text-category-matinais-foreground border-category-matinais/10",
+        "Congelados": "bg-category-congelados/30 text-category-congelados-foreground border-category-congelados/10",
+        "Bebidas": "bg-category-bebidas/30 text-category-bebidas-foreground border-category-bebidas/10",
+        "Limpeza": "bg-category-limpeza/30 text-category-limpeza-foreground border-category-limpeza/10",
+        "Higiene Pessoal": "bg-category-higiene/30 text-category-higiene-foreground border-category-higiene/10",
+        "Bebês e Crianças": "bg-category-bebes/30 text-category-bebes-foreground border-category-bebes/10",
+        "Pet Shop": "bg-category-pet/30 text-category-pet-foreground border-category-pet/10",
+        "Utilidades e Bazar": "bg-category-utilidades/30 text-category-utilidades-foreground border-category-utilidades/10",
+        "Default": "bg-secondary/50 text-secondary-foreground"
+    };
+    return subcategoryMap[category] || subcategoryMap.Default;
+  }
+  
 
   return (
     <div className="space-y-6">
@@ -317,12 +324,12 @@ export default function DashboardPage() {
                             <TableCell className="font-mono">{item.barcode}</TableCell>
                             <TableCell className="font-medium">{item.name}</TableCell>
                             <TableCell>
-                                <Badge variant="tag" className={cn(categoryClasses[item.category] || categoryClasses.Default)}>
+                                <Badge variant="tag" className={cn(getCategoryClass(item.category))}>
                                     {item.category}
                                 </Badge>
                             </TableCell>
                             <TableCell>
-                                <Badge variant="tag" className={cn(subcategoryClasses[item.category] || subcategoryClasses.Default)}>
+                                <Badge variant="tag" className={cn(getSubcategoryClass(item.category))}>
                                     {item.subcategory}
                                 </Badge>
                             </TableCell>
@@ -339,6 +346,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
-    

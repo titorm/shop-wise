@@ -29,6 +29,33 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    --category-hortifruti: 122 33% 75%;
+    --category-hortifruti-foreground: 120 25% 25%;
+    --category-acougue: 0 71% 77%;
+    --category-acougue-foreground: 0 50% 30%;
+    --category-padaria: 45 100% 76%;
+    --category-padaria-foreground: 35 50% 30%;
+    --category-laticinios: 211 89% 77%;
+    --category-laticinios-foreground: 210 50% 30%;
+    --category-mercearia: 30 100% 75%;
+    --category-mercearia-foreground: 25 50% 30%;
+    --category-matinais: 341 81% 77%;
+    --category-matinais-foreground: 340 50% 30%;
+    --category-congelados: 185 78% 71%;
+    --category-congelados-foreground: 185 50% 30%;
+    --category-bebidas: 265 56% 79%;
+    --category-bebidas-foreground: 265 30% 30%;
+    --category-limpeza: 174 44% 71%;
+    --category-limpeza-foreground: 175 30% 30%;
+    --category-higiene: 291 59% 81%;
+    --category-higiene-foreground: 290 30% 30%;
+    --category-bebes: 57 100% 80%;
+    --category-bebes-foreground: 55 50% 30%;
+    --category-pet: 20 25% 76%;
+    --category-pet-foreground: 20 20% 30%;
+    --category-utilidades: 200 25% 80%;
+    --category-utilidades-foreground: 200 20% 30%;
   }
 
   .dark {
@@ -57,6 +84,33 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    --category-hortifruti: 122 39% 64%;
+    --category-hortifruti-foreground: 120 70% 95%;
+    --category-acougue: 0 65% 68%;
+    --category-acougue-foreground: 0 70% 95%;
+    --category-padaria: 45 100% 66%;
+    --category-padaria-foreground: 45 70% 95%;
+    --category-laticinios: 211 85% 68%;
+    --category-laticinios-foreground: 210 70% 95%;
+    --category-mercearia: 30 100% 65%;
+    --category-mercearia-foreground: 30 70% 95%;
+    --category-matinais: 341 81% 69%;
+    --category-matinais-foreground: 340 70% 95%;
+    --category-congelados: 185 70% 60%;
+    --category-congelados-foreground: 185 70% 95%;
+    --category-bebidas: 265 58% 72%;
+    --category-bebidas-foreground: 265 70% 95%;
+    --category-limpeza: 174 45% 58%;
+    --category-limpeza-foreground: 175 70% 95%;
+    --category-higiene: 291 49% 70%;
+    --category-higiene-foreground: 290 70% 95%;
+    --category-bebes: 56 94% 72%;
+    --category-bebes-foreground: 55 70% 95%;
+    --category-pet: 20 20% 63%;
+    --category-pet-foreground: 20 70% 95%;
+    --category-utilidades: 200 17% 65%;
+    --category-utilidades-foreground: 200 70% 95%;
   }
 }
 
