@@ -22,6 +22,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "../ui/separator";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect } from "react";
+import { updateProfile } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useToast } from "@/hooks/use-toast";
 
 const profileSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -34,11 +39,14 @@ const passwordSchema = z.object({
 });
 
 export function ProfileForm() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: "Usuário Teste",
-      email: "usuario@teste.com",
+      name: "",
+      email: "",
     },
   });
 
@@ -50,12 +58,36 @@ export function ProfileForm() {
     },
   });
 
-  function onProfileSubmit(values: z.infer<typeof profileSchema>) {
-    console.log("Profile updated:", values);
+  useEffect(() => {
+    if (user) {
+        profileForm.reset({
+            name: user.displayName ?? "",
+            email: user.email ?? "",
+        });
+    }
+  }, [user, profileForm]);
+
+
+  async function onProfileSubmit(values: z.infer<typeof profileSchema>) {
+    if (!auth.currentUser) return;
+    try {
+        await updateProfile(auth.currentUser, { displayName: values.name });
+        toast({
+            title: "Sucesso!",
+            description: "Seu perfil foi atualizado.",
+        });
+    } catch (error: any) {
+        toast({
+            variant: "destructive",
+            title: "Erro ao atualizar perfil",
+            description: error.message,
+        });
+    }
   }
 
   function onPasswordSubmit(values: z.infer<typeof passwordSchema>) {
     console.log("Password change requested:", values);
+    // Here you would implement password change logic with Firebase Auth
   }
 
   return (
@@ -88,8 +120,9 @@ export function ProfileForm() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" {...field} />
+                      <Input type="email" {...field} disabled />
                     </FormControl>
+                     <p className="text-xs text-muted-foreground">O email não pode ser alterado.</p>
                     <FormMessage />
                   </FormItem>
                 )}
