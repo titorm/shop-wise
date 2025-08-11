@@ -84,7 +84,7 @@ export function ProfileForm() {
         // Save user data to Firestore
         const userRef = doc(db, Collections.Profile, auth.currentUser.uid);
         await setDoc(userRef, {
-            name: values.name,
+            display_name: values.name,
             email: auth.currentUser.email, // email is not editable, so we get it from auth
         }, { merge: true });
 

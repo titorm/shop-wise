@@ -33,9 +33,11 @@ import { Separator } from "../ui/separator";
 import { Collections } from "@/lib/enums";
 
 const preferencesSchema = z.object({
-  adults: z.coerce.number().min(1, { message: "Pelo menos um adulto é necessário." }),
-  children: z.coerce.number().min(0),
-  pets: z.coerce.number().min(0),
+  family: z.object({
+    adults: z.coerce.number().min(1, { message: "Pelo menos um adulto é necessário." }),
+    children: z.coerce.number().min(0),
+    pets: z.coerce.number().min(0),
+  }),
   theme: z.enum(["system", "light", "dark"]),
   notifications: z.boolean(),
 });
@@ -49,9 +51,11 @@ export function PreferencesForm() {
   const form = useForm<PreferencesData>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
-      adults: 2,
-      children: 1,
-      pets: 0,
+      family: {
+        adults: 2,
+        children: 1,
+        pets: 0,
+      },
       theme: "system",
       notifications: true,
     },
@@ -66,9 +70,11 @@ export function PreferencesForm() {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 const preferences = {
-                    adults: data.adults ?? 2,
-                    children: data.children ?? 1,
-                    pets: data.pets ?? 0,
+                    family: {
+                      adults: data.family?.adults ?? 2,
+                      children: data.family?.children ?? 1,
+                      pets: data.family?.pets ?? 0,
+                    },
                     theme: data.theme ?? "system",
                     notifications: data.notifications ?? true,
                 }
@@ -126,7 +132,7 @@ export function PreferencesForm() {
                 <div className="grid grid-cols-3 gap-4">
                     <FormField
                         control={form.control}
-                        name="adults"
+                        name="family.adults"
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>Adultos</FormLabel>
@@ -139,7 +145,7 @@ export function PreferencesForm() {
                     />
                     <FormField
                         control={form.control}
-                        name="children"
+                        name="family.children"
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>Crianças</FormLabel>
@@ -152,7 +158,7 @@ export function PreferencesForm() {
                     />
                      <FormField
                         control={form.control}
-                        name="pets"
+                        name="family.pets"
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>Pets</FormLabel>
