@@ -271,7 +271,7 @@ const SidebarCollapseButton = React.forwardRef<
             variant="ghost"
             size="icon"
             className={cn(
-              "absolute top-3 z-20 h-8 w-8",
+              "absolute top-6 z-20 h-8 w-8",
               "transition-all duration-300 ease-in-out",
               "data-[state=expanded]:right-3",
               "data-[state=collapsed]:right-[-1rem] data-[state=collapsed]:border data-[state=collapsed]:bg-background data-[state=collapsed]:hover:bg-accent",
