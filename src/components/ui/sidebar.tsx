@@ -233,7 +233,7 @@ const Sidebar = React.forwardRef<
         <div
           className={cn(
             "duration-200 relative h-full bg-sidebar transition-[width] ease-linear",
-            "w-[--sidebar-width]",
+            "data-[state=expanded]:w-[--sidebar-width]",
             "data-[state=collapsed]:w-[--sidebar-width-icon]",
             variant === 'floating' && 'rounded-lg border border-sidebar-border shadow'
           )}
@@ -317,22 +317,6 @@ const SidebarInset = React.forwardRef<
         className
       )}
     >
-        <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "absolute top-6 z-20 h-8 w-8",
-              "transition-all duration-300 ease-in-out -left-4",
-              "data-[state=expanded]:rotate-0",
-              "data-[state=collapsed]:rotate-180",
-               "border bg-background hover:bg-accent",
-            )}
-            onClick={toggleSidebar}
-            data-state={state}
-        >
-            <FontAwesomeIcon icon={faAnglesLeft} className="h-5 w-5" />
-            <span className="sr-only">Toggle Sidebar</span>
-        </Button>
         {props.children}
     </main>
   )

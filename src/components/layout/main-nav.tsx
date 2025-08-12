@@ -65,12 +65,6 @@ export function MainNav() {
   const { profile } = useAuth();
   const isAdmin = profile?.isAdmin || false;
   const { state } = useSidebar();
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/');
-  }
 
   const isActive = (href: string) => {
     if (href === '/admin') {
@@ -123,19 +117,6 @@ export function MainNav() {
 
         </SidebarMenu>
       </SidebarContent>
-       <SidebarFooter>
-            <Button
-                variant="destructive"
-                className={cn(
-                    'w-full',
-                    state === 'collapsed' && 'px-2'
-                )}
-                onClick={handleSignOut}
-            >
-                <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
-                <span className={cn(state === 'collapsed' ? 'hidden' : 'inline-block ml-2')}>Sair</span>
-            </Button>
-        </SidebarFooter>
     </>
   );
 }
