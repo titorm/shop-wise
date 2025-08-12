@@ -82,7 +82,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
               name="storeName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel><FontAwesomeIcon icon={faStore} className="mr-2" /> {t('store_name_label')}</FormLabel>
+                  <FormLabel>{t('store_name_label')}</FormLabel>
                   <FormControl>
                     <Input placeholder={t('store_name_placeholder')} {...field} />
                   </FormControl>
@@ -95,7 +95,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel><FontAwesomeIcon icon={faCalendarAlt} className="mr-2" /> {t('date_label')}</FormLabel>
+                  <FormLabel>{t('date_label')}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -142,10 +142,10 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-auto"><FontAwesomeIcon icon={faBox} className="mr-2" />{t('table_product')}</TableHead>
-                  <TableHead className="w-[140px]"><FontAwesomeIcon icon={faWeightHanging} className="mr-2" />{t('table_volume')}</TableHead>
-                  <TableHead className="w-[100px] text-center"><FontAwesomeIcon icon={faHashtag} className="mr-2" />{t('table_quantity_short')}</TableHead>
-                  <TableHead className="w-[140px] text-center"><FontAwesomeIcon icon={faDollarSign} className="mr-2" />{t('table_unit_price')}</TableHead>
+                  <TableHead className="w-auto">{t('table_product')}</TableHead>
+                  <TableHead className="w-[140px]">{t('table_volume')}</TableHead>
+                  <TableHead className="w-[100px] text-center">{t('table_quantity_short')}</TableHead>
+                  <TableHead className="w-[140px] text-center">{t('table_unit_price')}</TableHead>
                   <TableHead className="w-[50px] text-right">{t('table_actions')}</TableHead>
                 </TableRow>
               </TableHeader>
