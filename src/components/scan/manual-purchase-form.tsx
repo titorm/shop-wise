@@ -142,53 +142,73 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[30%]"><FontAwesomeIcon icon={faBox} className="mr-2" />{t('table_product')}</TableHead>
-                  <TableHead><FontAwesomeIcon icon={faWeightHanging} className="mr-2" />{t('table_volume')}</TableHead>
-                  <TableHead><FontAwesomeIcon icon={faHashtag} className="mr-2" />{t('table_quantity')}</TableHead>
-                  <TableHead><FontAwesomeIcon icon={faDollarSign} className="mr-2" />{t('table_unit_price')}</TableHead>
-                  <TableHead className="text-right">{t('table_actions')}</TableHead>
+                  <TableHead className="w-auto"><FontAwesomeIcon icon={faBox} className="mr-2" />{t('table_product')}</TableHead>
+                  <TableHead className="w-[140px]"><FontAwesomeIcon icon={faWeightHanging} className="mr-2" />{t('table_volume')}</TableHead>
+                  <TableHead className="w-[100px] text-center"><FontAwesomeIcon icon={faHashtag} className="mr-2" />{t('table_quantity_short')}</TableHead>
+                  <TableHead className="w-[140px] text-center"><FontAwesomeIcon icon={faDollarSign} className="mr-2" />{t('table_unit_price')}</TableHead>
+                  <TableHead className="w-[50px] text-right">{t('table_actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {fields.map((field, index) => (
-                  <TableRow key={field.id}>
-                    <TableCell>
+                  <TableRow key={field.id} className="align-top">
+                    <TableCell className="p-1">
                       <FormField
                         control={form.control}
                         name={`items.${index}.name`}
                         render={({ field }) => (
-                          <Input {...field} placeholder={t('item_name_placeholder')} />
+                            <FormItem>
+                                <FormControl>
+                                    <Input {...field} placeholder={t('item_name_placeholder')} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="p-1">
                       <FormField
                         control={form.control}
                         name={`items.${index}.volume`}
                         render={({ field }) => (
-                          <Input {...field} placeholder="ex: 1kg, 500ml" />
+                            <FormItem>
+                                <FormControl>
+                                     <Input {...field} placeholder="ex: 1kg, 500ml" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="p-1">
                       <FormField
                         control={form.control}
                         name={`items.${index}.quantity`}
                         render={({ field }) => (
-                          <Input type="number" step="0.01" {...field} />
+                            <FormItem>
+                                <FormControl>
+                                    <Input type="number" step="0.01" {...field} className="text-center" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="p-1">
                        <FormField
                         control={form.control}
                         name={`items.${index}.price`}
                         render={({ field }) => (
-                          <Input type="number" step="0.01" {...field} />
+                            <FormItem>
+                                <FormControl>
+                                    <Input type="number" step="0.01" {...field} className="text-center" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
                       />
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="p-1 text-right">
                       <Button
                         type="button"
                         variant="ghost"
