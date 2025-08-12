@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Bell, LogOut, ShoppingCart, User, Users, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
 import { useAuth } from "@/hooks/use-auth";
 import { auth } from "@/lib/firebase";
@@ -12,10 +12,11 @@ import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserInitials } from "@/lib/utils";
+import { getUserInitials, cn } from "@/lib/utils";
 
 export function Header() {
   const { user } = useAuth();
+  const { state } = useSidebar();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -25,6 +26,14 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
+      <div className={cn(
+        "items-center gap-2 md:flex",
+        state === 'expanded' ? 'md:hidden' : ''
+      )}>
+        <Logo className="w-6 h-6 text-primary" />
+        <span className="text-lg font-bold font-headline hidden md:block">ShopWise</span>
+      </div>
+      
       <div className="flex items-center gap-2 md:hidden">
         <SidebarTrigger />
       </div>
