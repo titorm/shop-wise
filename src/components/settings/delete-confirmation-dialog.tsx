@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect, ReactNode } from "react";
+import { useTranslation, Trans } from "react-i18next";
 
 interface DeleteConfirmationDialogProps {
     triggerButton: ReactNode;
@@ -31,6 +33,7 @@ export function DeleteConfirmationDialog({
     confirmButtonText,
     onConfirm 
 }: DeleteConfirmationDialogProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState("");
   const [inputCode, setInputCode] = useState("");
@@ -51,15 +54,15 @@ export function DeleteConfirmationDialog({
     try {
         await onConfirm();
         toast({
-            title: "Sucesso!",
-            description: "A operação foi concluída.",
+            title: t('toast_success_title'),
+            description: t('toast_success_operation_completed'),
         });
         setIsOpen(false);
     } catch (error: any) {
         toast({
             variant: "destructive",
-            title: "Ocorreu um erro",
-            description: error.message || "Não foi possível completar a ação. Tente novamente.",
+            title: t('toast_error_title'),
+            description: error.message || t('toast_error_generic'),
         });
     } finally {
         setIsLoading(false);
@@ -82,23 +85,27 @@ export function DeleteConfirmationDialog({
         </AlertDialogHeader>
         <div className="my-4 space-y-2">
             <p className="text-sm text-muted-foreground">
-                Digite o código <strong className="text-foreground font-mono tracking-widest">{confirmationCode}</strong> abaixo para confirmar:
+                <Trans 
+                    i18nKey="delete_confirmation_code_prompt"
+                    values={{ code: confirmationCode }}
+                    components={{ 1: <strong className="text-foreground font-mono tracking-widest" /> }}
+                />
             </p>
             <Input 
                 value={inputCode}
                 onChange={(e) => setInputCode(e.target.value)}
-                placeholder="Seu código de confirmação"
+                placeholder={t('delete_confirmation_placeholder')}
                 autoFocus
             />
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>{t('cancel')}</AlertDialogCancel>
           <Button
             variant="destructive"
             onClick={handleConfirm}
             disabled={!isCodeMatch || isLoading}
           >
-            {isLoading ? "Processando..." : confirmButtonText}
+            {isLoading ? t('processing') : confirmButtonText}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

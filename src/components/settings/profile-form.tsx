@@ -33,6 +33,7 @@ import { Collections } from "@/lib/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { useTranslation } from "react-i18next";
 
 const profileSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -47,6 +48,7 @@ const passwordSchema = z.object({
 export function ProfileForm() {
   const { user, reloadUser } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [linkedProviders, setLinkedProviders] = useState<string[]>([]);
@@ -97,13 +99,13 @@ export function ProfileForm() {
         await reloadUser();
         profileForm.reset(values); // Resets the dirty state
         toast({
-            title: "Sucesso!",
-            description: "Seu perfil foi atualizado.",
+            title: t('toast_success_title'),
+            description: t('profile_form_success_update'),
         });
     } catch (error: any) {
         toast({
             variant: "destructive",
-            title: "Erro ao atualizar perfil",
+            title: t('profile_form_error_update'),
             description: error.message,
         });
     }
@@ -121,13 +123,13 @@ export function ProfileForm() {
         await linkWithPopup(auth.currentUser, provider);
         await reloadUser();
         toast({
-            title: "Conta Conectada!",
-            description: "Sua conta foi conectada com sucesso.",
+            title: t('profile_form_success_account_linked_title'),
+            description: t('profile_form_success_account_linked_desc'),
         });
     } catch (error: any) {
         toast({
             variant: "destructive",
-            title: "Erro ao conectar conta",
+            title: t('profile_form_error_account_linked_title'),
             description: error.message,
         });
     }
@@ -141,8 +143,8 @@ export function ProfileForm() {
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle>Informações do Perfil</CardTitle>
-          <CardDescription>Atualize seu nome e email.</CardDescription>
+          <CardTitle>{t('profile_form_info_title')}</CardTitle>
+          <CardDescription>{t('profile_form_info_desc')}</CardDescription>
         </CardHeader>
         <Form {...profileForm}>
           <form onSubmit={profileForm.handleSubmit(onProfileSubmit)}>
@@ -152,7 +154,7 @@ export function ProfileForm() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome</FormLabel>
+                    <FormLabel>{t('profile_form_name_label')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -165,11 +167,11 @@ export function ProfileForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('email_label')}</FormLabel>
                     <FormControl>
                       <Input type="email" {...field} disabled />
                     </FormControl>
-                     <p className="text-xs text-muted-foreground">O email não pode ser alterado.</p>
+                     <p className="text-xs text-muted-foreground">{t('profile_form_email_note')}</p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -177,7 +179,7 @@ export function ProfileForm() {
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={!isProfileDirty || !isProfileValid || isProfileSubmitting}>
-                Salvar Alterações
+                {t('save_changes')}
               </Button>
             </CardFooter>
           </form>
@@ -186,8 +188,8 @@ export function ProfileForm() {
       
        <Card>
         <CardHeader>
-          <CardTitle>Contas Conectadas</CardTitle>
-          <CardDescription>Conecte suas contas sociais para facilitar o login.</CardDescription>
+          <CardTitle>{t('profile_form_linked_accounts_title')}</CardTitle>
+          <CardDescription>{t('profile_form_linked_accounts_desc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -200,7 +202,7 @@ export function ProfileForm() {
                     disabled={linkedProviders.includes("google.com")}
                     onClick={() => handleLinkAccount(googleProvider)}
                 >
-                    {linkedProviders.includes("google.com") ? "Conectado" : "Conectar"}
+                    {linkedProviders.includes("google.com") ? t('connected') : t('connect')}
                 </Button>
             </div>
              <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -213,7 +215,7 @@ export function ProfileForm() {
                     disabled={linkedProviders.includes("apple.com")}
                     onClick={() => handleLinkAccount(new OAuthProvider('apple.com'))}
                 >
-                    {linkedProviders.includes("apple.com") ? "Conectado" : "Conectar"}
+                    {linkedProviders.includes("apple.com") ? t('connected') : t('connect')}
                 </Button>
             </div>
         </CardContent>
@@ -221,8 +223,8 @@ export function ProfileForm() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Alterar Senha</CardTitle>
-          <CardDescription>Escolha uma nova senha forte.</CardDescription>
+          <CardTitle>{t('profile_form_change_password_title')}</CardTitle>
+          <CardDescription>{t('profile_form_change_password_desc')}</CardDescription>
         </CardHeader>
         <Form {...passwordForm}>
           <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}>
@@ -232,7 +234,7 @@ export function ProfileForm() {
                 name="currentPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha Atual</FormLabel>
+                    <FormLabel>{t('profile_form_current_password_label')}</FormLabel>
                     <div className="relative">
                         <FormControl>
                           <Input type={showCurrentPassword ? "text" : "password"} {...field} />
@@ -250,7 +252,7 @@ export function ProfileForm() {
                                 <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                             )}
                             <span className="sr-only">
-                                {showCurrentPassword ? "Hide password" : "Show password"}
+                                {showCurrentPassword ? t('hide_password') : t('show_password')}
                             </span>
                         </Button>
                     </div>
@@ -263,7 +265,7 @@ export function ProfileForm() {
                 name="newPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nova Senha</FormLabel>
+                    <FormLabel>{t('profile_form_new_password_label')}</FormLabel>
                      <div className="relative">
                         <FormControl>
                             <Input type={showNewPassword ? "text" : "password"} {...field} />
@@ -281,7 +283,7 @@ export function ProfileForm() {
                                 <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                             )}
                             <span className="sr-only">
-                                {showNewPassword ? "Hide password" : "Show password"}
+                                {showNewPassword ? t('hide_password') : t('show_password')}
                             </span>
                         </Button>
                     </div>
@@ -292,7 +294,7 @@ export function ProfileForm() {
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={!isPasswordDirty || !isPasswordValid || isPasswordSubmitting}>
-                Alterar Senha
+                {t('profile_form_change_password_button')}
               </Button>
             </CardFooter>
           </form>
