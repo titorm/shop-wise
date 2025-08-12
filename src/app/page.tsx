@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, BarChart, QrCode, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/icons";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   return (
@@ -21,7 +22,19 @@ export default function Home() {
         </nav>
       </header>
       <main className="flex-grow">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
+        <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
+           <div
+            className={cn(
+              "absolute -top-1/2 left-1/2 -z-10 h-[150%] w-full -translate-x-1/2 bg-[radial-gradient(closest-side,#ffffff33,transparent)]",
+              "md:bg-[radial-gradient(closest-side,#ffffff22,transparent)]"
+            )}
+          />
+          <div
+            className={cn(
+              "aurora-sm sm:aurora-md md:aurora-lg -z-10",
+              "absolute -top-1/2 left-0 h-full w-full"
+            )}
+          />
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-bold font-headline text-foreground tracking-tight">
               Transforme suas compras,
@@ -82,7 +95,7 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
   return (
-    <div className="bg-card p-6 rounded-2xl shadow-sm text-center flex flex-col items-center">
+    <div className="bg-card p-6 rounded-2xl shadow-sm text-center flex flex-col items-center transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
       <div className="mb-4">{icon}</div>
       <h4 className="text-xl font-bold font-headline mb-2 text-foreground">{title}</h4>
       <p className="text-muted-foreground">{description}</p>

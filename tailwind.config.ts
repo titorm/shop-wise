@@ -106,10 +106,25 @@ export default {
             height: '0',
           },
         },
+        'aurora-sm': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        'aurora-md': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        'aurora-lg': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'aurora-sm': 'aurora-sm 20s linear infinite',
+        'aurora-md': 'aurora-md 20s linear infinite',
+        'aurora-lg': 'aurora-lg 20s linear infinite',
       },
     },
   },

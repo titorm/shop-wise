@@ -112,3 +112,33 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .aurora-sm {
+    background-image: conic-gradient(
+      from 90deg at 40% 50%,
+      hsl(var(--primary) / 0.3),
+      hsl(var(--accent) / 0.3),
+      hsl(var(--primary) / 0.3)
+    );
+    animation: aurora-sm 20s linear infinite;
+  }
+  .aurora-md {
+    background-image: conic-gradient(
+      from 90deg at 40% 50%,
+      hsl(var(--primary) / 0.4),
+      hsl(var(--accent) / 0.4),
+      hsl(var(--primary) / 0.4)
+    );
+    animation: aurora-md 20s linear infinite;
+  }
+  .aurora-lg {
+    background-image: conic-gradient(
+      from 90deg at 40% 50%,
+      hsl(var(--primary) / 0.5),
+      hsl(var(--accent) / 0.5),
+      hsl(var(--primary) / 0.5)
+    );
+    animation: aurora-lg 20s linear infinite;
+  }
+}
