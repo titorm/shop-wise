@@ -177,7 +177,7 @@ export default function DashboardPage() {
           data={monthlySpendingByStore}
           type="spendingByStore"
         >
-          <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+          <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('dashboard_total_spent_month')}</CardTitle>
               <FontAwesomeIcon icon={faDollarSign} className="h-4 w-4 text-muted-foreground" />
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           data={recentItems}
           type="recentItems"
         >
-          <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+          <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('dashboard_items_bought')}</CardTitle>
               <FontAwesomeIcon icon={faShoppingBag} className="h-4 w-4 text-muted-foreground" />
@@ -213,7 +213,7 @@ export default function DashboardPage() {
           data={[]} // Mock data for now
           type="topCategories"
         >
-          <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+          <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('dashboard_main_category')}</CardTitle>
               <FontAwesomeIcon icon={faChartSimple} className="h-4 w-4 text-muted-foreground" />
@@ -231,7 +231,7 @@ export default function DashboardPage() {
           data={[]} // Mock data for now
           type="savingsOpportunities"
         >
-          <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+          <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{t('dashboard_potential_savings')}</CardTitle>
               <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-muted-foreground" />
@@ -245,7 +245,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-        <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+        <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
           <CardHeader>
             <CardTitle>{t('dashboard_consumption_overview_title')}</CardTitle>
             <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
@@ -293,7 +293,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+        <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
            <CardHeader>
                 <CardTitle>{t('dashboard_spending_by_category_title')}</CardTitle>
                 <CardDescription>{t('dashboard_spending_by_category_desc')}</CardDescription>
@@ -325,7 +325,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <Card>
+      <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
           <CardHeader>
             <CardTitle>{t('dashboard_top_expenses_title')}</CardTitle>
             <CardDescription>{t('dashboard_top_expenses_desc')}</CardDescription>
@@ -379,3 +379,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
