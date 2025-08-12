@@ -44,13 +44,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        const userRef = doc(db, Collections.Profile, user.uid);
-        const docSnap = await getDoc(userRef);
-        if (docSnap.exists()) {
-          // For initial testing, let's make the user an admin
-          setProfile({ ...docSnap.data(), isAdmin: true } as Profile);
-        } else {
-          setProfile(null);
+        try {
+          const userRef = doc(db, Collections.Profile, user.uid);
+          const docSnap = await getDoc(userRef);
+          if (docSnap.exists()) {
+            // For initial testing, let's make the user an admin
+            setProfile({ ...docSnap.data(), isAdmin: true } as Profile);
+          } else {
+            setProfile(null);
+          }
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+            setProfile(null);
         }
       } else {
         setProfile(null);
@@ -62,15 +67,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const reloadUser = async () => {
-    await auth.currentUser?.reload();
-    setUser(auth.currentUser);
-    if (auth.currentUser) {
-        const userRef = doc(db, Collections.Profile, auth.currentUser.uid);
-        const docSnap = await getDoc(userRef);
-        if (docSnap.exists()) {
-            // For initial testing, let's make the user an admin
-            setProfile({ ...docSnap.data(), isAdmin: true } as Profile);
+    try {
+        await auth.currentUser?.reload();
+        setUser(auth.currentUser);
+        if (auth.currentUser) {
+            const userRef = doc(db, Collections.Profile, auth.currentUser.uid);
+            const docSnap = await getDoc(userRef);
+            if (docSnap.exists()) {
+                // For initial testing, let's make the user an admin
+                setProfile({ ...docSnap.data(), isAdmin: true } as Profile);
+            }
         }
+    } catch(error) {
+        console.error("Error reloading user:", error);
     }
   }
 
