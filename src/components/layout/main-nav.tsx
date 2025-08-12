@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
   Sidebar,
   useSidebar,
+  SidebarCollapseButton,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,7 @@ export function MainNav() {
     <>
       <SidebarHeader>
         <ShopWiseLogo />
+        <SidebarCollapseButton />
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
@@ -96,7 +98,7 @@ export function MainNav() {
                     <SidebarMenuItem key={item.href}>
                     <Link href={item.href}>
                         <SidebarMenuButton 
-                        isActive={isActive(item.href)}
+                        isActive={pathname === item.href}
                         tooltip={item.label}
                         asChild={false}
                         >
