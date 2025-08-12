@@ -12,7 +12,6 @@ import {
   SidebarMenuItem,
   Sidebar,
   useSidebar,
-  SidebarCollapseButton,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -72,7 +71,6 @@ export function MainNav() {
     <>
       <SidebarHeader>
         <ShopWiseLogo />
-        <SidebarCollapseButton />
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
