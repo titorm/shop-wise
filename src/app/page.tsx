@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { BarChart, QrCode, ShoppingCart, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/icons";
-import { cn } from "@/lib/utils";
 
 export default function Home() {
   return (
@@ -13,27 +12,25 @@ export default function Home() {
           <h1 className="text-2xl font-bold font-headline text-foreground">ShopWise</h1>
         </div>
         <nav className="flex items-center gap-2">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Entrar</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/signup">Criar Conta</Link>
-          </Button>
+          <Link href="/login">
+            <Button variant="ghost">Entrar</Button>
+          </Link>
+          <Link href="/signup">
+            <Button>Criar Conta</Button>
+          </Link>
         </nav>
       </header>
       <main className="flex-grow">
         <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
            <div
-            className={cn(
-              "absolute -top-1/2 left-1/2 -z-10 h-[150%] w-full -translate-x-1/2 bg-[radial-gradient(closest-side,#ffffff33,transparent)]",
-              "md:bg-[radial-gradient(closest-side,#ffffff22,transparent)]"
-            )}
+            className={
+              "absolute -top-1/2 left-1/2 -z-10 h-[150%] w-full -translate-x-1/2 bg-[radial-gradient(closest-side,#ffffff33,transparent)] md:bg-[radial-gradient(closest-side,#ffffff22,transparent)]"
+            }
           />
           <div
-            className={cn(
-              "aurora-sm sm:aurora-md md:aurora-lg -z-10",
-              "absolute -top-1/2 left-0 h-full w-full"
-            )}
+            className={
+              "aurora-sm sm:aurora-md md:aurora-lg -z-10 absolute -top-1/2 left-0 h-full w-full"
+            }
           />
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-bold font-headline text-foreground tracking-tight">
@@ -45,9 +42,9 @@ export default function Home() {
               ShopWise é o seu assistente inteligente que te ajuda a economizar tempo e dinheiro em suas compras de supermercado, com insights poderosos e listas de compras inteligentes.
             </p>
             <div className="mt-8 flex justify-center gap-4">
-              <Button size="lg" asChild>
-                <Link href="/signup">Comece Agora - É Grátis</Link>
-              </Button>
+               <Link href="/signup">
+                <Button size="lg">Comece Agora - É Grátis</Button>
+              </Link>
             </div>
           </div>
         </section>
