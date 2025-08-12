@@ -1,20 +1,20 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield } from "lucide-react";
+import { Microscope } from "lucide-react";
 
-export default function AdminPage() {
+export default function AdminAuditPage() {
     return (
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <Shield className="w-6 h-6" />
-                        Dashboard Administrativo
+                        <Microscope className="w-6 h-6" />
+                        Auditoria e Testes
                     </CardTitle>
-                    <CardDescription>Visão geral e atalhos para as principais áreas de gerenciamento.</CardDescription>
+                    <CardDescription>Acesse logs do sistema e gerencie testes A/B.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p>Bem-vindo à área administrativa. Use o menu lateral para navegar entre as funcionalidades.</p>
+                    <p>Funcionalidades de auditoria e configuração de testes A/B estarão disponíveis aqui.</p>
                 </CardContent>
             </Card>
         </div>

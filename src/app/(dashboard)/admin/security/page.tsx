@@ -1,20 +1,20 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
-export default function AdminPage() {
+export default function AdminSecurityPage() {
     return (
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <Shield className="w-6 h-6" />
-                        Dashboard Administrativo
+                        <ShieldCheck className="w-6 h-6" />
+                        Segurança e Conformidade
                     </CardTitle>
-                    <CardDescription>Visão geral e atalhos para as principais áreas de gerenciamento.</CardDescription>
+                    <CardDescription>Controle de acesso e auditoria de ações administrativas.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p>Bem-vindo à área administrativa. Use o menu lateral para navegar entre as funcionalidades.</p>
+                    <p>Ferramentas para gerenciamento de permissões e logs de auditoria de administradores.</p>
                 </CardContent>
             </Card>
         </div>

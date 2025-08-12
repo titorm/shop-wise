@@ -1,20 +1,20 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 
-export default function AdminPage() {
+export default function AdminNotificationsPage() {
     return (
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <Shield className="w-6 h-6" />
-                        Dashboard Administrativo
+                        <MessageSquare className="w-6 h-6" />
+                        Gerenciamento de Notificações
                     </CardTitle>
-                    <CardDescription>Visão geral e atalhos para as principais áreas de gerenciamento.</CardDescription>
+                    <CardDescription>Crie e gerencie os modelos de notificações push para os usuários.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p>Bem-vindo à área administrativa. Use o menu lateral para navegar entre as funcionalidades.</p>
+                    <p>Ferramentas para o gerenciamento de notificações serão implementadas aqui.</p>
                 </CardContent>
             </Card>
         </div>
