@@ -56,7 +56,7 @@ export function Header() {
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
                     <Avatar className="h-9 w-9">
                       <AvatarImage src={user?.photoURL ?? ""} alt={user?.displayName ?? "User Avatar"} />
-                      <AvatarFallback>{getUserInitials(user?.displayName)}</Fallback>
+                      <AvatarFallback>{getUserInitials(user?.displayName)}</AvatarFallback>
                     </Avatar>
                   </Button>
               </DropdownMenuTrigger>
