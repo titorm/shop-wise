@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +32,9 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { doc, setDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { Collections } from "@/lib/enums";
+import { useTranslation } from "react-i18next";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -42,6 +45,7 @@ const formSchema = z.object({
 export function SignupForm() {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -56,15 +60,40 @@ export function SignupForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      // 1. Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, { displayName: values.name });
+      const user = userCredential.user;
+      
+      if (user) {
+        // 2. Update Auth profile
+        await updateProfile(user, { displayName: values.name });
+
+        // 3. Create a new family for the user
+        const familyRef = await addDoc(collection(db, Collections.Families), {
+            familyName: `Família de ${values.name}`,
+            createdAt: serverTimestamp(),
+            ownerId: user.uid,
+        });
+
+        // 4. Create the user document in Firestore
+        const userRef = doc(db, Collections.Users, user.uid);
+        await setDoc(userRef, {
+            displayName: values.name,
+            email: values.email,
+            familyId: familyRef.id,
+            isAdmin: true, // The user who creates the family is an admin
+            settings: {
+                theme: "system",
+                notifications: true,
+            }
+        });
+
+        router.push('/dashboard');
       }
-      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Erro ao criar conta",
+        title: t('signup_error_title'),
         description: error.message,
       });
     }
@@ -73,12 +102,34 @@ export function SignupForm() {
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        
+        // TODO: Check if user already exists in Firestore before creating new family
+        
+        const familyRef = await addDoc(collection(db, Collections.Families), {
+            familyName: `Família de ${user.displayName}`,
+            createdAt: serverTimestamp(),
+            ownerId: user.uid,
+        });
+
+        const userRef = doc(db, Collections.Users, user.uid);
+        await setDoc(userRef, {
+            displayName: user.displayName,
+            email: user.email,
+            familyId: familyRef.id,
+            isAdmin: true,
+            settings: {
+                theme: "system",
+                notifications: true,
+            }
+        }, { merge: true }); // Merge to avoid overwriting existing data if they sign up differently before
+
         router.push('/dashboard');
     } catch (error: any) {
         toast({
             variant: "destructive",
-            title: "Erro de Login com Google",
+            title: t("error_google_login"),
             description: error.message,
         });
     }
@@ -89,9 +140,9 @@ export function SignupForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-headline">Crie sua conta</CardTitle>
+        <CardTitle className="text-2xl font-headline">{t('signup_title')}</CardTitle>
         <CardDescription>
-          É rápido e fácil. Comece a economizar hoje mesmo!
+          {t('signup_description')}
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -103,9 +154,9 @@ export function SignupForm() {
                     name="name"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Nome</FormLabel>
+                        <FormLabel>{t('name_label')}</FormLabel>
                         <FormControl>
-                        <Input placeholder="Seu nome" {...field} />
+                        <Input placeholder={t('name_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -116,7 +167,7 @@ export function SignupForm() {
                     name="email"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{t('email_label')}</FormLabel>
                         <FormControl>
                         <Input placeholder="seu@email.com" {...field} />
                         </FormControl>
@@ -129,7 +180,7 @@ export function SignupForm() {
                     name="password"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Senha</FormLabel>
+                        <FormLabel>{t('password_label')}</FormLabel>
                         <div className="relative">
                             <FormControl>
                             <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
@@ -147,7 +198,7 @@ export function SignupForm() {
                                     <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                                 )}
                                 <span className="sr-only">
-                                    {showPassword ? "Hide password" : "Show password"}
+                                    {showPassword ? t('hide_password') : t('show_password')}
                                 </span>
                             </Button>
                         </div>
@@ -157,28 +208,28 @@ export function SignupForm() {
                 />
             </div>
             <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
-              Criar Conta
+              {t('create_account')}
             </Button>
              <div className="relative">
               <Separator />
-              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">OU</p>
+              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">{t('or_upper')}</p>
             </div>
             <div className="space-y-2">
                  <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn}>
                     <FontAwesomeIcon icon={faGoogle} className="mr-2 h-4 w-4" />
-                    Criar com Google
+                    {t('signup_with_google')}
                 </Button>
                 <Button variant="outline" className="w-full" type="button">
                     <FontAwesomeIcon icon={faApple} className="mr-2 h-4 w-4" />
-                    Criar com Apple
+                    {t('signup_with_apple')}
                 </Button>
             </div>
           </CardContent>
           <CardFooter>
             <p className="text-sm text-muted-foreground">
-              Já tem uma conta?{" "}
+              {t('already_have_account')}{" "}
               <Link href="/login" passHref>
-                <Button variant="link" className="px-0 h-auto">Entrar</Button>
+                <Button variant="link" className="px-0 h-auto">{t('login')}</Button>
               </Link>
             </p>
           </CardFooter>
@@ -187,3 +238,5 @@ export function SignupForm() {
     </Card>
   );
 }
+
+    

@@ -39,14 +39,16 @@ const preferencesSchema = z.object({
     children: z.coerce.number().min(0),
     pets: z.coerce.number().min(0),
   }),
-  theme: z.enum(["system", "light", "dark"]),
-  notifications: z.boolean(),
+  settings: z.object({
+    theme: z.enum(["system", "light", "dark"]),
+    notifications: z.boolean(),
+  }),
 });
 
 type PreferencesData = z.infer<typeof preferencesSchema>;
 
 export function PreferencesForm() {
-  const { user } = useAuth();
+  const { user, profile, reloadUser } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
 
@@ -58,34 +60,29 @@ export function PreferencesForm() {
         children: 1,
         pets: 0,
       },
-      theme: "system",
-      notifications: true,
+      settings: {
+        theme: "system",
+        notifications: true,
+      },
     },
     mode: "onChange",
   });
 
   useEffect(() => {
-    async function fetchPreferences() {
-        if (user) {
-            const userRef = doc(db, Collections.Profile, user.uid);
-            const docSnap = await getDoc(userRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const preferences = {
-                    family: {
-                      adults: data.family?.adults ?? 2,
-                      children: data.family?.children ?? 1,
-                      pets: data.family?.pets ?? 0,
-                    },
-                    theme: data.theme ?? "system",
-                    notifications: data.notifications ?? true,
-                }
-                form.reset(preferences);
+    if (profile) {
+        form.reset({
+            family: {
+                adults: profile.family?.adults ?? 2,
+                children: profile.family?.children ?? 1,
+                pets: profile.family?.pets ?? 0,
+            },
+            settings: {
+                theme: profile.settings?.theme ?? "system",
+                notifications: profile.settings?.notifications ?? true,
             }
-        }
+        });
     }
-    fetchPreferences();
-  }, [user, form]);
+  }, [profile, form]);
 
 
   async function onSubmit(values: PreferencesData) {
@@ -98,8 +95,17 @@ export function PreferencesForm() {
         return;
     }
     try {
-        const userRef = doc(db, Collections.Profile, user.uid);
-        await setDoc(userRef, values, { merge: true });
+        const userRef = doc(db, Collections.Users, user.uid);
+        // We only update the settings part in the user document
+        await setDoc(userRef, { settings: values.settings }, { merge: true });
+        
+        // We update the family part in the family document
+        if (profile?.familyId) {
+            const familyRef = doc(db, Collections.Families, profile.familyId);
+            await setDoc(familyRef, { familyComposition: values.family }, { merge: true });
+        }
+        
+        await reloadUser(); // Reload user to get fresh data into context
         form.reset(values); // This will reset the isDirty state after successful submission
         toast({
             title: t('toast_success_title'),
@@ -180,11 +186,11 @@ export function PreferencesForm() {
                 <h4 className="text-base font-medium mb-2">{t('preferences_form_appearance_title')}</h4>
                 <FormField
                     control={form.control}
-                    name="theme"
+                    name="settings.theme"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>{t('preferences_form_theme')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder={t('preferences_form_theme_placeholder')} />
@@ -208,7 +214,7 @@ export function PreferencesForm() {
                  <h4 className="text-base font-medium mb-2">{t('preferences_form_notifications_title')}</h4>
                 <FormField
                     control={form.control}
-                    name="notifications"
+                    name="settings.notifications"
                     render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
@@ -239,3 +245,5 @@ export function PreferencesForm() {
     </Card>
   );
 }
+
+    

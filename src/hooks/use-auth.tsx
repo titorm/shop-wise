@@ -10,16 +10,19 @@ import { Collections } from '@/lib/enums';
 import i18n from '@/lib/i18n';
 
 interface Profile {
-  display_name: string;
+  uid: string;
+  displayName: string;
   email: string;
+  familyId: string;
   family?: {
     adults: number;
     children: number;
-
     pets: number;
   };
-  theme?: string;
-  notifications?: boolean;
+  settings?: {
+    theme: string;
+    notifications: boolean;
+  };
   isAdmin?: boolean;
 }
 
@@ -42,22 +45,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUserProfile = async (user: User) => {
+    try {
+        const userRef = doc(db, Collections.Users, user.uid);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            const profileData: Profile = {
+                uid: user.uid,
+                displayName: userData.displayName,
+                email: userData.email,
+                familyId: userData.familyId,
+                settings: userData.settings,
+                isAdmin: userData.isAdmin,
+            };
+
+            // Fetch family data if familyId exists
+            if (userData.familyId) {
+                const familyRef = doc(db, Collections.Families, userData.familyId);
+                const familySnap = await getDoc(familyRef);
+                if (familySnap.exists()) {
+                    profileData.family = familySnap.data().familyComposition;
+                }
+            }
+            setProfile(profileData);
+        } else {
+            setProfile(null);
+        }
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        setProfile(null);
+    }
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        try {
-          const userRef = doc(db, Collections.Profile, user.uid);
-          const docSnap = await getDoc(userRef);
-          if (docSnap.exists()) {
-            setProfile(docSnap.data() as Profile);
-          } else {
-            setProfile(null);
-          }
-        } catch (error) {
-            console.error("Error fetching user profile:", error);
-            setProfile(null);
-        }
+        await fetchUserProfile(user);
       } else {
         setProfile(null);
       }
@@ -68,18 +93,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const reloadUser = async () => {
+    setLoading(true);
     try {
         await auth.currentUser?.reload();
-        setUser(auth.currentUser);
-        if (auth.currentUser) {
-            const userRef = doc(db, Collections.Profile, auth.currentUser.uid);
-            const docSnap = await getDoc(userRef);
-            if (docSnap.exists()) {
-                setProfile(docSnap.data() as Profile);
-            }
+        const currentUser = auth.currentUser;
+        setUser(currentUser);
+        if (currentUser) {
+            await fetchUserProfile(currentUser);
         }
     } catch(error) {
         console.error("Error reloading user:", error);
+    } finally {
+        setLoading(false);
     }
   }
 
@@ -104,3 +129,5 @@ export const useRequireAuth = () => {
 
     return { user, loading };
 };
+
+    

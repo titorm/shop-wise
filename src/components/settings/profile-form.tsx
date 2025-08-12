@@ -36,7 +36,7 @@ import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { useTranslation } from "react-i18next";
 
 const profileSchema = z.object({
-  name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
+  displayName: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
   email: z.string().email({ message: "Email inválido." }),
 });
 
@@ -56,7 +56,7 @@ export function ProfileForm() {
   useEffect(() => {
     if (user) {
         profileForm.reset({
-            name: user.displayName ?? "",
+            displayName: user.displayName ?? "",
             email: user.email ?? "",
         });
         const providers = user.providerData.map(p => p.providerId);
@@ -67,7 +67,7 @@ export function ProfileForm() {
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: "",
+      displayName: "",
       email: "",
     },
     mode: "onChange",
@@ -86,13 +86,12 @@ export function ProfileForm() {
   async function onProfileSubmit(values: z.infer<typeof profileSchema>) {
     if (!auth.currentUser) return;
     try {
-        await updateProfile(auth.currentUser, { displayName: values.name });
+        await updateProfile(auth.currentUser, { displayName: values.displayName });
 
         // Save user data to Firestore
-        const userRef = doc(db, Collections.Profile, auth.currentUser.uid);
+        const userRef = doc(db, Collections.Users, auth.currentUser.uid);
         await setDoc(userRef, {
-            display_name: values.name,
-            email: auth.currentUser.email, // email is not editable, so we get it from auth
+            displayName: values.displayName
         }, { merge: true });
 
 
@@ -151,7 +150,7 @@ export function ProfileForm() {
             <CardContent className="space-y-4">
               <FormField
                 control={profileForm.control}
-                name="name"
+                name="displayName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('profile_form_name_label')}</FormLabel>
@@ -303,3 +302,5 @@ export function ProfileForm() {
     </div>
   );
 }
+
+    

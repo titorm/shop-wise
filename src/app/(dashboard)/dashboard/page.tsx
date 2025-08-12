@@ -10,6 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "@/hooks/use-auth";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { Collections } from "@/lib/enums";
 
 const barChartConfig = {
   total: { label: "Total" },
@@ -51,103 +55,57 @@ const pieChartConfig = {
   },
 };
 
-const topExpensesData = [
-  {
-    name: "Picanha",
-    category: "Açougue e Peixaria",
-    subcategory: "Carnes Bovinas",
-    barcode: "7891234567890",
-    quantity: 1,
-    volume: "1 kg",
-    totalPrice: 89.90,
-    unitPrice: 89.90,
-  },
-  {
-    name: "Salmão Fresco",
-    category: "Açougue e Peixaria",
-    subcategory: "Peixes e Frutos do Mar",
-    barcode: "7891234567891",
-    quantity: 1,
-    volume: "800 g",
-    totalPrice: 72.00,
-    unitPrice: 90.00,
-  },
-  {
-    name: "Azeite Extra Virgem",
-    category: "Mercearia",
-    subcategory: "Óleos, Azeites e Vinagres",
-    barcode: "7891234567892",
-    quantity: 1,
-    volume: "500 ml",
-    totalPrice: 45.50,
-    unitPrice: 91.00,
-  },
-  {
-    name: "Vinho Tinto",
-    category: "Bebidas",
-    subcategory: "Bebidas Alcoólicas",
-    barcode: "7891234567893",
-    quantity: 1,
-    volume: "750 ml",
-    totalPrice: 65.00,
-    unitPrice: 86.67,
-  },
-  {
-    name: "Queijo Parmesão",
-    category: "Laticínios e Frios",
-    subcategory: "Queijos",
-    barcode: "7891234567894",
-    quantity: 1,
-    volume: "250 g",
-    totalPrice: 38.75,
-    unitPrice: 155.00,
-  },
-  {
-    name: "Alface Crespa",
-    category: "Hortifrúti e Ovos",
-    subcategory: "Verduras e Folhas",
-    barcode: "7891234567895",
-    quantity: 1,
-    volume: "un",
-    totalPrice: 3.50,
-    unitPrice: 3.50,
-  },
-   {
-    name: "Detergente",
-    category: "Limpeza",
-    subcategory: "Cozinha",
-    barcode: "7891234567896",
-    quantity: 2,
-    volume: "un",
-    totalPrice: 5.00,
-    unitPrice: 2.50,
-  },
-];
-
 
 export default function DashboardPage() {
+  const { profile } = useAuth();
   const [barChartData, setBarChartData] = useState<any[]>([]);
   const [pieChartData, setPieChartData] = useState<any[]>([]);
+  const [topExpensesData, setTopExpensesData] = useState<any[]>([]);
 
   useEffect(() => {
-    setBarChartData([
-      { month: "Jan", hortifrutiEOvos: 350, acougueEPeixaria: 500, laticiniosEFrios: 400, mercearia: 350, bebidas: 200, limpeza: 100 },
-      { month: "Fev", hortifrutiEOvos: 380, acougueEPeixaria: 520, laticiniosEFrios: 420, mercearia: 370, bebidas: 230, limpeza: 110 },
-      { month: "Mar", hortifrutiEOvos: 400, acougueEPeixaria: 550, laticiniosEFrios: 450, mercearia: 400, bebidas: 250, limpeza: 120 },
-      { month: "Abr", hortifrutiEOvos: 320, acougueEPeixaria: 480, laticiniosEFrios: 380, mercearia: 320, bebidas: 180, limpeza: 90 },
-      { month: "Mai", hortifrutiEOvos: 420, acougueEPeixaria: 580, laticiniosEFrios: 480, mercearia: 420, bebidas: 280, limpeza: 130 },
-      { month: "Jun", hortifrutiEOvos: 450, acougueEPeixaria: 600, laticiniosEFrios: 500, mercearia: 450, bebidas: 300, limpeza: 150 },
-    ]);
+    async function fetchData() {
+        if (!profile || !profile.familyId) return;
 
-    setPieChartData([
-        { category: 'Hortifrúti e Ovos', value: 150.75, fill: 'hsl(var(--category-hortifruti))'},
-        { category: 'Açougue e Peixaria', value: 280.50, fill: 'hsl(var(--category-acougue))' },
-        { category: 'Laticínios e Frios', value: 180.00, fill: 'hsl(var(--category-laticinios))' },
-        { category: 'Mercearia', value: 250.25, fill: 'hsl(var(--category-mercearia))' },
-        { category: 'Bebidas', value: 120.00, fill: 'hsl(var(--category-bebidas))' },
-        { category: 'Limpeza', value: 50.00, fill: 'hsl(var(--category-limpeza))' },
-    ]);
-  }, []);
+        // Mock data for charts as we don't have enough historical data yet
+        setBarChartData([
+            { month: "Jan", hortifrutiEOvos: 350, acougueEPeixaria: 500, laticiniosEFrios: 400, mercearia: 350, bebidas: 200, limpeza: 100 },
+            { month: "Fev", hortifrutiEOvos: 380, acougueEPeixaria: 520, laticiniosEFrios: 420, mercearia: 370, bebidas: 230, limpeza: 110 },
+            { month: "Mar", hortifrutiEOvos: 400, acougueEPeixaria: 550, laticiniosEFrios: 450, mercearia: 400, bebidas: 250, limpeza: 120 },
+            { month: "Abr", hortifrutiEOvos: 320, acougueEPeixaria: 480, laticiniosEFrios: 380, mercearia: 320, bebidas: 180, limpeza: 90 },
+            { month: "Mai", hortifrutiEOvos: 420, acougueEPeixaria: 580, laticiniosEFrios: 480, mercearia: 420, bebidas: 280, limpeza: 130 },
+            { month: "Jun", hortifrutiEOvos: 450, acougueEPeixaria: 600, laticiniosEFrios: 500, mercearia: 450, bebidas: 300, limpeza: 150 },
+        ]);
+
+        setPieChartData([
+            { category: 'Hortifrúti e Ovos', value: 150.75, fill: 'hsl(var(--category-hortifruti))'},
+            { category: 'Açougue e Peixaria', value: 280.50, fill: 'hsl(var(--category-acougue))' },
+            { category: 'Laticínios e Frios', value: 180.00, fill: 'hsl(var(--category-laticinios))' },
+            { category: 'Mercearia', value: 250.25, fill: 'hsl(var(--category-mercearia))' },
+            { category: 'Bebidas', value: 120.00, fill: 'hsl(var(--category-bebidas))' },
+            { category: 'Limpeza', value: 50.00, fill: 'hsl(var(--category-limpeza))' },
+        ]);
+
+        // Fetch top expenses from the most recent purchase
+        const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
+        const qPurchases = query(purchasesRef, orderBy("date", "desc"), limit(1));
+        const purchasesSnap = await getDocs(qPurchases);
+
+        if (!purchasesSnap.empty) {
+            const lastPurchase = purchasesSnap.docs[0];
+            const itemsRef = collection(db, Collections.Families, profile.familyId, "purchases", lastPurchase.id, "purchase_items");
+            const qItems = query(itemsRef, orderBy("totalPrice", "desc"), limit(7));
+            const itemsSnap = await getDocs(qItems);
+            const expenses = itemsSnap.docs.map(doc => ({
+              ...doc.data(),
+              id: doc.id
+            }));
+            setTopExpensesData(expenses);
+        }
+
+    }
+    fetchData();
+  }, [profile]);
+
 
   const getCategoryClass = (category: string) => {
     const categoryMap: { [key: string]: string } = {
@@ -302,8 +260,8 @@ export default function DashboardPage() {
 
       <Card>
           <CardHeader>
-            <CardTitle>Maiores Despesas</CardTitle>
-            <CardDescription>Itens que mais impactaram seu orçamento este mês.</CardDescription>
+            <CardTitle>Maiores Despesas da Última Compra</CardTitle>
+            <CardDescription>Itens que mais impactaram seu orçamento na compra mais recente.</CardDescription>
           </CardHeader>
           <CardContent>
              <Table>
@@ -321,7 +279,7 @@ export default function DashboardPage() {
                 </TableHeader>
                 <TableBody>
                     {topExpensesData.map((item) => (
-                        <TableRow key={item.name}>
+                        <TableRow key={item.id}>
                             <TableCell className="font-mono">{item.barcode}</TableCell>
                             <TableCell className="font-medium">{item.name}</TableCell>
                             <TableCell>
@@ -336,8 +294,8 @@ export default function DashboardPage() {
                             </TableCell>
                             <TableCell>{item.volume}</TableCell>
                             <TableCell>{item.quantity}</TableCell>
-                            <TableCell className="text-right">R$ {item.unitPrice.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">R$ {item.totalPrice.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">R$ {item.unitPrice?.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">R$ {item.totalPrice?.toFixed(2)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -347,3 +305,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

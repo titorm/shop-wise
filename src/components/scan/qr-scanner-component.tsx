@@ -25,11 +25,17 @@ interface Product {
     quantity: number;
     price: number;
 }
-export function QrScannerComponent() {
+
+interface QrScannerProps {
+    onSave: (scanResult: ExtractProductDataOutput, products: Product[]) => Promise<void>;
+}
+
+export function QrScannerComponent({ onSave }: QrScannerProps) {
   const [scanResult, setScanResult] = useState<ExtractProductDataOutput | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -103,6 +109,14 @@ export function QrScannerComponent() {
     };
     setProducts([...products, newItem]);
     handleEditClick(newItem);
+  };
+
+  const handleConfirmPurchase = async () => {
+    if (scanResult) {
+        setIsSaving(true);
+        await onSave(scanResult, products);
+        setIsSaving(false);
+    }
   }
 
 
@@ -173,41 +187,12 @@ export function QrScannerComponent() {
                             </Button>
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faShieldCheck} className="w-5 h-5 text-primary"/> Programas de Fidelidade</CardTitle>
-                            <CardDescription>Adicione suas informações de fidelidade para esta compra.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <Alert>
-                                <FontAwesomeIcon icon={faShieldCheck} className="h-4 w-4" />
-                                <AlertTitle>Em breve: Integração Automática!</AlertTitle>
-                                <AlertDescription>
-                                    Estamos trabalhando para conectar seus programas de fidelidade favoritos diretamente ao ShopWise para captura automática de pontos e descontos.
-                                </AlertDescription>
-                            </Alert>
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label htmlFor="loyalty-program">Programa de Fidelidade</Label>
-                                    <Select disabled>
-                                        <SelectTrigger id="loyalty-program">
-                                            <SelectValue placeholder="Selecione um programa" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="pao-de-acucar">Pão de Açúcar Mais</SelectItem>
-                                            <SelectItem value="extra">Clube Extra</SelectItem>
-                                            <SelectItem value="carrefour">Meu Carrefour</SelectItem>
-                                            <SelectItem value="outros">Outro</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                 <div>
-                                    <Label htmlFor="loyalty-id">Nº de Identificação (CPF/ID)</Label>
-                                    <Input id="loyalty-id" placeholder="Seu número de membro" disabled />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <CardFooter>
+                        <Button size="lg" onClick={handleConfirmPurchase} disabled={isSaving}>
+                            <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
+                            {isSaving ? "Salvando..." : "Confirmar e Salvar Compra"}
+                        </Button>
+                    </CardFooter>
                 </div>
             )}
         </CardContent>
@@ -253,3 +238,5 @@ export function QrScannerComponent() {
     </>
   );
 }
+
+    
