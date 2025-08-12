@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -219,7 +218,7 @@ const Sidebar = React.forwardRef<
       <aside
         ref={ref}
         className={cn(
-            "group/sidebar peer hidden md:block text-sidebar-foreground",
+            "group/sidebar peer hidden md:block text-sidebar-foreground h-svh sticky top-0",
              // Adjust the padding for floating and inset variants.
              variant === "floating" || variant === "inset"
              ? "p-2"
@@ -232,7 +231,7 @@ const Sidebar = React.forwardRef<
       >
         <div
           className={cn(
-            "duration-200 relative h-svh bg-sidebar transition-[width] ease-linear",
+            "duration-200 relative h-full bg-sidebar transition-[width] ease-linear",
             "w-[--sidebar-width]",
             "group-data-[collapsible=icon]:w-[--sidebar-width-icon]",
             variant === 'floating' && 'rounded-lg border border-sidebar-border shadow'
