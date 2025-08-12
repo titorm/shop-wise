@@ -12,10 +12,10 @@ export default function Home() {
           <h1 className="text-2xl font-bold font-headline text-foreground">ShopWise</h1>
         </div>
         <nav className="flex items-center gap-2">
-          <Link href="/login">
+          <Link href="/login" passHref>
             <Button variant="ghost">Entrar</Button>
           </Link>
-          <Link href="/signup">
+          <Link href="/signup" passHref>
             <Button>Criar Conta</Button>
           </Link>
         </nav>
@@ -42,7 +42,7 @@ export default function Home() {
               ShopWise é o seu assistente inteligente que te ajuda a economizar tempo e dinheiro em suas compras de supermercado, com insights poderosos e listas de compras inteligentes.
             </p>
             <div className="mt-8 flex justify-center gap-4">
-               <Link href="/signup">
+               <Link href="/signup" passHref>
                 <Button size="lg">Comece Agora - É Grátis</Button>
               </Link>
             </div>

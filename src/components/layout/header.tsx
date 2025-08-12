@@ -65,24 +65,24 @@ export function Header() {
                       </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                      <Link href="/settings?tab=profile">
-                          <User className="mr-2 h-4 w-4" />
-                          <span>Perfil</span>
-                      </Link>
-                  </DropdownMenuItem>
-                   <DropdownMenuItem asChild>
-                      <Link href="/settings?tab=preferences">
-                          <Users className="mr-2 h-4 w-4" />
-                          <span>Preferências</span>
-                      </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings?tab=privacy">
+                  <Link href="/settings?tab=profile" passHref>
+                    <DropdownMenuItem>
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Perfil</span>
+                    </DropdownMenuItem>
+                  </Link>
+                   <Link href="/settings?tab=preferences" passHref>
+                    <DropdownMenuItem>
+                        <Users className="mr-2 h-4 w-4" />
+                        <span>Preferências</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/settings?tab=privacy" passHref>
+                    <DropdownMenuItem>
                         <Shield className="mr-2 h-4 w-4" />
                         <span>Dados e Privacidade</span>
-                    </Link>
-                  </DropdownMenuItem>
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
