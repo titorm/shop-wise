@@ -22,11 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head />
       <body
         className={cn('min-h-screen bg-background font-body antialiased', noto_sans.variable)}
-        suppressHydrationWarning
       >
         <AuthProvider>
             {children}
