@@ -106,7 +106,7 @@ export function PlanForm() {
                             name="plan"
                             render={({ field }) => (
                                 <RadioGroup
-                                    onValue-change={field.onChange}
+                                    onValueChange={field.onChange}
                                     defaultValue={field.value}
                                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                                 >
@@ -156,7 +156,7 @@ export function PlanForm() {
                                                     <Tabs defaultValue="monthly" onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="w-full">
                                                         <TabsList className="grid w-full grid-cols-2">
                                                             <TabsTrigger value="monthly">Mensal</TabsTrigger>
-                                                            <TabsTrigger value="annually" className="relative">
+                                                            <TabsTrigger value="annually" className="relative group">
                                                                 Anual
                                                                 <Badge variant="outline" className="ml-2 border-primary text-primary bg-primary/10 group-data-[state=active]:bg-white group-data-[state=active]:text-primary">
                                                                     Economize 2 meses!
