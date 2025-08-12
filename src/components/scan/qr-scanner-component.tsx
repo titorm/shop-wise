@@ -128,7 +128,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
             <div className="w-full max-w-sm aspect-square bg-muted rounded-lg flex flex-col items-center justify-center p-4">
                 <FontAwesomeIcon icon={faCamera} className="w-24 h-24 text-muted-foreground/50 mb-4" />
                 <p className="text-sm text-muted-foreground text-center mb-4">{t('scan_qr_code_description')}</p>
-                <Button onClick={handleScan} disabled={isLoading} size="lg">
+                <Button onClick={handleScan} disabled={isLoading}>
                 <FontAwesomeIcon icon={faQrcode} className="mr-2 h-5 w-5" />
                 {isLoading ? t('processing') : t('scan_qr_code_button')}
                 </Button>
@@ -241,3 +241,5 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     </>
   );
 }
+
+    
