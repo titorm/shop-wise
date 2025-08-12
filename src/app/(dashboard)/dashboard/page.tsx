@@ -14,6 +14,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
+import { useTranslation } from "react-i18next";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const barChartConfig = {
   total: { label: "Total" },
@@ -57,6 +59,7 @@ const pieChartConfig = {
 
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [barChartData, setBarChartData] = useState<any[]>([]);
   const [pieChartData, setPieChartData] = useState<any[]>([]);
@@ -153,42 +156,42 @@ export default function DashboardPage() {
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gasto Total (Mês)</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard_total_spent_month')}</CardTitle>
             <FontAwesomeIcon icon={faDollarSign} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">R$ 4,287.50</div>
-            <p className="text-xs text-muted-foreground">+20.1% em relação ao mês passado</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard_total_spent_comparison')}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Itens Comprados</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard_items_bought')}</CardTitle>
             <FontAwesomeIcon icon={faShoppingBag} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">152</div>
-            <p className="text-xs text-muted-foreground">+12 itens em relação à última compra</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard_items_bought_comparison')}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Categoria Principal</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard_main_category')}</CardTitle>
             <FontAwesomeIcon icon={faChartSimple} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">Alimentação</div>
-            <p className="text-xs text-muted-foreground">45% do gasto total</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage')}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Economia Potencial</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard_potential_savings')}</CardTitle>
             <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">R$ 215.30</div>
-            <p className="text-xs text-muted-foreground">Sugestões de substituição aplicadas</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard_potential_savings_desc')}</p>
           </CardContent>
         </Card>
       </div>
@@ -196,8 +199,8 @@ export default function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Visão Geral do Consumo</CardTitle>
-            <CardDescription>Seus gastos mensais nos últimos 6 meses, divididos por categoria.</CardDescription>
+            <CardTitle>{t('dashboard_consumption_overview_title')}</CardTitle>
+            <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
              <ChartContainer config={barChartConfig} className="h-[300px] w-full">
@@ -236,8 +239,8 @@ export default function DashboardPage() {
 
         <Card className="flex flex-col">
            <CardHeader>
-                <CardTitle>Gasto por Categoria</CardTitle>
-                <CardDescription>Distribuição de despesas do último mês.</CardDescription>
+                <CardTitle>{t('dashboard_spending_by_category_title')}</CardTitle>
+                <CardDescription>{t('dashboard_spending_by_category_desc')}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
                 <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full max-h-[300px] w-full">
@@ -260,50 +263,55 @@ export default function DashboardPage() {
 
       <Card>
           <CardHeader>
-            <CardTitle>Maiores Despesas da Última Compra</CardTitle>
-            <CardDescription>Itens que mais impactaram seu orçamento na compra mais recente.</CardDescription>
+            <CardTitle>{t('dashboard_top_expenses_title')}</CardTitle>
+            <CardDescription>{t('dashboard_top_expenses_desc')}</CardDescription>
           </CardHeader>
           <CardContent>
-             <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> Código de Barras</TableHead>
-                        <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
-                        <TableHead><FontAwesomeIcon icon={faTag} className="inline-block mr-1 w-4 h-4" /> Categoria</TableHead>
-                        <TableHead>Subcategoria</TableHead>
-                        <TableHead><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
-                        <TableHead><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
-                        <TableHead className="text-right"><FontAwesomeIcon icon={faScaleBalanced} className="inline-block mr-1 w-4 h-4" /> Preço p/ kg/L</TableHead>
-                        <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> Preço Total</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {topExpensesData.map((item) => (
-                        <TableRow key={item.id}>
-                            <TableCell className="font-mono">{item.barcode}</TableCell>
-                            <TableCell className="font-medium">{item.name}</TableCell>
-                            <TableCell>
-                                <Badge variant="tag" className={cn(getCategoryClass(item.category))}>
-                                    {item.category}
-                                </Badge>
-                            </TableCell>
-                            <TableCell>
-                                <Badge variant="tag" className={cn(getSubcategoryClass(item.category))}>
-                                    {item.subcategory}
-                                </Badge>
-                            </TableCell>
-                            <TableCell>{item.volume}</TableCell>
-                            <TableCell>{item.quantity}</TableCell>
-                            <TableCell className="text-right">R$ {item.unitPrice?.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">R$ {item.totalPrice?.toFixed(2)}</TableCell>
+            {topExpensesData.length > 0 ? (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> {t('table_barcode')}</TableHead>
+                            <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> {t('table_product')}</TableHead>
+                            <TableHead><FontAwesomeIcon icon={faTag} className="inline-block mr-1 w-4 h-4" /> {t('table_category')}</TableHead>
+                            <TableHead>{t('table_subcategory')}</TableHead>
+                            <TableHead><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> {t('table_volume')}</TableHead>
+                            <TableHead><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
+                            <TableHead className="text-right"><FontAwesomeIcon icon={faScaleBalanced} className="inline-block mr-1 w-4 h-4" /> {t('table_unit_price')}</TableHead>
+                            <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_total_price')}</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-             </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {topExpensesData.map((item) => (
+                            <TableRow key={item.id}>
+                                <TableCell className="font-mono">{item.barcode}</TableCell>
+                                <TableCell className="font-medium">{item.name}</TableCell>
+                                <TableCell>
+                                    <Badge variant="tag" className={cn(getCategoryClass(item.category))}>
+                                        {item.category}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="tag" className={cn(getSubcategoryClass(item.category))}>
+                                        {item.subcategory}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>{item.volume}</TableCell>
+                                <TableCell>{item.quantity}</TableCell>
+                                <TableCell className="text-right">R$ {item.unitPrice?.toFixed(2)}</TableCell>
+                                <TableCell className="text-right">R$ {item.totalPrice?.toFixed(2)}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+             ) : (
+                <EmptyState 
+                    title={t('empty_state_no_expenses_title')}
+                    description={t('empty_state_no_expenses_desc')}
+                />
+             )}
           </CardContent>
         </Card>
     </div>
   );
 }
-
-    
