@@ -12,10 +12,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, where, Timestamp } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/empty-state";
+import { InsightModal } from "@/components/dashboard/insight-modal";
 
 const barChartConfig = {
   total: { label: "Total" },
@@ -64,6 +65,13 @@ export default function DashboardPage() {
   const [barChartData, setBarChartData] = useState<any[]>([]);
   const [pieChartData, setPieChartData] = useState<any[]>([]);
   const [topExpensesData, setTopExpensesData] = useState<any[]>([]);
+  
+  // States for modal data
+  const [monthlySpendingByStore, setMonthlySpendingByStore] = useState<any[]>([]);
+  const [recentItems, setRecentItems] = useState<any[]>([]);
+  const [spendingByCategory, setSpendingByCategory] = useState<any[]>([]);
+  const [savingsOpportunities, setSavingsOpportunities] = useState<any[]>([]);
+
 
   useEffect(() => {
     async function fetchData() {
@@ -73,11 +81,16 @@ export default function DashboardPage() {
         setBarChartData([]);
         setPieChartData([]);
 
-        // Fetch top expenses from the most recent purchase
-        const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
-        const qPurchases = query(purchasesRef, orderBy("date", "desc"), limit(1));
-        const purchasesSnap = await getDocs(qPurchases);
+        const now = new Date();
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const firstDayOfMonthTimestamp = Timestamp.fromDate(firstDayOfMonth);
 
+        // Fetch purchases for various insights
+        const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
+        const qPurchases = query(purchasesRef, orderBy("date", "desc"));
+        const purchasesSnap = await getDocs(qPurchases);
+        
+        // Top expenses from the most recent purchase
         if (!purchasesSnap.empty) {
             const lastPurchase = purchasesSnap.docs[0];
             const itemsRef = collection(db, Collections.Families, profile.familyId, "purchases", lastPurchase.id, "purchase_items");
@@ -88,7 +101,26 @@ export default function DashboardPage() {
               id: doc.id
             }));
             setTopExpensesData(expenses);
+            
+            // Recent 20 items
+            const allItems = await Promise.all(purchasesSnap.docs.map(async pDoc => {
+                const itemsRef = collection(db, Collections.Families, profile.familyId!, "purchases", pDoc.id, "purchase_items");
+                const itemsSnap = await getDocs(itemsRef);
+                return itemsSnap.docs.map(iDoc => ({...iDoc.data(), purchaseDate: pDoc.data().date.toDate() }));
+            }));
+            setRecentItems(allItems.flat().slice(0, 20));
         }
+        
+        // Monthly spending by store
+        const monthlyPurchasesQuery = query(purchasesRef, where("date", ">=", firstDayOfMonthTimestamp));
+        const monthlyPurchasesSnap = await getDocs(monthlyPurchasesQuery);
+        const spendingByStore: {[key: string]: number} = {};
+        monthlyPurchasesSnap.forEach(doc => {
+            const purchase = doc.data();
+            spendingByStore[purchase.storeName] = (spendingByStore[purchase.storeName] || 0) + purchase.totalAmount;
+        });
+        const spendingByStoreArray = Object.entries(spendingByStore).map(([name, value]) => ({ name, value }));
+        setMonthlySpendingByStore(spendingByStoreArray);
 
     }
     fetchData();
@@ -139,46 +171,77 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard_total_spent_month')}</CardTitle>
-            <FontAwesomeIcon icon={faDollarSign} className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">R$ 4,287.50</div>
-            <p className="text-xs text-muted-foreground">{t('dashboard_total_spent_comparison')}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard_items_bought')}</CardTitle>
-            <FontAwesomeIcon icon={faShoppingBag} className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">152</div>
-            <p className="text-xs text-muted-foreground">{t('dashboard_items_bought_comparison')}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard_main_category')}</CardTitle>
-            <FontAwesomeIcon icon={faChartSimple} className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Alimentação</div>
-            <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage')}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('dashboard_potential_savings')}</CardTitle>
-            <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">R$ 215.30</div>
-            <p className="text-xs text-muted-foreground">{t('dashboard_potential_savings_desc')}</p>
-          </CardContent>
-        </Card>
+        <InsightModal 
+          title={t('modal_total_spent_title')}
+          description={t('modal_total_spent_desc')}
+          data={monthlySpendingByStore}
+          type="spendingByStore"
+        >
+          <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('dashboard_total_spent_month')}</CardTitle>
+              <FontAwesomeIcon icon={faDollarSign} className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">R$ 4,287.50</div>
+              <p className="text-xs text-muted-foreground">{t('dashboard_total_spent_comparison')}</p>
+            </CardContent>
+          </Card>
+        </InsightModal>
+
+         <InsightModal 
+          title={t('modal_items_bought_title')}
+          description={t('modal_items_bought_desc')}
+          data={recentItems}
+          type="recentItems"
+        >
+          <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('dashboard_items_bought')}</CardTitle>
+              <FontAwesomeIcon icon={faShoppingBag} className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">152</div>
+              <p className="text-xs text-muted-foreground">{t('dashboard_items_bought_comparison')}</p>
+            </CardContent>
+          </Card>
+        </InsightModal>
+
+        <InsightModal 
+          title={t('modal_main_category_title')}
+          description={t('modal_main_category_desc')}
+          data={[]} // Mock data for now
+          type="topCategories"
+        >
+          <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('dashboard_main_category')}</CardTitle>
+              <FontAwesomeIcon icon={faChartSimple} className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Alimentação</div>
+              <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage')}</p>
+            </CardContent>
+          </Card>
+        </InsightModal>
+
+        <InsightModal 
+          title={t('modal_potential_savings_title')}
+          description={t('modal_potential_savings_desc')}
+          data={[]} // Mock data for now
+          type="savingsOpportunities"
+        >
+          <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('dashboard_potential_savings')}</CardTitle>
+              <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">R$ 215.30</div>
+              <p className="text-xs text-muted-foreground">{t('dashboard_potential_savings_desc')}</p>
+            </CardContent>
+          </Card>
+        </InsightModal>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
@@ -189,7 +252,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             {barChartData.length > 0 ? (
-             <ChartContainer config={barChartConfig} className="h-[300px] w-full pl-2">
+             <ChartContainer config={barChartConfig} className="h-[300px] w-full">
                 <ResponsiveContainer>
                     <RechartsBarChart data={barChartData} stackOffset="sign">
                         <XAxis
@@ -235,7 +298,7 @@ export default function DashboardPage() {
                 <CardTitle>{t('dashboard_spending_by_category_title')}</CardTitle>
                 <CardDescription>{t('dashboard_spending_by_category_desc')}</CardDescription>
             </CardHeader>
-            <CardContent className="pb-0">
+            <CardContent className="h-[300px] w-full flex items-center justify-center">
                 {pieChartData.length > 0 ? (
                     <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full max-h-[300px] w-full">
                         <RechartsPieChart>
@@ -244,8 +307,8 @@ export default function DashboardPage() {
                                 content={<ChartTooltipContent hideLabel nameKey="category" />}
                             />
                             <Pie data={pieChartData} dataKey="value" nameKey="category" innerRadius={60} strokeWidth={5}>
-                                {pieChartData.map((entry) => (
-                                    <Cell key={entry.category} fill={entry.fill} />
+                                {pieChartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
                                 ))}
                             </Pie>
                             <ChartLegend content={<ChartLegendContent nameKey="category" />} />
@@ -316,3 +379,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
