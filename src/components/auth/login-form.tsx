@@ -32,6 +32,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { useTranslation } from "react-i18next";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Por favor, insira um email válido." }),
@@ -42,6 +43,7 @@ export function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,7 +61,7 @@ export function LoginForm() {
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Erro de Login",
+        title: t("error_login"),
         description: error.message,
       });
     }
@@ -73,7 +75,7 @@ export function LoginForm() {
     } catch (error: any) {
         toast({
             variant: "destructive",
-            title: "Erro de Login com Google",
+            title: t("error_google_login"),
             description: error.message,
         });
     }
@@ -84,9 +86,9 @@ export function LoginForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-headline">Entrar na sua conta</CardTitle>
+        <CardTitle className="text-2xl font-headline">{t('login_title')}</CardTitle>
         <CardDescription>
-          Bem-vindo de volta! Insira seus dados para continuar.
+          {t('login_description')}
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -98,7 +100,7 @@ export function LoginForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('emailLabel')}</FormLabel>
                     <FormControl>
                       <Input placeholder="seu@email.com" {...field} />
                     </FormControl>
@@ -112,10 +114,10 @@ export function LoginForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center justify-between">
-                      <FormLabel>Senha</FormLabel>
+                      <FormLabel>{t('passwordLabel')}</FormLabel>
                       <Link href="/forgot-password" passHref>
                         <Button variant="link" className="px-0 h-auto text-sm">
-                          Esqueceu a senha?
+                          {t('forgotPassword')}
                         </Button>
                       </Link>
                     </div>
@@ -136,7 +138,7 @@ export function LoginForm() {
                           <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                         )}
                         <span className="sr-only">
-                          {showPassword ? "Hide password" : "Show password"}
+                          {showPassword ? t('hidePassword') : t('showPassword')}
                         </span>
                       </Button>
                     </div>
@@ -146,28 +148,28 @@ export function LoginForm() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
-              Entrar
+              {t('login')}
             </Button>
             <div className="relative">
               <Separator />
-              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">OU</p>
+              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">{t('or')}</p>
             </div>
             <div className="space-y-2">
                  <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn}>
                     <FontAwesomeIcon icon={faGoogle} className="mr-2 h-4 w-4" />
-                    Entrar com Google
+                    {t('signInWithGoogle')}
                 </Button>
                 <Button variant="outline" className="w-full" type="button">
                     <FontAwesomeIcon icon={faApple} className="mr-2 h-4 w-4" />
-                    Entrar com Apple
+                    {t('signInWithApple')}
                 </Button>
             </div>
           </CardContent>
           <CardFooter className="flex-col gap-2">
             <p className="text-sm text-muted-foreground">
-              Não tem uma conta?{" "}
+              {t('noAccount')}{" "}
               <Link href="/signup" passHref>
-                <Button variant="link" className="px-0 h-auto">Criar conta</Button>
+                <Button variant="link" className="px-0 h-auto">{t('createAccount')}</Button>
               </Link>
             </p>
           </CardFooter>

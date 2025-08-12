@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faArrowTrendUp, faBox, faHashtag, faBarcode, faWeightHanging } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
+import { useTranslation, Trans } from 'react-i18next';
 
 // Mock data, in a real application this would come from a database.
 const mockPurchases = [
@@ -65,6 +66,7 @@ const mockPurchases = [
 type Purchase = typeof mockPurchases[0];
 
 export default function HistoryPage() {
+    const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedStore, setSelectedStore] = useState('all');
     const [selectedPeriod, setSelectedPeriod] = useState('all');
@@ -93,15 +95,15 @@ export default function HistoryPage() {
         <div className="container mx-auto py-8 space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-6 h-6"/> Histórico de Compras</CardTitle>
-                    <CardDescription>Visualize, filtre e gerencie todas as suas compras registradas.</CardDescription>
+                    <CardTitle className="text-2xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-6 h-6"/> {t('purchaseHistory_title')}</CardTitle>
+                    <CardDescription>{t('purchaseHistory_description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col md:flex-row gap-4 mb-6">
                         <div className="relative flex-grow">
                             <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input 
-                                placeholder="Buscar por loja ou produto..."
+                                placeholder={t('searchByStoreOrProduct')}
                                 className="pl-10"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -109,24 +111,24 @@ export default function HistoryPage() {
                         </div>
                         <Select value={selectedStore} onValueChange={setSelectedStore}>
                             <SelectTrigger className="w-full md:w-[200px]">
-                                <SelectValue placeholder="Filtrar por loja" />
+                                <SelectValue placeholder={t('filterByStore')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Todas as Lojas</SelectItem>
+                                <SelectItem value="all">{t('allStores')}</SelectItem>
                                 <SelectItem value="Supermercado Exemplo">Supermercado Exemplo</SelectItem>
                                 <SelectItem value="Atacarejo Preço Baixo">Atacarejo Preço Baixo</SelectItem>
                             </SelectContent>
                         </Select>
                         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                              <SelectTrigger className="w-full md:w-[200px]">
-                                <SelectValue placeholder="Filtrar por período" />
+                                <SelectValue placeholder={t('filterByPeriod')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Todo o Período</SelectItem>
-                                <SelectItem value="last_month">Último Mês</SelectItem>
-                                <SelectItem value="last_3_months">Últimos 3 Meses</SelectItem>
-                                <SelectItem value="last_6_months">Últimos 6 Meses</SelectItem>
-                                <SelectItem value="last_year">Último Ano</SelectItem>
+                                <SelectItem value="all">{t('allPeriods')}</SelectItem>
+                                <SelectItem value="last_month">{t('lastMonth')}</SelectItem>
+                                <SelectItem value="last_3_months">{t('last3Months')}</SelectItem>
+                                <SelectItem value="last_6_months">{t('last6Months')}</SelectItem>
+                                <SelectItem value="last_year">{t('lastYear')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -138,7 +140,7 @@ export default function HistoryPage() {
                     </div>
                      {filteredPurchases.length === 0 && (
                         <div className="text-center py-12 text-muted-foreground">
-                            <p>Nenhuma compra encontrada com os filtros aplicados.</p>
+                            <p>{t('noPurchasesFound')}</p>
                         </div>
                     )}
                 </CardContent>
@@ -146,21 +148,21 @@ export default function HistoryPage() {
 
              <Card>
                 <CardHeader>
-                    <CardTitle className="text-xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faLightbulb} className="w-5 h-5 text-primary"/> Recomendações Baseadas no Histórico</CardTitle>
+                    <CardTitle className="text-xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faLightbulb} className="w-5 h-5 text-primary"/> {t('recommendations_title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-6">
                     <Alert>
                         <FontAwesomeIcon icon={faShoppingCart} className="h-4 w-4" />
-                        <AlertTitle>Comprado Recentemente</AlertTitle>
+                        <AlertTitle>{t('recommendations_recentlyBought')}</AlertTitle>
                         <AlertDescription>
-                            Itens de suas últimas compras que podem precisar de reposição: <span className="font-semibold">Leite, Pão, Café</span>.
+                          <Trans i18nKey="recommendations_recentlyBought_desc" values={{ items: "Leite, Pão, Café" }} components={{ 1: <span className="font-semibold" /> }} />
                         </AlertDescription>
                     </Alert>
                      <Alert>
                         <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4" />
-                        <AlertTitle>Economia Potencial</AlertTitle>
+                        <AlertTitle>{t('recommendations_potentialSavings')}</AlertTitle>
                         <AlertDescription>
-                           O item <span className="font-semibold">Arroz 5kg</span> esteve mais barato no <span className="font-semibold">Atacarejo Preço Baixo</span> em sua última compra.
+                           <Trans i18nKey="recommendations_potentialSavings_desc" values={{ item: "Arroz 5kg", store: "Atacarejo Preço Baixo" }} components={{ 1: <span className="font-semibold" />, 3: <span className="font-semibold" /> }} />
                         </AlertDescription>
                     </Alert>
                 </CardContent>
@@ -172,6 +174,7 @@ export default function HistoryPage() {
 
 
 function PurchaseCard({ purchase }: { purchase: Purchase }) {
+    const { t } = useTranslation();
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -183,7 +186,7 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
                     <CardContent className="flex justify-between items-center text-sm">
                         <div className="flex items-center gap-2 text-muted-foreground">
                             <FontAwesomeIcon icon={faShoppingCart} className="w-4 h-4"/>
-                            <span>{purchase.items.length} itens</span>
+                            <span>{t('purchaseCard_items', {count: purchase.items.length})}</span>
                         </div>
                         <div className="flex items-center gap-2 font-bold text-lg text-foreground">
                             <FontAwesomeIcon icon={faDollarSign} className="w-5 h-5 text-primary"/>
@@ -194,7 +197,7 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle>Detalhes da Compra - {purchase.store}</DialogTitle>
+                    <DialogTitle>{t('purchaseDetails_title', { store: purchase.store })}</DialogTitle>
                     <DialogDescription>
                          {new Date(purchase.date).toLocaleString('pt-BR', {dateStyle: 'full', timeStyle: 'short'})}
                     </DialogDescription>
@@ -203,11 +206,11 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[150px]"><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> Cód. de Barras</TableHead>
-                                <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
-                                <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
-                                <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
-                                <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> Preço (R$)</TableHead>
+                                <TableHead className="w-[150px]"><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> {t('table_barcode')}</TableHead>
+                                <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> {t('table_product')}</TableHead>
+                                <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> {t('table_volume')}</TableHead>
+                                <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
+                                <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_price_header')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

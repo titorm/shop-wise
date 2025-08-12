@@ -12,9 +12,11 @@ import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShieldHalved, faTrash, faUserXmark, faGear } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
+import { useTranslation } from 'react-i18next';
 
 
 export default function SettingsPage() {
+    const { t } = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
     const tab = searchParams.get('tab') || 'profile';
@@ -51,15 +53,15 @@ export default function SettingsPage() {
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-headline">Configurações</CardTitle>
-                    <CardDescription>Gerencie suas informações de perfil e preferências do aplicativo.</CardDescription>
+                    <CardTitle className="text-2xl font-headline">{t('settings_title')}</CardTitle>
+                    <CardDescription>{t('settings_description')}</CardDescription>
                 </CardHeader>
                 <div className="p-6 pt-0">
                     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                         <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-                            <TabsTrigger value="profile"><FontAwesomeIcon icon={faUser} className="mr-2 h-4 w-4" /> Perfil</TabsTrigger>
-                            <TabsTrigger value="preferences"><FontAwesomeIcon icon={faGear} className="mr-2 h-4 w-4" /> Preferências</TabsTrigger>
-                            <TabsTrigger value="privacy"><FontAwesomeIcon icon={faShieldHalved} className="mr-2 h-4 w-4" /> Privacidade</TabsTrigger>
+                            <TabsTrigger value="profile"><FontAwesomeIcon icon={faUser} className="mr-2 h-4 w-4" /> {t('tab_profile')}</TabsTrigger>
+                            <TabsTrigger value="preferences"><FontAwesomeIcon icon={faGear} className="mr-2 h-4 w-4" /> {t('tab_preferences')}</TabsTrigger>
+                            <TabsTrigger value="privacy"><FontAwesomeIcon icon={faShieldHalved} className="mr-2 h-4 w-4" /> {t('tab_privacy')}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="profile" className="mt-6">
                             <ProfileForm />
@@ -70,21 +72,21 @@ export default function SettingsPage() {
                         <TabsContent value="privacy" className="mt-6 space-y-8">
                            <Card className="border-destructive">
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faTrash} className="w-5 h-5 text-destructive" /> Apagar Dados</CardTitle>
-                                    <CardDescription>Esta ação é irreversível. Todos os seus dados de compras, listas e histórico serão permanentemente excluídos.</CardDescription>
+                                    <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faTrash} className="w-5 h-5 text-destructive" /> {t('privacy_deleteData_title')}</CardTitle>
+                                    <CardDescription>{t('privacy_deleteData_desc')}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-sm text-muted-foreground">Seu perfil e login serão mantidos, mas todo o conteúdo gerado por você será apagado.</p>
+                                    <p className="text-sm text-muted-foreground">{t('privacy_deleteData_note')}</p>
                                 </CardContent>
                                 <CardFooter>
                                      <DeleteConfirmationDialog 
                                         onConfirm={handleDeleteData}
-                                        title="Confirmar Exclusão de Dados"
-                                        description="Para confirmar, digite o código de segurança. Esta ação não pode ser desfeita."
-                                        confirmButtonText="Apagar meus dados"
+                                        title={t('privacy_deleteData_confirm_title')}
+                                        description={t('privacy_deleteData_confirm_desc')}
+                                        confirmButtonText={t('privacy_deleteData_confirm_button')}
                                         triggerButton={
                                             <Button variant="destructive">
-                                                <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" /> Quero apagar meus dados
+                                                <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" /> {t('privacy_deleteData_button')}
                                             </Button>
                                         }
                                     />
@@ -92,21 +94,21 @@ export default function SettingsPage() {
                            </Card>
                            <Card className="border-destructive">
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faUserXmark} className="w-5 h-5 text-destructive" /> Apagar Conta</CardTitle>
-                                    <CardDescription>Esta ação é final e irreversível. Sua conta e todos os dados associados serão permanentemente excluídos.</CardDescription>
+                                    <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faUserXmark} className="w-5 h-5 text-destructive" /> {t('privacy_deleteAccount_title')}</CardTitle>
+                                    <CardDescription>{t('privacy_deleteAccount_desc')}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-sm text-muted-foreground">Você perderá o acesso ao ShopWise e não poderá recuperar sua conta ou dados.</p>
+                                    <p className="text-sm text-muted-foreground">{t('privacy_deleteAccount_note')}</p>
                                 </CardContent>
                                 <CardFooter>
                                     <DeleteConfirmationDialog 
                                         onConfirm={handleDeleteAccount}
-                                        title="Confirmar Exclusão da Conta"
-                                        description="Para confirmar, digite o código de segurança. Esta é a sua última chance de voltar atrás."
-                                        confirmButtonText="Apagar minha conta permanentemente"
+                                        title={t('privacy_deleteAccount_confirm_title')}
+                                        description={t('privacy_deleteAccount_confirm_desc')}
+                                        confirmButtonText={t('privacy_deleteAccount_confirm_button')}
                                         triggerButton={
                                             <Button variant="destructive" >
-                                                <FontAwesomeIcon icon={faUserXmark} className="mr-2 h-4 w-4" /> Quero apagar minha conta
+                                                <FontAwesomeIcon icon={faUserXmark} className="mr-2 h-4 w-4" /> {t('privacy_deleteAccount_button')}
                                             </Button>
                                         }
                                     />

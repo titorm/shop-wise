@@ -1,21 +1,25 @@
 
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage } from "@fortawesome/free-regular-svg-icons";
+import { useTranslation } from "react-i18next";
 
 export default function AdminNotificationsPage() {
+    const { t } = useTranslation();
     return (
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
                         <FontAwesomeIcon icon={faMessage} className="w-6 h-6" />
-                        Gerenciamento de Notificações
+                        {t('admin_notifications_title')}
                     </CardTitle>
-                    <CardDescription>Crie e gerencie os modelos de notificações push para os usuários.</CardDescription>
+                    <CardDescription>{t('admin_notifications_description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p>Ferramentas para o gerenciamento de notificações serão implementadas aqui.</p>
+                    <p>{t('admin_notifications_content')}</p>
                 </CardContent>
             </Card>
         </div>

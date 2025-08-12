@@ -1,21 +1,26 @@
 
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicroscope } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 
 export default function AdminAuditPage() {
+    const { t } = useTranslation();
+
     return (
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
                         <FontAwesomeIcon icon={faMicroscope} className="w-6 h-6" />
-                        Auditoria e Testes
+                        {t('admin_audit_title')}
                     </CardTitle>
-                    <CardDescription>Acesse logs do sistema e gerencie testes A/B.</CardDescription>
+                    <CardDescription>{t('admin_audit_description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p>Funcionalidades de auditoria e configuração de testes A/B estarão disponíveis aqui.</p>
+                    <p>{t('admin_audit_content')}</p>
                 </CardContent>
             </Card>
         </div>

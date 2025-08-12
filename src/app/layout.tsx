@@ -6,6 +6,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/hooks/use-auth';
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
+import "./../lib/i18n";
+
 config.autoAddCss = false
 
 const pt_sans = PT_Sans({
