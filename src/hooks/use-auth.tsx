@@ -14,6 +14,7 @@ interface Profile {
   family?: {
     adults: number;
     children: number;
+
     pets: number;
   };
   theme?: string;
@@ -48,8 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const userRef = doc(db, Collections.Profile, user.uid);
           const docSnap = await getDoc(userRef);
           if (docSnap.exists()) {
-            // For initial testing, let's make the user an admin
-            setProfile({ ...docSnap.data(), isAdmin: true } as Profile);
+            setProfile(docSnap.data() as Profile);
           } else {
             setProfile(null);
           }
@@ -74,8 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const userRef = doc(db, Collections.Profile, auth.currentUser.uid);
             const docSnap = await getDoc(userRef);
             if (docSnap.exists()) {
-                // For initial testing, let's make the user an admin
-                setProfile({ ...docSnap.data(), isAdmin: true } as Profile);
+                setProfile(docSnap.data() as Profile);
             }
         }
     } catch(error) {
