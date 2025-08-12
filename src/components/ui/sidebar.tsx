@@ -143,7 +143,7 @@ const SidebarProvider = React.forwardRef<
               } as React.CSSProperties
             }
             className={cn(
-              "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
+              "group/sidebar-wrapper flex min-h-svh w-full",
               className
             )}
             ref={ref}
@@ -178,7 +178,16 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    const { isMobile, state, openMobile, setOpenMobile, open } = useSidebar()
+    const mainContentRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        if (!isMobile && mainContentRef.current) {
+            const sidebarWidth = open ? SIDEBAR_WIDTH : SIDEBAR_WIDTH_ICON;
+            mainContentRef.current.style.marginLeft = sidebarWidth;
+        }
+    }, [isMobile, open]);
+
 
     if (collapsible === "none") {
       return (
@@ -201,7 +210,7 @@ const Sidebar = React.forwardRef<
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            className="w-[--sidebar-width] bg-card p-0 text-card-foreground [&>button]:hidden"
             style={
               {
                 "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -219,28 +228,16 @@ const Sidebar = React.forwardRef<
       <aside
         ref={ref}
         className={cn(
-            "group/sidebar peer hidden md:block text-sidebar-foreground h-svh sticky top-0",
-             // Adjust the padding for floating and inset variants.
-             variant === "floating" || variant === "inset"
-             ? "p-2"
-             : "group-data-[side=left]:border-r group-data-[side=right]:border-l"
+            "group/sidebar peer hidden md:flex flex-col text-card-foreground h-svh sticky top-0 bg-card transition-[width] duration-300 ease-in-out",
+            state === 'expanded' ? "w-[--sidebar-width]" : "w-[--sidebar-width-icon]",
+             className
             )}
         data-state={state}
         data-collapsible={collapsible}
         data-variant={variant}
         data-side={side}
       >
-        <div
-          className={cn(
-            "duration-200 relative h-full bg-sidebar transition-[width] ease-linear",
-            "data-[state=expanded]:w-[--sidebar-width]",
-            "data-[state=collapsed]:w-[--sidebar-width-icon]",
-            variant === 'floating' && 'rounded-lg border border-sidebar-border shadow'
-          )}
-          data-state={state}
-        >
-          {children}
-        </div>
+        {children}
       </aside>
     )
   }
@@ -766,7 +763,6 @@ export {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarInput,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuBadge,

@@ -27,7 +27,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 bg-card px-4 md:px-6">
       <div className={cn(
         "flex items-center gap-2",
         !isMobile && "md:hidden"
@@ -56,7 +56,7 @@ export function Header() {
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
                     <Avatar className="h-9 w-9">
                       <AvatarImage src={user?.photoURL ?? ""} alt={user?.displayName ?? "User Avatar"} />
-                      <AvatarFallback>{getUserInitials(user?.displayName)}</AvatarFallback>
+                      <AvatarFallback>{getUserInitials(user?.displayName)}</Fallback>
                     </Avatar>
                   </Button>
               </DropdownMenuTrigger>
@@ -86,6 +86,11 @@ export function Header() {
                         <span>Dados e Privacidade</span>
                     </DropdownMenuItem>
                   </Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <FontAwesomeIcon icon={faSignOutAlt} className="mr-2 h-4 w-4" />
+                    <span>Sair</span>
+                  </DropdownMenuItem>
               </DropdownMenuContent>
           </DropdownMenu>
         )}
