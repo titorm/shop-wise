@@ -41,7 +41,10 @@ function ShopWiseLogo() {
   const { state } = useSidebar();
   return (
       <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-primary/20">
+          <div className={cn(
+              "p-1.5 rounded-lg transition-colors duration-300",
+              state === 'expanded' && 'bg-primary/20'
+            )}>
               <Logo className="w-5 h-5 text-primary" />
           </div>
           <span className={cn("text-lg font-bold font-headline transition-opacity duration-300", state === 'collapsed' && 'opacity-0')}>
