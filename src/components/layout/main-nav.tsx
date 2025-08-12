@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   SidebarContent,
   SidebarHeader,
@@ -11,13 +11,17 @@ import {
   SidebarMenuItem,
   Sidebar,
   useSidebar,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Logo } from "../icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartColumn, faCog, faGears, faHistory, faHome, faList, faMicroscope, faQrcode, faShield, faShieldHalved, faShoppingBasket, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faChartColumn, faCog, faGears, faHistory, faHome, faList, faMicroscope, faQrcode, faShield, faShieldHalved, faShoppingBasket, faUsers, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines, faMessage } from "@fortawesome/free-regular-svg-icons";
+import { Button } from "../ui/button";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const menuItems = [
     { href: "/dashboard", label: "Insights", icon: faHome },
@@ -49,7 +53,7 @@ function ShopWiseLogo() {
             )}>
               <Logo className="w-5 h-5 text-primary" />
           </div>
-          <span className={cn("text-lg font-bold font-headline transition-opacity duration-300", state === 'collapsed' && 'opacity-0')}>
+          <span className={cn("text-lg font-bold font-headline transition-opacity duration-300", state === 'collapsed' ? 'opacity-0' : 'opacity-100')}>
             ShopWise
           </span>
       </div>
@@ -61,6 +65,12 @@ export function MainNav() {
   const { profile } = useAuth();
   const isAdmin = profile?.isAdmin || false;
   const { state } = useSidebar();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    router.push('/');
+  }
 
   const isActive = (href: string) => {
     if (href === '/admin') {
@@ -113,6 +123,19 @@ export function MainNav() {
 
         </SidebarMenu>
       </SidebarContent>
+       <SidebarFooter>
+            <Button
+                variant="destructive"
+                className={cn(
+                    'w-full',
+                    state === 'collapsed' && 'px-2'
+                )}
+                onClick={handleSignOut}
+            >
+                <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
+                <span className={cn(state === 'collapsed' ? 'hidden' : 'inline-block ml-2')}>Sair</span>
+            </Button>
+        </SidebarFooter>
     </>
   );
 }

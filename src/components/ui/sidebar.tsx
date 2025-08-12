@@ -178,7 +178,7 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile, toggleSidebar } = useSidebar()
+    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
     if (collapsible === "none") {
       return (
@@ -240,21 +240,6 @@ const Sidebar = React.forwardRef<
           data-state={state}
         >
           {children}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "absolute top-6 z-20 h-8 w-8",
-              "transition-all duration-300 ease-in-out",
-              "data-[state=expanded]:right-3 data-[state=expanded]:rotate-0",
-              "data-[state=collapsed]:right-[-1rem] data-[state=collapsed]:rotate-180 data-[state=collapsed]:border data-[state=collapsed]:bg-background data-[state=collapsed]:hover:bg-accent",
-            )}
-            onClick={toggleSidebar}
-            data-state={state}
-        >
-            <FontAwesomeIcon icon={faAnglesLeft} className="h-5 w-5" />
-            <span className="sr-only">Toggle Sidebar</span>
-        </Button>
         </div>
       </aside>
     )
@@ -322,6 +307,7 @@ const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"main">
 >(({ className, ...props }, ref) => {
+    const { toggleSidebar, state } = useSidebar();
   return (
     <main
       ref={ref}
@@ -330,8 +316,25 @@ const SidebarInset = React.forwardRef<
         "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)] md:peer-data-[variant=inset]:ml-[calc(var(--sidebar-width)_+_theme(spacing.4)_+2px)] md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
         className
       )}
-      {...props}
-    />
+    >
+        <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "absolute top-6 z-20 h-8 w-8",
+              "transition-all duration-300 ease-in-out -left-4",
+              "data-[state=expanded]:rotate-0",
+              "data-[state=collapsed]:rotate-180",
+               "border bg-background hover:bg-accent",
+            )}
+            onClick={toggleSidebar}
+            data-state={state}
+        >
+            <FontAwesomeIcon icon={faAnglesLeft} className="h-5 w-5" />
+            <span className="sr-only">Toggle Sidebar</span>
+        </Button>
+        {props.children}
+    </main>
   )
 })
 SidebarInset.displayName = "SidebarInset"
@@ -378,11 +381,15 @@ const SidebarFooter = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div">
 >(({ className, ...props }, ref) => {
+    const { state } = useSidebar();
   return (
     <div
       ref={ref}
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("flex flex-col gap-2 p-3 mt-auto",
+        state === 'collapsed' && 'p-2',
+        className
+      )}
       {...props}
     />
   )

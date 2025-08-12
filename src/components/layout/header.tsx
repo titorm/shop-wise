@@ -86,11 +86,6 @@ export function Header() {
                         <span>Dados e Privacidade</span>
                     </DropdownMenuItem>
                   </Link>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut}>
-                      <FontAwesomeIcon icon={faSignOutAlt} className="mr-2 h-4 w-4" />
-                      <span>Sair</span>
-                  </DropdownMenuItem>
               </DropdownMenuContent>
           </DropdownMenu>
         )}
