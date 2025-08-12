@@ -69,24 +69,9 @@ export default function DashboardPage() {
     async function fetchData() {
         if (!profile || !profile.familyId) return;
 
-        // Mock data for charts as we don't have enough historical data yet
-        setBarChartData([
-            { month: "Jan", hortifrutiEOvos: 350, acougueEPeixaria: 500, laticiniosEFrios: 400, mercearia: 350, bebidas: 200, limpeza: 100 },
-            { month: "Fev", hortifrutiEOvos: 380, acougueEPeixaria: 520, laticiniosEFrios: 420, mercearia: 370, bebidas: 230, limpeza: 110 },
-            { month: "Mar", hortifrutiEOvos: 400, acougueEPeixaria: 550, laticiniosEFrios: 450, mercearia: 400, bebidas: 250, limpeza: 120 },
-            { month: "Abr", hortifrutiEOvos: 320, acougueEPeixaria: 480, laticiniosEFrios: 380, mercearia: 320, bebidas: 180, limpeza: 90 },
-            { month: "Mai", hortifrutiEOvos: 420, acougueEPeixaria: 580, laticiniosEFrios: 480, mercearia: 420, bebidas: 280, limpeza: 130 },
-            { month: "Jun", hortifrutiEOvos: 450, acougueEPeixaria: 600, laticiniosEFrios: 500, mercearia: 450, bebidas: 300, limpeza: 150 },
-        ]);
-
-        setPieChartData([
-            { category: 'Hortifrúti e Ovos', value: 150.75, fill: 'hsl(var(--category-hortifruti))'},
-            { category: 'Açougue e Peixaria', value: 280.50, fill: 'hsl(var(--category-acougue))' },
-            { category: 'Laticínios e Frios', value: 180.00, fill: 'hsl(var(--category-laticinios))' },
-            { category: 'Mercearia', value: 250.25, fill: 'hsl(var(--category-mercearia))' },
-            { category: 'Bebidas', value: 120.00, fill: 'hsl(var(--category-bebidas))' },
-            { category: 'Limpeza', value: 50.00, fill: 'hsl(var(--category-limpeza))' },
-        ]);
+        // For now, charts will be empty as we don't have enough data aggregation logic yet.
+        setBarChartData([]);
+        setPieChartData([]);
 
         // Fetch top expenses from the most recent purchase
         const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
@@ -203,6 +188,7 @@ export default function DashboardPage() {
             <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
+            {barChartData.length > 0 ? (
              <ChartContainer config={barChartConfig} className="h-[300px] w-full">
                 <ResponsiveContainer>
                     <RechartsBarChart data={barChartData} stackOffset="sign">
@@ -234,6 +220,13 @@ export default function DashboardPage() {
                     </RechartsBarChart>
                 </ResponsiveContainer>
             </ChartContainer>
+            ) : (
+                <EmptyState
+                    title={t('empty_state_no_chart_title')}
+                    description={t('empty_state_no_chart_desc')}
+                    className="h-[300px]"
+                />
+            )}
           </CardContent>
         </Card>
 
@@ -243,20 +236,28 @@ export default function DashboardPage() {
                 <CardDescription>{t('dashboard_spending_by_category_desc')}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
-                <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full max-h-[300px] w-full">
-                    <RechartsPieChart>
-                         <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent hideLabel nameKey="category" />}
-                        />
-                        <Pie data={pieChartData} dataKey="value" nameKey="category" innerRadius={60} strokeWidth={5}>
-                             {pieChartData.map((entry) => (
-                                <Cell key={entry.category} fill={entry.fill} />
-                            ))}
-                        </Pie>
-                        <ChartLegend content={<ChartLegendContent nameKey="category" />} />
-                    </RechartsPieChart>
-                </ChartContainer>
+                {pieChartData.length > 0 ? (
+                    <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full max-h-[300px] w-full">
+                        <RechartsPieChart>
+                            <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent hideLabel nameKey="category" />}
+                            />
+                            <Pie data={pieChartData} dataKey="value" nameKey="category" innerRadius={60} strokeWidth={5}>
+                                {pieChartData.map((entry) => (
+                                    <Cell key={entry.category} fill={entry.fill} />
+                                ))}
+                            </Pie>
+                            <ChartLegend content={<ChartLegendContent nameKey="category" />} />
+                        </RechartsPieChart>
+                    </ChartContainer>
+                ) : (
+                    <EmptyState
+                        title={t('empty_state_no_chart_title')}
+                        description={t('empty_state_no_chart_desc')}
+                        className="h-full"
+                    />
+                )}
             </CardContent>
         </Card>
       </div>
