@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
+import { useTranslation } from 'react-i18next';
 
 interface Product {
     id: number;
@@ -31,6 +32,7 @@ interface QrScannerProps {
 }
 
 export function QrScannerComponent({ onSave }: QrScannerProps) {
+  const { t } = useTranslation();
   const [scanResult, setScanResult] = useState<ExtractProductDataOutput | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -122,12 +124,13 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
 
   return (
     <>
-        <CardContent className="flex flex-col items-center gap-8">
+        <CardContent className="flex flex-col items-center gap-8 p-0">
             <div className="w-full max-w-sm aspect-square bg-muted rounded-lg flex flex-col items-center justify-center p-4">
                 <FontAwesomeIcon icon={faCamera} className="w-24 h-24 text-muted-foreground/50 mb-4" />
+                <p className="text-sm text-muted-foreground text-center mb-4">{t('scan_qr_code_description')}</p>
                 <Button onClick={handleScan} disabled={isLoading} size="lg">
                 <FontAwesomeIcon icon={faQrcode} className="mr-2 h-5 w-5" />
-                {isLoading ? "Processando..." : "Escanear QR Code"}
+                {isLoading ? t('processing') : t('scan_qr_code_button')}
                 </Button>
             </div>
 
@@ -135,29 +138,29 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                 <div className="w-full space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-5 h-5 text-primary" /> Dados da Compra</CardTitle>
+                            <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-5 h-5 text-primary" /> {t('purchase_data_title')}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div className="flex items-center gap-2">
                                     <FontAwesomeIcon icon={faStore} className="w-4 h-4 text-muted-foreground"/>
-                                    <strong>Estabelecimento:</strong> {scanResult.storeName}
+                                    <strong>{t('store_label')}:</strong> {scanResult.storeName}
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <FontAwesomeIcon icon={faCalendar} className="w-4 h-4 text-muted-foreground"/>
-                                    <strong>Data:</strong> {new Date(scanResult.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                                    <strong>{t('date_label')}:</strong> {new Date(scanResult.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                                 </div>
                             </div>
                             
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-[150px]"><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> Cód. de Barras</TableHead>
-                                        <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
-                                        <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
-                                        <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
-                                        <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> Preço (R$)</TableHead>
-                                        <TableHead className="text-right w-[100px]">Ações</TableHead>
+                                        <TableHead className="w-[150px]"><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> {t('table_barcode')}</TableHead>
+                                        <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> {t('table_product')}</TableHead>
+                                        <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> {t('table_volume')}</TableHead>
+                                        <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
+                                        <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_price_header')} (R$)</TableHead>
+                                        <TableHead className="text-right w-[100px]">{t('table_actions')}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -183,14 +186,14 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                                 </TableBody>
                             </Table>
                              <Button variant="outline" onClick={handleAddNewItem}>
-                                <FontAwesomeIcon icon={faPlusCircle} className="mr-2 h-4 w-4" /> Adicionar Item Manualmente
+                                <FontAwesomeIcon icon={faPlusCircle} className="mr-2 h-4 w-4" /> {t('add_item_manually_button')}
                             </Button>
                         </CardContent>
                     </Card>
-                    <CardFooter>
+                    <CardFooter className="p-0">
                         <Button size="lg" onClick={handleConfirmPurchase} disabled={isSaving}>
                             <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
-                            {isSaving ? "Salvando..." : "Confirmar e Salvar Compra"}
+                            {isSaving ? t('saving') : t('confirm_and_save_button')}
                         </Button>
                     </CardFooter>
                 </div>
@@ -200,43 +203,41 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Editar Item</DialogTitle>
+                    <DialogTitle>{t('edit_item_title')}</DialogTitle>
                     <DialogDescription>
-                        Faça as correções necessárias nas informações do produto.
+                        {t('edit_item_description')}
                     </DialogDescription>
                 </DialogHeader>
                 {editingProduct && (
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="barcode" className="text-right">Cód. Barras</Label>
+                            <Label htmlFor="barcode" className="text-right">{t('table_barcode')}</Label>
                             <Input id="barcode" value={editingProduct.barcode} onChange={(e) => setEditingProduct({...editingProduct, barcode: e.target.value})} className="col-span-3" />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">Nome</Label>
+                            <Label htmlFor="name" className="text-right">{t('name_label')}</Label>
                             <Input id="name" value={editingProduct.name} onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})} className="col-span-3" />
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="volume" className="text-right">Volume</Label>
+                            <Label htmlFor="volume" className="text-right">{t('table_volume')}</Label>
                             <Input id="volume" value={editingProduct.volume} onChange={(e) => setEditingProduct({...editingProduct, volume: e.target.value})} className="col-span-3" />
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="quantity" className="text-right">Quantidade</Label>
+                            <Label htmlFor="quantity" className="text-right">{t('table_quantity')}</Label>
                             <Input id="quantity" type="number" value={editingProduct.quantity} onChange={(e) => setEditingProduct({...editingProduct, quantity: parseFloat(e.target.value) || 0})} className="col-span-3" />
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="price" className="text-right">Preço (R$)</Label>
+                            <Label htmlFor="price" className="text-right">{t('table_price_header')} (R$)</Label>
                             <Input id="price" type="number" value={editingProduct.price} onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})} className="col-span-3" />
                         </div>
                     </div>
                 )}
                 <DialogFooter>
-                    <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>Cancelar</Button>
-                    <Button onClick={handleSaveEdit}><FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4"/> Salvar Alterações</Button>
+                    <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>{t('cancel')}</Button>
+                    <Button onClick={handleSaveEdit}><FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4"/> {t('save_changes_button')}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     </>
   );
 }
-
-    

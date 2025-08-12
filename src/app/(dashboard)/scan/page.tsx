@@ -6,11 +6,16 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { useTranslation } from "react-i18next";
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, writeBatch, Timestamp } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { toast } from '@/hooks/use-toast';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { useRouter } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ManualPurchaseForm } from "@/components/scan/manual-purchase-form";
+import type { PurchaseData } from "@/components/scan/manual-purchase-form";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQrcode, faKeyboard } from "@fortawesome/free-solid-svg-icons";
 
 
 export default function ScanPage() {
@@ -19,7 +24,7 @@ export default function ScanPage() {
     const router = useRouter();
 
 
-    const handleSavePurchase = async (scanResult: ExtractProductDataOutput, products: any[]) => {
+    const handleSavePurchase = async (purchaseData: ExtractProductDataOutput | PurchaseData, products: any[]) => {
         if (!user || !profile || !profile.familyId) {
             toast({
                 variant: 'destructive',
@@ -31,29 +36,36 @@ export default function ScanPage() {
 
         try {
             const totalAmount = products.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            
+            // Ensure date is a Firestore Timestamp
+            const purchaseDate = purchaseData.date instanceof Date ? Timestamp.fromDate(purchaseData.date) : Timestamp.fromDate(new Date(purchaseData.date));
+
 
             // Create a new purchase document
             const purchaseRef = await addDoc(collection(db, Collections.Families, profile.familyId, 'purchases'), {
-                storeName: scanResult.storeName,
-                date: new Date(scanResult.date),
+                storeName: purchaseData.storeName,
+                date: purchaseDate,
                 totalAmount: totalAmount,
                 purchasedBy: user.uid,
+                entryMethod: 'products' in purchaseData ? 'qr_code' : 'manual',
             });
 
             // Batch write all the items in the purchase
             const batch = writeBatch(db);
+            const itemsColRef = collection(db, Collections.Families, profile.familyId, 'purchases', purchaseRef.id, 'purchase_items');
             products.forEach(product => {
-                const itemRef = collection(db, Collections.Families, profile.familyId, 'purchases', purchaseRef.id, 'purchase_items');
-                batch.set(addDoc(itemRef).withConverter(null), { // Use addDoc to get a new ref and then set it in the batch
+                const itemRef = doc(itemsColRef); // Create a new doc reference within the subcollection
+                batch.set(itemRef, {
                     name: product.name,
                     quantity: product.quantity,
                     price: product.price,
                     totalPrice: product.price * product.quantity,
-                    barcode: product.barcode,
-                    volume: product.volume,
+                    barcode: product.barcode || null,
+                    volume: product.volume || null,
                     // In a real app, you'd link to the global product and category
                     productId: null, 
                     categoryId: null,
+                    subcategory: null,
                 });
             });
 
@@ -82,15 +94,26 @@ export default function ScanPage() {
         <div className="container mx-auto py-8">
             <Card>
                  <CardHeader>
-                    <CardTitle className="text-2xl font-headline">{t('scan_title')}</CardTitle>
+                    <CardTitle className="text-2xl font-headline">{t('add_purchase_title')}</CardTitle>
                     <CardDescription>
-                        {t('scan_description')}
+                        {t('add_purchase_description')}
                     </CardDescription>
                 </CardHeader>
-                <QrScannerComponent onSave={handleSavePurchase}/>
+                <div className="p-6 pt-0">
+                    <Tabs defaultValue="scan" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="scan"><FontAwesomeIcon icon={faQrcode} className="mr-2 h-4 w-4" /> {t('scan_qr_code_tab')}</TabsTrigger>
+                            <TabsTrigger value="manual"><FontAwesomeIcon icon={faKeyboard} className="mr-2 h-4 w-4" /> {t('manual_entry_tab')}</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="scan" className="mt-6">
+                            <QrScannerComponent onSave={handleSavePurchase}/>
+                        </TabsContent>
+                        <TabsContent value="manual" className="mt-6">
+                            <ManualPurchaseForm onSave={handleSavePurchase} />
+                        </TabsContent>
+                    </Tabs>
+                </div>
             </Card>
         </div>
     );
 }
-
-    

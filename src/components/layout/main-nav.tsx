@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   SidebarContent,
+  SidebarFooter,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -13,13 +14,16 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartColumn, faCog, faGears, faHistory, faHome, faList, faMicroscope, faQrcode, faShield, faShieldHalved, faShoppingBasket, faUsers, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faChartColumn, faCog, faGears, faHistory, faHome, faList, faMicroscope, faPlusCircle, faQrcode, faShield, faShieldHalved, faShoppingBasket, faUsers, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines, faMessage } from "@fortawesome/free-regular-svg-icons";
+import { Button } from "../ui/button";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const menuItems = [
     { href: "/dashboard", label: "Insights", icon: faHome },
     { href: "/list", label: "Lista de Compras", icon: faList },
-    { href: "/scan", label: "Escanear Cupom", icon: faQrcode },
+    { href: "/scan", label: "Adicionar Compra", icon: faPlusCircle },
     { href: "/history", label: "Histórico", icon: faHistory },
     { href: "/settings", label: "Configurações", icon: faGears },
 ];
@@ -42,6 +46,8 @@ export function MainNav() {
   const { profile } = useAuth();
   const isAdmin = profile?.isAdmin || false;
   const { state } = useSidebar();
+  const router = useRouter();
+
 
   const isActive = (href: string) => {
     if (href === '/admin') {
