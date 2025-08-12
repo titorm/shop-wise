@@ -1,4 +1,8 @@
 
 export const enum Collections {
-  Profile = "profile",
+  Families = "families",
+  Users = "users",
+  Products = "products",
+  Categories = "categories",
+  Stores = "stores",
 }
