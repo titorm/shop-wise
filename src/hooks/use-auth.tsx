@@ -7,6 +7,7 @@ import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
+import i18n from '@/lib/i18n';
 
 interface Profile {
   display_name: string;
