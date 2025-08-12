@@ -3,19 +3,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, List, QrCode, Settings, Shield, History, Users, BarChart2, ShoppingBasket, MessageSquare, Cog, Microscope, ShieldCheck, FileText, MessageCircle } from "lucide-react";
+import { Home, List, QrCode, Settings, Shield, History, Users, BarChart2, ShoppingBasket, MessageSquare, Cog, Microscope, ShieldCheck, FileText } from "lucide-react";
 import {
   SidebarContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
   SidebarCollapseButton,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { Logo } from "../icons";
 
 const menuItems = [
     { href: "/dashboard", label: "Insights", icon: Home },
@@ -37,13 +37,13 @@ const adminMenuItems = [
     { href: "/admin/logs", label: "Logs do Sistema", icon: FileText },
 ];
 
-function MeetMindLogo() {
+function ShopWiseLogo() {
     return (
         <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-primary/20">
-                <MessageCircle className="w-5 h-5 text-primary" />
+                <Logo className="w-5 h-5 text-primary" />
             </div>
-            <span className="text-lg font-bold font-headline">meetmind.ai</span>
+            <span className="text-lg font-bold font-headline">ShopWise</span>
         </div>
     )
 }
@@ -57,12 +57,10 @@ export function MainNav() {
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center justify-between w-full">
-            <div className={cn("transition-opacity duration-300", state === 'collapsed' && 'opacity-0')}>
-                <MeetMindLogo />
-            </div>
-            <SidebarCollapseButton />
+        <div className={cn("transition-opacity duration-300", state === 'collapsed' && 'opacity-0')}>
+            <ShopWiseLogo />
         </div>
+        <SidebarCollapseButton />
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
@@ -88,7 +86,7 @@ export function MainNav() {
                     <SidebarMenuItem key={item.href}>
                     <Link href={item.href}>
                         <SidebarMenuButton 
-                        isActive={pathname.startsWith(item.href)}
+                        isActive={pathname === item.href}
                         tooltip={item.label}
                         asChild={false}
                         >
