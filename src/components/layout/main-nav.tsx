@@ -10,9 +10,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarCollapseButton,
-  useSidebar,
   Sidebar,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -65,7 +64,7 @@ export function MainNav() {
     if (href === '/admin') {
         return pathname === href;
     }
-    return pathname.startsWith(href);
+    return pathname.startsWith(href) && href !== '/';
   }
 
   return (
@@ -73,7 +72,6 @@ export function MainNav() {
       <SidebarHeader>
         <ShopWiseLogo />
       </SidebarHeader>
-      <SidebarCollapseButton />
       <SidebarContent>
         <SidebarMenu>
           {menuItems.map((item) => (

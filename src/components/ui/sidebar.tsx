@@ -157,6 +157,35 @@ const SidebarProvider = React.forwardRef<
 )
 SidebarProvider.displayName = "SidebarProvider"
 
+const SidebarCollapseButton = React.forwardRef<
+    React.ElementRef<typeof Button>,
+    React.ComponentProps<typeof Button>
+>(({ className, ...props }, ref) => {
+    const { toggleSidebar, state } = useSidebar();
+    return (
+        <Button
+            ref={ref}
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "absolute top-4 z-20 h-8 w-8",
+              "transition-all duration-300 ease-in-out",
+              "data-[state=expanded]:right-3 data-[state=expanded]:rotate-0",
+              "data-[state=collapsed]:right-[-1rem] data-[state=collapsed]:rotate-180 data-[state=collapsed]:border data-[state=collapsed]:bg-background data-[state=collapsed]:hover:bg-accent",
+              className
+            )}
+            onClick={toggleSidebar}
+            data-state={state}
+            {...props}
+        >
+            <ChevronsLeft className="h-5 w-5" />
+            <span className="sr-only">Toggle Sidebar</span>
+        </Button>
+    )
+})
+SidebarCollapseButton.displayName = "SidebarCollapseButton"
+
+
 const Sidebar = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
@@ -180,7 +209,7 @@ const Sidebar = React.forwardRef<
 
     if (collapsible === "none") {
       return (
-        <div
+        <aside
           className={cn(
             "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
             className
@@ -189,7 +218,7 @@ const Sidebar = React.forwardRef<
           {...props}
         >
           {children}
-        </div>
+        </aside>
       )
     }
 
@@ -214,9 +243,9 @@ const Sidebar = React.forwardRef<
     }
 
     return (
-      <div
+      <aside
         ref={ref}
-        className="group peer hidden md:block text-sidebar-foreground"
+        className="group/sidebar peer hidden md:block text-sidebar-foreground"
         data-state={state}
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
@@ -252,41 +281,14 @@ const Sidebar = React.forwardRef<
             className="relative flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
           >
             {children}
+            <SidebarCollapseButton/>
           </div>
         </div>
-      </div>
+      </aside>
     )
   }
 )
 Sidebar.displayName = "Sidebar"
-
-const SidebarCollapseButton = React.forwardRef<
-    React.ElementRef<typeof Button>,
-    React.ComponentProps<typeof Button>
->(({ className, ...props }, ref) => {
-    const { toggleSidebar, state } = useSidebar();
-    return (
-        <Button
-            ref={ref}
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "absolute top-6 z-20 h-8 w-8",
-              "transition-all duration-300 ease-in-out",
-              "data-[state=expanded]:right-3",
-              "data-[state=collapsed]:right-[-1rem] data-[state=collapsed]:border data-[state=collapsed]:bg-background data-[state=collapsed]:hover:bg-accent",
-              className
-            )}
-            onClick={toggleSidebar}
-            data-state={state}
-            {...props}
-        >
-            {state === 'expanded' ? <ChevronsLeft className="h-5 w-5" /> : <ChevronsRight className="h-5 w-5" />}
-            <span className="sr-only">Toggle Sidebar</span>
-        </Button>
-    )
-})
-SidebarCollapseButton.displayName = "SidebarCollapseButton"
 
 
 const SidebarTrigger = React.forwardRef<
