@@ -24,6 +24,7 @@ interface Profile {
     notifications: boolean;
   };
   isAdmin?: boolean;
+  plan?: string;
 }
 
 interface AuthContextType {
@@ -58,6 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 familyId: userData.familyId,
                 settings: userData.settings,
                 isAdmin: userData.isAdmin,
+                plan: userData.plan || 'free',
             };
 
             // Fetch family data if familyId exists
@@ -129,5 +131,3 @@ export const useRequireAuth = () => {
 
     return { user, loading };
 };
-
-    

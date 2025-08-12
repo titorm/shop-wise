@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 import { DeleteConfirmationDialog } from "@/components/settings/delete-confirmation-dialog";
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShieldHalved, faTrash, faUserXmark } from '@fortawesome/free-solid-svg-icons';
+import { faShieldHalved, faTrash, faUserXmark, faGem } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { faGears } from '@fortawesome/free-solid-svg-icons/faGears';
+import { PlanForm } from '@/components/settings/plan-form';
 
 
 export default function SettingsPage() {
@@ -59,9 +60,10 @@ export default function SettingsPage() {
                 </CardHeader>
                 <div className="p-6 pt-0">
                     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+                        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
                             <TabsTrigger value="profile"><FontAwesomeIcon icon={faUser} className="mr-2 h-4 w-4" /> {t('tab_profile')}</TabsTrigger>
                             <TabsTrigger value="preferences"><FontAwesomeIcon icon={faGears} className="mr-2 h-4 w-4" /> {t('tab_preferences')}</TabsTrigger>
+                            <TabsTrigger value="plan"><FontAwesomeIcon icon={faGem} className="mr-2 h-4 w-4" /> {t('tab_plan')}</TabsTrigger>
                             <TabsTrigger value="privacy"><FontAwesomeIcon icon={faShieldHalved} className="mr-2 h-4 w-4" /> {t('tab_privacy')}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="profile" className="mt-6">
@@ -69,6 +71,9 @@ export default function SettingsPage() {
                         </TabsContent>
                         <TabsContent value="preferences" className="mt-6">
                             <PreferencesForm />
+                        </TabsContent>
+                         <TabsContent value="plan" className="mt-6">
+                            <PlanForm />
                         </TabsContent>
                         <TabsContent value="privacy" className="mt-6 space-y-8">
                            <Card className="border-destructive">
