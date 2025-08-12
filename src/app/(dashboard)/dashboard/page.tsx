@@ -245,7 +245,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-        <Card>
+        <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
           <CardHeader>
             <CardTitle>{t('dashboard_consumption_overview_title')}</CardTitle>
             <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
@@ -293,7 +293,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
            <CardHeader>
                 <CardTitle>{t('dashboard_spending_by_category_title')}</CardTitle>
                 <CardDescription>{t('dashboard_spending_by_category_desc')}</CardDescription>
@@ -379,5 +379,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
