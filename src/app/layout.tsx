@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
-import { Noto_Sans } from 'next/font/google';
+import { PT_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/hooks/use-auth';
 
-const noto_sans = Noto_Sans({
+const pt_sans = PT_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '700'],
+  weight: ['400', '700'],
   variable: '--font-sans',
 });
 
@@ -22,10 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR" suppressHydrationWarning>
       <head />
       <body
-        className={cn('min-h-screen bg-background font-body antialiased', noto_sans.variable)}
+        className={cn('min-h-screen bg-background font-body antialiased', pt_sans.variable)}
         suppressHydrationWarning
       >
         <AuthProvider>
