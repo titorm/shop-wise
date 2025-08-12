@@ -25,7 +25,7 @@ const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "3.25rem"
+const SIDEBAR_WIDTH_ICON = "3.75rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContext = {
@@ -415,7 +415,7 @@ const SidebarContent = React.forwardRef<
         data-sidebar="content"
         className={cn(
             "flex min-h-0 flex-1 flex-col gap-2 overflow-auto p-3",
-            state === 'collapsed' && "overflow-hidden",
+            state === 'collapsed' && "overflow-hidden px-2",
             className
         )}
         {...props}
