@@ -112,7 +112,7 @@ export function PlanForm() {
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center justify-between">
                                                         <span>{t('plan_form_free_title')}</span>
-                                                        <span className="text-lg font-bold">R$ 0</span>
+                                                        <span className="text-lg font-bold">Grátis</span>
                                                     </CardTitle>
                                                     <CardDescription>{t('plan_form_free_desc')}</CardDescription>
                                                 </CardHeader>
