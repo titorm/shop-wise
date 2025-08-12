@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUsers } from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminUsersPage() {
     return (
@@ -8,7 +9,7 @@ export default function AdminUsersPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <Users className="w-6 h-6" />
+                        <FontAwesomeIcon icon={faUsers} className="w-6 h-6" />
                         Gerenciamento de Usuários
                     </CardTitle>
                     <CardDescription>Visualize, edite, suspenda ou exclua contas de usuários.</CardDescription>

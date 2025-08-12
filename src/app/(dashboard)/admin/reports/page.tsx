@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart2 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartBar } from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminReportsPage() {
     return (
@@ -8,7 +9,7 @@ export default function AdminReportsPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <BarChart2 className="w-6 h-6" />
+                        <FontAwesomeIcon icon={faChartBar} className="w-6 h-6" />
                         Relatórios de Uso
                     </CardTitle>
                     <CardDescription>Análise de dados agregados e insights sobre o uso do aplicativo.</CardDescription>

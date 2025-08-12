@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMessage } from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminNotificationsPage() {
     return (
@@ -8,7 +9,7 @@ export default function AdminNotificationsPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <MessageSquare className="w-6 h-6" />
+                        <FontAwesomeIcon icon={faMessage} className="w-6 h-6" />
                         Gerenciamento de Notificações
                     </CardTitle>
                     <CardDescription>Crie e gerencie os modelos de notificações push para os usuários.</CardDescription>

@@ -3,7 +3,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, List, QrCode, Settings, Shield, History, Users, BarChart2, ShoppingBasket, MessageSquare, Cog, Microscope, ShieldCheck, FileText } from "lucide-react";
 import {
   SidebarContent,
   SidebarHeader,
@@ -16,25 +15,27 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Logo } from "../icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartColumn, faCog, faFileLines, faGears, faHistory, faHome, faList, faMessage, faMicroscope, faQrcode, faShieldCheck, faShieldHalved, faShoppingBasket, faUsers } from "@fortawesome/free-solid-svg-icons";
 
 const menuItems = [
-    { href: "/dashboard", label: "Insights", icon: Home },
-    { href: "/list", label: "Lista de Compras", icon: List },
-    { href: "/scan", label: "Escanear Cupom", icon: QrCode },
-    { href: "/history", label: "Histórico", icon: History },
-    { href: "/settings", label: "Configurações", icon: Settings },
+    { href: "/dashboard", label: "Insights", icon: faHome },
+    { href: "/list", label: "Lista de Compras", icon: faList },
+    { href: "/scan", label: "Escanear Cupom", icon: faQrcode },
+    { href: "/history", label: "Histórico", icon: faHistory },
+    { href: "/settings", label: "Configurações", icon: faGears },
 ];
 
 const adminMenuItems = [
-    { href: "/admin", label: "Dashboard", icon: Shield },
-    { href: "/admin/users", label: "Gerenciar Usuários", icon: Users },
-    { href: "/admin/reports", label: "Relatórios de Uso", icon: BarChart2 },
-    { href: "/admin/market-insights", label: "Insights de Mercado", icon: ShoppingBasket },
-    { href: "/admin/settings", label: "Configurações Globais", icon: Cog },
-    { href: "/admin/notifications", label: "Gerenciar Notificações", icon: MessageSquare },
-    { href: "/admin/audit", label: "Auditoria e Testes", icon: Microscope },
-    { href: "/admin/security", label: "Segurança", icon: ShieldCheck },
-    { href: "/admin/logs", label: "Logs do Sistema", icon: FileText },
+    { href: "/admin", label: "Dashboard", icon: faShieldHalved },
+    { href: "/admin/users", label: "Gerenciar Usuários", icon: faUsers },
+    { href: "/admin/reports", label: "Relatórios de Uso", icon: faChartColumn },
+    { href: "/admin/market-insights", label: "Insights de Mercado", icon: faShoppingBasket },
+    { href: "/admin/settings", label: "Configurações Globais", icon: faCog },
+    { href: "/admin/notifications", label: "Gerenciar Notificações", icon: faMessage },
+    { href: "/admin/audit", label: "Auditoria e Testes", icon: faMicroscope },
+    { href: "/admin/security", label: "Segurança", icon: faShieldCheck },
+    { href: "/admin/logs", label: "Logs do Sistema", icon: faFileLines },
 ];
 
 function ShopWiseLogo() {
@@ -82,7 +83,7 @@ export function MainNav() {
                   tooltip={item.label}
                   asChild={false}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
                   <span className={cn(state === 'collapsed' && 'hidden')}>{item.label}</span>
                 </SidebarMenuButton>
               </Link>
@@ -100,7 +101,7 @@ export function MainNav() {
                         tooltip={item.label}
                         asChild={false}
                         >
-                        <item.icon className="h-5 w-5" />
+                        <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
                         <span className={cn(state === 'collapsed' && 'hidden')}>{item.label}</span>
                         </SidebarMenuButton>
                     </Link>

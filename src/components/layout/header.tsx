@@ -2,7 +2,6 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, LogOut, ShoppingCart, User, Users, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
@@ -13,6 +12,8 @@ import { useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserInitials, cn } from "@/lib/utils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell, faSignOutAlt, faShoppingCart, faUser, faUsers, faShieldHalved } from "@fortawesome/free-solid-svg-icons";
 
 export function Header() {
   const { user } = useAuth();
@@ -38,14 +39,14 @@ export function Header() {
       <div className="flex w-full items-center justify-end gap-2">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/list">
-            <ShoppingCart className="h-5 w-5" />
+            <FontAwesomeIcon icon={faShoppingCart} className="h-5 w-5" />
             <span>
               <span className="sr-only">Lista de Compras Ativa</span>
             </span>
           </Link>
         </Button>
         <Button variant="ghost" size="icon">
-          <Bell className="h-5 w-5" />
+          <FontAwesomeIcon icon={faBell} className="h-5 w-5" />
           <span className="sr-only">Notificações</span>
         </Button>
         {user && (
@@ -68,25 +69,25 @@ export function Header() {
                   <DropdownMenuSeparator />
                   <Link href="/settings?tab=profile" passHref>
                     <DropdownMenuItem>
-                        <User className="mr-2 h-4 w-4" />
+                        <FontAwesomeIcon icon={faUser} className="mr-2 h-4 w-4" />
                         <span>Perfil</span>
                     </DropdownMenuItem>
                   </Link>
                    <Link href="/settings?tab=preferences" passHref>
                     <DropdownMenuItem>
-                        <Users className="mr-2 h-4 w-4" />
+                        <FontAwesomeIcon icon={faUsers} className="mr-2 h-4 w-4" />
                         <span>Preferências</span>
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/settings?tab=privacy" passHref>
                     <DropdownMenuItem>
-                        <Shield className="mr-2 h-4 w-4" />
+                        <FontAwesomeIcon icon={faShieldHalved} className="mr-2 h-4 w-4" />
                         <span>Dados e Privacidade</span>
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
-                      <LogOut className="mr-2 h-4 w-4" />
+                      <FontAwesomeIcon icon={faSignOutAlt} className="mr-2 h-4 w-4" />
                       <span>Sair</span>
                   </DropdownMenuItem>
               </DropdownMenuContent>

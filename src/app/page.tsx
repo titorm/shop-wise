@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { BarChart, QrCode, ShoppingCart, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartSimple, faQrcode, faShoppingCart, faSliders } from "@fortawesome/free-solid-svg-icons";
 
 export default function Home() {
   return (
@@ -24,7 +25,7 @@ export default function Home() {
         <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
            <div
             className={
-              "absolute -top-1/2 left-1/2 -z-10 h-[150%] w-full -translate-x-1/2 bg-[radial-gradient(closest-side,hsl(var(--primary)/0.3),transparent)] md:bg-[radial-gradient(closest-side,hsl(var(--primary)/0.2),transparent)]"
+              "absolute -top-1/2 left-1/2 -z-10 h-[150%] w-full -translate-x-1/2 bg-[radial-gradient(closest-side,hsl(var(--primary)/0.2),transparent)]"
             }
           />
           <div className="max-w-3xl mx-auto">
@@ -52,22 +53,22 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <FeatureCard
-                icon={<BarChart className="w-10 h-10 text-primary" />}
+                icon={<FontAwesomeIcon icon={faChartSimple} className="w-10 h-10 text-primary" />}
                 title="Insights Visuais"
                 description="Acompanhe seus gastos com gráficos interativos e entenda para onde seu dinheiro está indo."
               />
               <FeatureCard
-                icon={<QrCode className="w-10 h-10 text-primary" />}
+                icon={<FontAwesomeIcon icon={faQrcode} className="w-10 h-10 text-primary" />}
                 title="Cadastro por Câmera"
                 description="Escaneie o QR Code da nota fiscal e adicione suas compras em segundos, sem digitação."
               />
               <FeatureCard
-                icon={<ShoppingCart className="w-10 h-10 text-primary" />}
+                icon={<FontAwesomeIcon icon={faShoppingCart} className="w-10 h-10 text-primary" />}
                 title="Listas Inteligentes"
                 description="Receba sugestões de itens e crie listas de compras que te ajudam a não esquecer de nada."
               />
               <FeatureCard
-                icon={<SlidersHorizontal className="w-10 h-10 text-primary" />}
+                icon={<FontAwesomeIcon icon={faSliders} className="w-10 h-10 text-primary" />}
                 title="Controle Total"
                 description="Personalize suas preferências, gerencie sua família e tenha o controle total dos seus dados."
               />

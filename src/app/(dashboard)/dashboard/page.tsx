@@ -3,12 +3,13 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BarChart, DollarSign, ShoppingBag, TrendingUp, PieChart as PieChartIcon, Tag, Weight, Scale, Package, Hash, Barcode } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Pie, PieChart as RechartsPieChart, Cell } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode } from "@fortawesome/free-solid-svg-icons";
 
 const barChartConfig = {
   total: { label: "Total" },
@@ -195,7 +196,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Gasto Total (Mês)</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <FontAwesomeIcon icon={faDollarSign} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">R$ 4,287.50</div>
@@ -205,7 +206,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Itens Comprados</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+            <FontAwesomeIcon icon={faShoppingBag} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">152</div>
@@ -215,7 +216,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Categoria Principal</CardTitle>
-            <BarChart className="h-4 w-4 text-muted-foreground" />
+            <FontAwesomeIcon icon={faChartSimple} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">Alimentação</div>
@@ -225,7 +226,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Economia Potencial</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">R$ 215.30</div>
@@ -308,14 +309,14 @@ export default function DashboardPage() {
              <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead><Barcode className="inline-block mr-1 w-4 h-4" /> Código de Barras</TableHead>
-                        <TableHead><Package className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
-                        <TableHead><Tag className="inline-block mr-1 w-4 h-4" /> Categoria</TableHead>
+                        <TableHead><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> Código de Barras</TableHead>
+                        <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
+                        <TableHead><FontAwesomeIcon icon={faTag} className="inline-block mr-1 w-4 h-4" /> Categoria</TableHead>
                         <TableHead>Subcategoria</TableHead>
-                        <TableHead><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
-                        <TableHead><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
-                        <TableHead className="text-right"><Scale className="inline-block mr-1 w-4 h-4" /> Preço p/ kg/L</TableHead>
-                        <TableHead className="text-right"><DollarSign className="inline-block mr-1 w-4 h-4" /> Preço Total</TableHead>
+                        <TableHead><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
+                        <TableHead><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
+                        <TableHead className="text-right"><FontAwesomeIcon icon={faScaleBalanced} className="inline-block mr-1 w-4 h-4" /> Preço p/ kg/L</TableHead>
+                        <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> Preço Total</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>

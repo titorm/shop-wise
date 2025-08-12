@@ -31,6 +31,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye as faEyeSolid, faEyeSlash as faEyeSlashSolid } from "@fortawesome/free-solid-svg-icons";
 
 const profileSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -243,9 +245,9 @@ export function ProfileForm() {
                             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                             >
                             {showCurrentPassword ? (
-                                <EyeOff className="h-4 w-4" aria-hidden="true" />
+                                <FontAwesomeIcon icon={faEyeSlashSolid} className="h-4 w-4" aria-hidden="true" />
                             ) : (
-                                <Eye className="h-4 w-4" aria-hidden="true" />
+                                <FontAwesomeIcon icon={faEyeSolid} className="h-4 w-4" aria-hidden="true" />
                             )}
                             <span className="sr-only">
                                 {showCurrentPassword ? "Hide password" : "Show password"}
@@ -274,9 +276,9 @@ export function ProfileForm() {
                             onClick={() => setShowNewPassword(!showNewPassword)}
                             >
                             {showNewPassword ? (
-                                <EyeOff className="h-4 w-4" aria-hidden="true" />
+                                <FontAwesomeIcon icon={faEyeSlashSolid} className="h-4 w-4" aria-hidden="true" />
                             ) : (
-                                <Eye className="h-4 w-4" aria-hidden="true" />
+                                <FontAwesomeIcon icon={faEyeSolid} className="h-4 w-4" aria-hidden="true" />
                             )}
                             <span className="sr-only">
                                 {showNewPassword ? "Hide password" : "Show password"}

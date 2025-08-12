@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { History, Search, Store, Calendar, ShoppingCart, DollarSign, Lightbulb, TrendingUp, Package, Hash, Barcode, Weight } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHistory, faSearch, faStore, faCalendar, faShoppingCart, faDollarSign, faLightbulb, faArrowTrendUp, faBox, faHashtag, faBarcode, faWeightHanging } from '@fortawesome/free-solid-svg-icons';
 
 // Mock data, in a real application this would come from a database.
 const mockPurchases = [
@@ -91,13 +92,13 @@ export default function HistoryPage() {
         <div className="container mx-auto py-8 space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-headline flex items-center gap-2"><History className="w-6 h-6"/> Histórico de Compras</CardTitle>
+                    <CardTitle className="text-2xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-6 h-6"/> Histórico de Compras</CardTitle>
                     <CardDescription>Visualize, filtre e gerencie todas as suas compras registradas.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col md:flex-row gap-4 mb-6">
                         <div className="relative flex-grow">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input 
                                 placeholder="Buscar por loja ou produto..."
                                 className="pl-10"
@@ -144,18 +145,18 @@ export default function HistoryPage() {
 
              <Card>
                 <CardHeader>
-                    <CardTitle className="text-xl font-headline flex items-center gap-2"><Lightbulb className="w-5 h-5 text-primary"/> Recomendações Baseadas no Histórico</CardTitle>
+                    <CardTitle className="text-xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faLightbulb} className="w-5 h-5 text-primary"/> Recomendações Baseadas no Histórico</CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-6">
                     <Alert>
-                        <ShoppingCart className="h-4 w-4" />
+                        <FontAwesomeIcon icon={faShoppingCart} className="h-4 w-4" />
                         <AlertTitle>Comprado Recentemente</AlertTitle>
                         <AlertDescription>
                             Itens de suas últimas compras que podem precisar de reposição: <span className="font-semibold">Leite, Pão, Café</span>.
                         </AlertDescription>
                     </Alert>
                      <Alert>
-                        <TrendingUp className="h-4 w-4" />
+                        <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4" />
                         <AlertTitle>Economia Potencial</AlertTitle>
                         <AlertDescription>
                            O item <span className="font-semibold">Arroz 5kg</span> esteve mais barato no <span className="font-semibold">Atacarejo Preço Baixo</span> em sua última compra.
@@ -175,16 +176,16 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
             <DialogTrigger asChild>
                  <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                     <CardHeader>
-                        <CardTitle className="text-lg truncate flex items-center gap-2"><Store className="w-4 h-4 text-primary"/> {purchase.store}</CardTitle>
-                        <CardDescription className="flex items-center gap-2"><Calendar className="w-4 h-4"/> {new Date(purchase.date).toLocaleDateString('pt-BR', {day: '2-digit', month: 'long', year: 'numeric'})}</CardDescription>
+                        <CardTitle className="text-lg truncate flex items-center gap-2"><FontAwesomeIcon icon={faStore} className="w-4 h-4 text-primary"/> {purchase.store}</CardTitle>
+                        <CardDescription className="flex items-center gap-2"><FontAwesomeIcon icon={faCalendar} className="w-4 h-4"/> {new Date(purchase.date).toLocaleDateString('pt-BR', {day: '2-digit', month: 'long', year: 'numeric'})}</CardDescription>
                     </CardHeader>
                     <CardContent className="flex justify-between items-center text-sm">
                         <div className="flex items-center gap-2 text-muted-foreground">
-                            <ShoppingCart className="w-4 h-4"/>
+                            <FontAwesomeIcon icon={faShoppingCart} className="w-4 h-4"/>
                             <span>{purchase.items.length} itens</span>
                         </div>
                         <div className="flex items-center gap-2 font-bold text-lg text-foreground">
-                            <DollarSign className="w-5 h-5 text-primary"/>
+                            <FontAwesomeIcon icon={faDollarSign} className="w-5 h-5 text-primary"/>
                             <span>{purchase.total.toFixed(2)}</span>
                         </div>
                     </CardContent>
@@ -201,11 +202,11 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[150px]"><Barcode className="inline-block mr-1 w-4 h-4" /> Cód. de Barras</TableHead>
-                                <TableHead><Package className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
-                                <TableHead className="text-center w-[100px]"><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
-                                <TableHead className="text-center w-[80px]"><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
-                                <TableHead className="text-right w-[120px]"><DollarSign className="inline-block mr-1 w-4 h-4" /> Preço (R$)</TableHead>
+                                <TableHead className="w-[150px]"><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> Cód. de Barras</TableHead>
+                                <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
+                                <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
+                                <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
+                                <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> Preço (R$)</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

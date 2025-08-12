@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Microscope } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMicroscope } from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminAuditPage() {
     return (
@@ -8,7 +9,7 @@ export default function AdminAuditPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <Microscope className="w-6 h-6" />
+                        <FontAwesomeIcon icon={faMicroscope} className="w-6 h-6" />
                         Auditoria e Testes
                     </CardTitle>
                     <CardDescription>Acesse logs do sistema e gerencie testes A/B.</CardDescription>

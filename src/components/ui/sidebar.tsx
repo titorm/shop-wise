@@ -4,7 +4,8 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft, ChevronsLeft, ChevronsRight } from "lucide-react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faAnglesLeft, faBars } from "@fortawesome/free-solid-svg-icons"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -158,35 +159,6 @@ const SidebarProvider = React.forwardRef<
 SidebarProvider.displayName = "SidebarProvider"
 
 
-const SidebarCollapseButton = React.forwardRef<
-    React.ElementRef<typeof Button>,
-    React.ComponentProps<typeof Button>
->(({ className, ...props }, ref) => {
-    const { toggleSidebar, state } = useSidebar();
-    return (
-        <Button
-            ref={ref}
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "absolute top-6 z-20 h-8 w-8",
-              "transition-all duration-300 ease-in-out",
-              "data-[state=expanded]:right-3 data-[state=expanded]:rotate-0",
-              "data-[state=collapsed]:right-[-1rem] data-[state=collapsed]:rotate-180 data-[state=collapsed]:border data-[state=collapsed]:bg-background data-[state=collapsed]:hover:bg-accent",
-              className
-            )}
-            onClick={toggleSidebar}
-            data-state={state}
-            {...props}
-        >
-            <ChevronsLeft className="h-5 w-5" />
-            <span className="sr-only">Toggle Sidebar</span>
-        </Button>
-    )
-})
-SidebarCollapseButton.displayName = "SidebarCollapseButton"
-
-
 const Sidebar = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
@@ -279,7 +251,7 @@ const Sidebar = React.forwardRef<
             onClick={toggleSidebar}
             data-state={state}
         >
-            <ChevronsLeft className="h-5 w-5" />
+            <FontAwesomeIcon icon={faAnglesLeft} className="h-5 w-5" />
             <span className="sr-only">Toggle Sidebar</span>
         </Button>
         </div>
@@ -309,7 +281,7 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      <PanelLeft />
+      <FontAwesomeIcon icon={faBars} />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

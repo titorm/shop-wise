@@ -5,12 +5,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Trash2, Sparkles, Plus, Share2, Download } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { suggestMissingItems } from "@/app/(dashboard)/list/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faWandMagicSparkles, faPlus, faShareNodes, faDownload } from "@fortawesome/free-solid-svg-icons";
 
 interface ListItem {
   id: number;
@@ -124,7 +125,7 @@ export function ShoppingListComponent() {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleAddItem} className="w-full sm:w-auto mt-2 sm:mt-0"><Plus className="mr-2 h-4 w-4" /> Adicionar</Button>
+        <Button onClick={handleAddItem} className="w-full sm:w-auto mt-2 sm:mt-0"><FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" /> Adicionar</Button>
       </div>
       
       <div className="space-y-2">
@@ -145,7 +146,7 @@ export function ShoppingListComponent() {
               {item.quantity} {item.unit}
             </span>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteItem(item.id)}>
-              <Trash2 className="h-4 w-4" />
+              <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
             </Button>
           </div>
         ))}
@@ -155,20 +156,20 @@ export function ShoppingListComponent() {
 
       <div>
         <Button onClick={handleGetSuggestions} disabled={isLoading}>
-            <Sparkles className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faWandMagicSparkles} className="mr-2 h-4 w-4" />
             {isLoading ? "Sugerindo..." : "Sugerir Itens com IA"}
         </Button>
 
         {suggestedItems.length > 0 && (
             <Alert className="mt-4">
-                <Sparkles className="h-4 w-4" />
+                <FontAwesomeIcon icon={faWandMagicSparkles} className="h-4 w-4" />
                 <AlertTitle>Sugestões Inteligentes</AlertTitle>
                 <AlertDescription>
                     <p className="mb-2">Com base no seu histórico, talvez você precise destes itens:</p>
                     <div className="flex flex-wrap gap-2">
                         {suggestedItems.map((name) => (
                             <Button key={name} size="sm" variant="outline" onClick={() => addSuggestionToList(name)}>
-                                <Plus className="mr-2 h-4 w-4" /> {name}
+                                <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" /> {name}
                             </Button>
                         ))}
                     </div>
@@ -180,8 +181,8 @@ export function ShoppingListComponent() {
       <Separator />
 
       <div className="flex gap-2">
-        <Button variant="outline"><Share2 className="mr-2 h-4 w-4" /> Compartilhar</Button>
-        <Button variant="outline"><Download className="mr-2 h-4 w-4" /> Exportar PDF</Button>
+        <Button variant="outline"><FontAwesomeIcon icon={faShareNodes} className="mr-2 h-4 w-4" /> Compartilhar</Button>
+        <Button variant="outline"><FontAwesomeIcon icon={faDownload} className="mr-2 h-4 w-4" /> Exportar PDF</Button>
       </div>
     </div>
   );

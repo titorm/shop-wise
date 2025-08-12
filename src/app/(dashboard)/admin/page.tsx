@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShieldHalved } from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminPage() {
     return (
@@ -8,7 +9,7 @@ export default function AdminPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <Shield className="w-6 h-6" />
+                        <FontAwesomeIcon icon={faShieldHalved} className="w-6 h-6" />
                         Dashboard Administrativo
                     </CardTitle>
                     <CardDescription>Visão geral e atalhos para as principais áreas de gerenciamento.</CardDescription>

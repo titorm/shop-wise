@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Cog } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminSettingsPage() {
     return (
@@ -8,7 +9,7 @@ export default function AdminSettingsPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <Cog className="w-6 h-6" />
+                        <FontAwesomeIcon icon={faCog} className="w-6 h-6" />
                         Configurações Globais
                     </CardTitle>
                     <CardDescription>Gerencie categorias, estabelecimentos e sugestões de produtos.</CardDescription>

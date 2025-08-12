@@ -4,7 +4,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { QrCode, Camera, History, Store, Calendar, Package, Hash, DollarSign, Edit, Trash2, ShieldCheck, PlusCircle, Pencil, Save, X, Barcode, Weight } from 'lucide-react';
 import { extractProductData } from '@/app/(dashboard)/scan/actions';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +13,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faQrcode, faCamera, faHistory, faStore, faCalendar, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging } from '@fortawesome/free-solid-svg-icons';
 
 interface Product {
     id: number;
@@ -108,9 +109,9 @@ export function QrScannerComponent() {
     <>
         <CardContent className="flex flex-col items-center gap-8">
             <div className="w-full max-w-sm aspect-square bg-muted rounded-lg flex flex-col items-center justify-center p-4">
-                <Camera className="w-24 h-24 text-muted-foreground/50 mb-4" />
+                <FontAwesomeIcon icon={faCamera} className="w-24 h-24 text-muted-foreground/50 mb-4" />
                 <Button onClick={handleScan} disabled={isLoading} size="lg">
-                <QrCode className="mr-2 h-5 w-5" />
+                <FontAwesomeIcon icon={faQrcode} className="mr-2 h-5 w-5" />
                 {isLoading ? "Processando..." : "Escanear QR Code"}
                 </Button>
             </div>
@@ -119,16 +120,16 @@ export function QrScannerComponent() {
                 <div className="w-full space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><History className="w-5 h-5 text-primary" /> Dados da Compra</CardTitle>
+                            <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-5 h-5 text-primary" /> Dados da Compra</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div className="flex items-center gap-2">
-                                    <Store className="w-4 h-4 text-muted-foreground"/>
+                                    <FontAwesomeIcon icon={faStore} className="w-4 h-4 text-muted-foreground"/>
                                     <strong>Estabelecimento:</strong> {scanResult.storeName}
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4 text-muted-foreground"/>
+                                    <FontAwesomeIcon icon={faCalendar} className="w-4 h-4 text-muted-foreground"/>
                                     <strong>Data:</strong> {new Date(scanResult.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                                 </div>
                             </div>
@@ -136,11 +137,11 @@ export function QrScannerComponent() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-[150px]"><Barcode className="inline-block mr-1 w-4 h-4" /> Cód. de Barras</TableHead>
-                                        <TableHead><Package className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
-                                        <TableHead className="text-center w-[100px]"><Weight className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
-                                        <TableHead className="text-center w-[80px]"><Hash className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
-                                        <TableHead className="text-right w-[120px]"><DollarSign className="inline-block mr-1 w-4 h-4" /> Preço (R$)</TableHead>
+                                        <TableHead className="w-[150px]"><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> Cód. de Barras</TableHead>
+                                        <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> Produto</TableHead>
+                                        <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> Volume</TableHead>
+                                        <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> Qtd.</TableHead>
+                                        <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> Preço (R$)</TableHead>
                                         <TableHead className="text-right w-[100px]">Ações</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -155,10 +156,10 @@ export function QrScannerComponent() {
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
                                                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditClick(product)}>
-                                                        <Pencil className="h-4 w-4" />
+                                                        <FontAwesomeIcon icon={faPencil} className="h-4 w-4" />
                                                     </Button>
                                                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteClick(product.id)}>
-                                                        <Trash2 className="h-4 w-4" />
+                                                        <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
                                                     </Button>
                                                 </div>
                                             </TableCell>
@@ -167,18 +168,18 @@ export function QrScannerComponent() {
                                 </TableBody>
                             </Table>
                              <Button variant="outline" onClick={handleAddNewItem}>
-                                <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Item Manualmente
+                                <FontAwesomeIcon icon={faPlusCircle} className="mr-2 h-4 w-4" /> Adicionar Item Manualmente
                             </Button>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary"/> Programas de Fidelidade</CardTitle>
+                            <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faShieldCheck} className="w-5 h-5 text-primary"/> Programas de Fidelidade</CardTitle>
                             <CardDescription>Adicione suas informações de fidelidade para esta compra.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <Alert>
-                                <ShieldCheck className="h-4 w-4" />
+                                <FontAwesomeIcon icon={faShieldCheck} className="h-4 w-4" />
                                 <AlertTitle>Em breve: Integração Automática!</AlertTitle>
                                 <AlertDescription>
                                     Estamos trabalhando para conectar seus programas de fidelidade favoritos diretamente ao ShopWise para captura automática de pontos e descontos.
@@ -244,7 +245,7 @@ export function QrScannerComponent() {
                 )}
                 <DialogFooter>
                     <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>Cancelar</Button>
-                    <Button onClick={handleSaveEdit}><Save className="mr-2 h-4 w-4"/> Salvar Alterações</Button>
+                    <Button onClick={handleSaveEdit}><FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4"/> Salvar Alterações</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

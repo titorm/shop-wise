@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileLines } from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminLogsPage() {
     return (
@@ -8,7 +9,7 @@ export default function AdminLogsPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <FileText className="w-6 h-6" />
+                        <FontAwesomeIcon icon={faFileLines} className="w-6 h-6" />
                         Logs do Sistema
                     </CardTitle>
                     <CardDescription>Visualize logs de erros e eventos importantes do sistema.</CardDescription>
