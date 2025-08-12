@@ -230,12 +230,12 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="flex flex-col">
+        <Card>
            <CardHeader>
                 <CardTitle>{t('dashboard_spending_by_category_title')}</CardTitle>
                 <CardDescription>{t('dashboard_spending_by_category_desc')}</CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 pb-0 flex items-center justify-center">
+            <CardContent className="pb-0">
                 {pieChartData.length > 0 ? (
                     <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full max-h-[300px] w-full">
                         <RechartsPieChart>
