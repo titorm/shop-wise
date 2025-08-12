@@ -143,7 +143,7 @@ const SidebarProvider = React.forwardRef<
               } as React.CSSProperties
             }
             className={cn(
-              "group/sidebar-wrapper flex min-h-svh w-full",
+              "group/sidebar-wrapper w-full",
               className
             )}
             ref={ref}
@@ -178,17 +178,8 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile, open } = useSidebar()
-    const mainContentRef = React.useRef<HTMLDivElement>(null);
-
-    React.useEffect(() => {
-        if (!isMobile && mainContentRef.current) {
-            const sidebarWidth = open ? SIDEBAR_WIDTH : SIDEBAR_WIDTH_ICON;
-            mainContentRef.current.style.marginLeft = sidebarWidth;
-        }
-    }, [isMobile, open]);
-
-
+    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    
     if (collapsible === "none") {
       return (
         <aside
@@ -228,8 +219,8 @@ const Sidebar = React.forwardRef<
       <aside
         ref={ref}
         className={cn(
-            "group/sidebar peer hidden md:flex flex-col text-card-foreground h-svh sticky top-0 bg-card transition-[width] duration-300 ease-in-out",
-            state === 'expanded' ? "w-[--sidebar-width]" : "w-[--sidebar-width-icon]",
+            "group/sidebar peer hidden md:flex flex-col text-card-foreground h-svh fixed top-0 left-0 bg-card transition-[width] duration-300 ease-in-out border-r",
+            state === 'expanded' ? "w-[--sidebar-width] pt-16" : "w-[--sidebar-width-icon] pt-16",
              className
             )}
         data-state={state}
@@ -257,14 +248,14 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-7 w-7", className)}
+      className={cn("h-8 w-8", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
       }}
       {...props}
     >
-      <FontAwesomeIcon icon={faBars} />
+      <FontAwesomeIcon icon={faBars} className="w-4 h-4"/>
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
@@ -299,26 +290,6 @@ const SidebarRail = React.forwardRef<
   )
 })
 SidebarRail.displayName = "SidebarRail"
-
-const SidebarInset = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<"main">
->(({ className, ...props }, ref) => {
-    const { toggleSidebar, state } = useSidebar();
-  return (
-    <main
-      ref={ref}
-      className={cn(
-        "relative flex min-h-svh flex-1 flex-col bg-background",
-        "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)] md:peer-data-[variant=inset]:ml-[calc(var(--sidebar-width)_+_theme(spacing.4)_+2px)] md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
-        className
-      )}
-    >
-        {props.children}
-    </main>
-  )
-})
-SidebarInset.displayName = "SidebarInset"
 
 const SidebarInput = React.forwardRef<
   React.ElementRef<typeof Input>,

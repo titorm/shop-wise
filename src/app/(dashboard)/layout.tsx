@@ -46,18 +46,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 function DashboardLayoutContent({ children }: { children: ReactNode }) {
   const { state } = useSidebar();
   return (
-    <div className="flex min-h-screen bg-card">
-      <Sidebar>
-          <MainNav />
-      </Sidebar>
-      <div className="flex flex-1 flex-col">
-          <Header />
-          <main className={cn(
-              "flex-1 p-4 md:p-6 lg:p-8 bg-background rounded-tl-2xl transition-[margin-left] duration-300 ease-in-out",
-              state === 'expanded' ? "md:ml-0" : "md:ml-0" 
-          )}>
-              {children}
-          </main>
+    <div className="min-h-screen bg-card">
+      <Header />
+      <div className="flex">
+        <Sidebar>
+            <MainNav />
+        </Sidebar>
+        <main className={cn(
+            "flex-1 p-4 md:p-6 lg:p-8 bg-background rounded-tl-2xl transition-[margin-left] duration-300 ease-in-out",
+            state === 'expanded' ? "md:ml-[var(--sidebar-width)]" : "md:ml-[var(--sidebar-width-icon)]" 
+        )}>
+            {children}
+        </main>
       </div>
     </div>
   );

@@ -13,12 +13,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserInitials, cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt, faShoppingCart, faUsers, faShieldHalved } from "@fortawesome/free-solid-svg-icons";
+import { faSignOutAlt, faShoppingCart, faUsers, faShieldHalved, faBars } from "@fortawesome/free-solid-svg-icons";
 import { faBell, faUser } from "@fortawesome/free-regular-svg-icons";
 
 export function Header() {
   const { user } = useAuth();
-  const { isMobile } = useSidebar();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -27,11 +26,8 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 bg-card px-4 md:px-6">
-      <div className={cn(
-        "flex items-center gap-2",
-        !isMobile && "md:hidden"
-      )}>
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-4 md:px-6">
+      <div className="flex items-center gap-2">
         <SidebarTrigger />
         <Logo className="w-6 h-6 text-primary" />
         <span className="text-lg font-bold font-headline">ShopWise</span>

@@ -5,23 +5,16 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   SidebarContent,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  Sidebar,
   useSidebar,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { Logo } from "../icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartColumn, faCog, faGears, faHistory, faHome, faList, faMicroscope, faQrcode, faShield, faShieldHalved, faShoppingBasket, faUsers, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines, faMessage } from "@fortawesome/free-regular-svg-icons";
-import { Button } from "../ui/button";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 
 const menuItems = [
     { href: "/dashboard", label: "Insights", icon: faHome },
@@ -43,22 +36,6 @@ const adminMenuItems = [
     { href: "/admin/logs", label: "Logs do Sistema", icon: faFileLines },
 ];
 
-function ShopWiseLogo() {
-  const { state } = useSidebar();
-  return (
-      <div className="flex items-center gap-2">
-          <div className={cn(
-              "p-1.5 rounded-lg transition-colors duration-300",
-              state === 'expanded' && 'bg-primary/20'
-            )}>
-              <Logo className="w-5 h-5 text-primary" />
-          </div>
-          <span className={cn("text-lg font-bold font-headline transition-opacity duration-300", state === 'collapsed' ? 'opacity-0' : 'opacity-100')}>
-            ShopWise
-          </span>
-      </div>
-  )
-}
 
 export function MainNav() {
   const pathname = usePathname();
@@ -75,9 +52,6 @@ export function MainNav() {
 
   return (
     <>
-      <SidebarHeader>
-        <ShopWiseLogo />
-      </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           {menuItems.map((item) => (
