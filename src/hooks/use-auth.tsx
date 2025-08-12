@@ -13,7 +13,7 @@ interface Profile {
   uid: string;
   displayName: string;
   email: string;
-  familyId: string | DocumentReference; // Allow for old reference type for backwards compatibility
+  familyId: string | null; 
   family?: {
     adults: number;
     children: number;
@@ -52,20 +52,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
             const userData = docSnap.data();
+            const familyIdString = typeof userData.familyId === 'string' ? userData.familyId : (userData.familyId as DocumentReference)?.id || null;
+
             const profileData: Profile = {
                 uid: user.uid,
                 displayName: userData.displayName,
                 email: userData.email,
-                familyId: userData.familyId,
+                familyId: familyIdString,
                 settings: userData.settings,
                 isAdmin: userData.isAdmin,
                 plan: userData.plan || 'free',
             };
 
             // Fetch family data if familyId exists
-            if (userData.familyId) {
-                const familyId = typeof userData.familyId === 'string' ? userData.familyId : (userData.familyId as DocumentReference).id;
-                const familyRef = doc(db, Collections.Families, familyId);
+            if (familyIdString) {
+                const familyRef = doc(db, Collections.Families, familyIdString);
                 const familySnap = await getDoc(familyRef);
                 if (familySnap.exists()) {
                     profileData.family = familySnap.data().familyComposition;

@@ -15,7 +15,7 @@ import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy, Timestamp, collectionGroup } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, Timestamp, collectionGroup, doc } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -48,7 +48,10 @@ export default function HistoryPage() {
 
     useEffect(() => {
         async function fetchPurchases() {
-            if (!profile?.familyId) return;
+            if (!profile?.familyId) {
+                setLoading(false);
+                return;
+            };
 
             setLoading(true);
             try {
@@ -58,7 +61,7 @@ export default function HistoryPage() {
                 
                 const allPurchases = await Promise.all(querySnapshot.docs.map(async (purchaseDoc) => {
                     const purchaseData = purchaseDoc.data();
-                    const itemsRef = collection(db, Collections.Families, profile.familyId, "purchases", purchaseDoc.id, "purchase_items");
+                    const itemsRef = collection(db, Collections.Families, profile.familyId!, "purchases", purchaseDoc.id, "purchase_items");
                     const itemsSnap = await getDocs(itemsRef);
                     const items = itemsSnap.docs.map(doc => ({...doc.data(), id: doc.id } as PurchaseItem));
 

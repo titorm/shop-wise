@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, limit, orderBy, query, where, Timestamp } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, where, Timestamp, doc } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -379,5 +379,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
