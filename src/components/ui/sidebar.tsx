@@ -24,7 +24,7 @@ const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "3.5rem"
+const SIDEBAR_WIDTH_ICON = "3.25rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContext = {
@@ -157,6 +157,7 @@ const SidebarProvider = React.forwardRef<
 )
 SidebarProvider.displayName = "SidebarProvider"
 
+
 const SidebarCollapseButton = React.forwardRef<
     React.ElementRef<typeof Button>,
     React.ComponentProps<typeof Button>
@@ -205,7 +206,7 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    const { isMobile, state, openMobile, setOpenMobile, toggleSidebar } = useSidebar()
 
     if (collapsible === "none") {
       return (
@@ -266,6 +267,21 @@ const Sidebar = React.forwardRef<
           )}
         >
           {children}
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "absolute top-6 z-20 h-8 w-8",
+              "transition-all duration-300 ease-in-out",
+              "data-[state=expanded]:right-3 data-[state=expanded]:rotate-0",
+              "data-[state=collapsed]:right-[-1rem] data-[state=collapsed]:rotate-180 data-[state=collapsed]:border data-[state=collapsed]:bg-background data-[state=collapsed]:hover:bg-accent",
+            )}
+            onClick={toggleSidebar}
+            data-state={state}
+        >
+            <ChevronsLeft className="h-5 w-5" />
+            <span className="sr-only">Toggle Sidebar</span>
+        </Button>
         </div>
       </aside>
     )
@@ -781,6 +797,5 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  SidebarCollapseButton,
   useSidebar,
 }
