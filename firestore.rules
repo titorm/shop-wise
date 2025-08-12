@@ -2,8 +2,125 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /profile/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    // ==================================================================
+    // Funções Auxiliares (Helpers)
+    // Para deixar as regras mais limpas e reutilizáveis
+    // ==================================================================
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Verifica se o ID do usuário que faz a requisição é o mesmo do documento
+    function isUser(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Verifica se o ID do usuário que faz a requisição é o mesmo do documento
+    function isUserAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Obtém o familyId do usuário que está fazendo a requisição
+    function getUserFamilyId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.familyId;
+    }
+
+    // Verifica se o usuário logado é membro da família especificada
+    function isFamilyMember(familyId) {
+      return isSignedIn() && getUserFamilyId() == familyId;
+    }
+
+    // Verifica se o usuário logado é admin da família especificada
+    function isFamilyAdmin(familyId) {
+      let userRole = get(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid)).data.role;
+      return isFamilyMember(familyId) && userRole == 'admin';
+    }
+
+    // ==================================================================
+    // Regras para Collections Globais
+    // ==================================================================
+    
+    // Qualquer usuário autenticado pode ler produtos, categorias e lojas.
+    // Ninguém pode escrever nesses dados diretamente pelo app cliente.
+    // (A escrita deve ser feita por um painel de admin ou script com privilégios)
+    match /{collectionName=**} {
+      allow read: if isSignedIn();
+      allow write: if isUserAdmin(); // Proteção máxima
+    }
+
+    // ==================================================================
+    // Regras para a Collection `users`
+    // ==================================================================
+    
+    match /users/{userId} {
+      // Um usuário só pode ler e apagar o seu próprio documento.
+      allow read, delete: if isUser(userId);
+
+      // Qualquer um pode criar um documento de usuário (ao se cadastrar),
+      // desde que o ID do documento seja o seu próprio UID.
+      // Validação garante que os campos obrigatórios existam e tenham o tipo certo.
+      allow create: if isUser(userId)
+                    && 'email' in request.resource.data && request.resource.data.email is string
+                    && 'displayName' in request.resource.data && request.resource.data.displayName is string
+                    && 'familyId' in request.resource.data && (request.resource.data.familyId is string || request.resource.data.familyId == null);
+                    
+      // Um usuário só pode atualizar seu próprio documento.
+      // Não pode alterar seu familyId ou email após a criação.
+      allow update: if isUser(userId)
+                    && request.resource.data.familyId == resource.data.familyId
+                    && request.resource.data.email == resource.data.email;
+    }
+
+    // ==================================================================
+    // Regras para a Collection `families` e suas Subcollections
+    // ==================================================================
+
+    match /families/{familyId} {
+      // Um usuário só pode ler os dados da sua própria família.
+      allow read: if isFamilyMember(familyId);
+      
+      // Um usuário autenticado pode criar uma família.
+      // O 'ownerId' deve ser o UID de quem está criando.
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      
+      // Apenas o dono (ou um admin) pode atualizar o nome da família.
+      allow update: if isFamilyAdmin(familyId);
+
+      // --- Subcollection de Membros ---
+      match /members/{memberId} {
+        // Todos os membros da família podem ver quem são os outros membros.
+        allow read: if isFamilyMember(familyId);
+        
+        // Apenas admins podem adicionar novos membros ou alterar cargos.
+        allow create, update: if isFamilyAdmin(familyId);
+        
+        // Admins podem remover outros membros. Um membro pode se remover.
+        allow delete: if isFamilyAdmin(familyId) || isUser(memberId);
+      }
+
+      // --- Subcollections de Dados Compartilhados (Listas, Compras, Despensa) ---
+      // Esta regra se aplica a todas as subcollections de dados da família
+      match /{sharedCollection}/{docId} {
+        // Qualquer membro da família pode ler, criar, atualizar e apagar itens.
+        // Isso permite a colaboração total na despensa, listas e histórico.
+        allow read, write: if isFamilyMember(familyId);
+        
+        // Validação extra na criação: o campo 'createdBy'/'addedBy'/'purchasedBy'
+        // deve ser o UID do usuário que está fazendo a ação.
+        // Isso evita que alguém crie um item em nome de outra pessoa.
+        allow create: if isFamilyMember(familyId) &&
+                       (request.resource.data.createdBy == request.auth.uid ||
+                        request.resource.data.addedBy == request.auth.uid ||
+                        request.resource.data.purchasedBy == request.auth.uid);
+      }
+      
+      // Regra aninhada para os itens dentro das compras e listas
+      match /{sharedCollection}/{docId}/{itemsCollection}/{itemId} {
+        // A mesma regra se aplica: qualquer membro pode gerenciar os itens.
+        allow read, write: if isFamilyMember(familyId);
+      }
     }
   }
 }
