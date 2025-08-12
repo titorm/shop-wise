@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, List, QrCode, Settings, Shield, History, Users, BarChart2, ShoppingBasket, MessageSquare, Cog, Microscope, ShieldCheck, FileText } from "lucide-react";
+import { Home, List, QrCode, Settings, Shield, History, Users, BarChart2, ShoppingBasket, MessageSquare, Cog, Microscope, ShieldCheck, FileText, MessageCircle } from "lucide-react";
 import {
   SidebarContent,
   SidebarHeader,
@@ -11,8 +11,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  SidebarCollapseButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { Logo } from "@/components/icons";
 import { useAuth } from "@/hooks/use-auth";
 
 const menuItems = [
@@ -35,17 +36,31 @@ const adminMenuItems = [
     { href: "/admin/logs", label: "Logs do Sistema", icon: FileText },
 ];
 
+function MeetMindLogo() {
+    return (
+        <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-primary/20">
+                <MessageCircle className="w-5 h-5 text-primary" />
+            </div>
+            <span className="text-lg font-bold font-headline">meetmind.ai</span>
+        </div>
+    )
+}
+
 export function MainNav() {
   const pathname = usePathname();
   const { profile } = useAuth();
   const isAdmin = profile?.isAdmin || false;
+  const { state } = useSidebar();
 
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center gap-2 p-2">
-            <Logo className="w-8 h-8 text-primary" />
-            <span className="text-lg font-bold font-headline">ShopWise</span>
+        <div className="flex items-center justify-between w-full">
+            <div className={cn("transition-opacity duration-300", state === 'collapsed' && 'opacity-0')}>
+                <MeetMindLogo />
+            </div>
+            <SidebarCollapseButton />
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -58,8 +73,8 @@ export function MainNav() {
                   tooltip={item.label}
                   asChild={false}
                 >
-                  <item.icon className="h-6 w-6" />
-                  <span>{item.label}</span>
+                  <item.icon className="h-5 w-5" />
+                  <span className={cn(state === 'collapsed' && 'hidden')}>{item.label}</span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
@@ -67,8 +82,7 @@ export function MainNav() {
           
           {isAdmin && (
             <>
-                <SidebarSeparator />
-                <p className="px-4 py-2 text-xs font-semibold text-muted-foreground">Admin</p>
+                <p className={cn("px-4 py-2 text-xs font-semibold text-muted-foreground transition-opacity duration-300", state === 'collapsed' ? 'opacity-0 h-0' : 'opacity-100 h-auto')}>Workspace</p>
                 {adminMenuItems.map((item) => (
                     <SidebarMenuItem key={item.href}>
                     <Link href={item.href}>
@@ -77,8 +91,8 @@ export function MainNav() {
                         tooltip={item.label}
                         asChild={false}
                         >
-                        <item.icon className="h-6 w-6" />
-                        <span>{item.label}</span>
+                        <item.icon className="h-5 w-5" />
+                        <span className={cn(state === 'collapsed' && 'hidden')}>{item.label}</span>
                         </SidebarMenuButton>
                     </Link>
                     </SidebarMenuItem>

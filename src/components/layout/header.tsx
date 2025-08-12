@@ -28,12 +28,7 @@ export function Header() {
       <div className="flex items-center gap-2 md:hidden">
         <SidebarTrigger />
       </div>
-      <div className="hidden items-center gap-2 md:flex">
-        <Link href="/dashboard">
-            <Logo className="h-7 w-7 text-primary" />
-        </Link>
-        <span className="text-xl font-bold font-headline">ShopWise</span>
-      </div>
+      
       <div className="flex w-full items-center justify-end gap-2">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/list">
