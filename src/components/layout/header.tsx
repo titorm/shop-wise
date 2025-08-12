@@ -16,7 +16,7 @@ import { getUserInitials, cn } from "@/lib/utils";
 
 export function Header() {
   const { user } = useAuth();
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -26,16 +26,16 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
-      <div className={cn(
-        "items-center gap-2 md:flex",
-        state === 'expanded' ? 'md:hidden' : ''
-      )}>
-        <Logo className="w-6 h-6 text-primary" />
-        <span className="text-lg font-bold font-headline hidden md:block">ShopWise</span>
-      </div>
-      
       <div className="flex items-center gap-2 md:hidden">
         <SidebarTrigger />
+      </div>
+
+      <div className={cn(
+        "hidden items-center gap-2",
+        (isMobile || state === 'collapsed') && "flex"
+      )}>
+        <Logo className="w-6 h-6 text-primary" />
+        <span className="text-lg font-bold font-headline">ShopWise</span>
       </div>
       
       <div className="flex w-full items-center justify-end gap-2">

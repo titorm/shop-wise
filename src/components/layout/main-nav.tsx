@@ -38,14 +38,17 @@ const adminMenuItems = [
 ];
 
 function ShopWiseLogo() {
-    return (
-        <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-primary/20">
-                <Logo className="w-5 h-5 text-primary" />
-            </div>
-            <span className="text-lg font-bold font-headline">ShopWise</span>
-        </div>
-    )
+  const { state } = useSidebar();
+  return (
+      <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-primary/20">
+              <Logo className="w-5 h-5 text-primary" />
+          </div>
+          <span className={cn("text-lg font-bold font-headline transition-opacity duration-300", state === 'collapsed' && 'opacity-0')}>
+            ShopWise
+          </span>
+      </div>
+  )
 }
 
 export function MainNav() {
@@ -57,10 +60,10 @@ export function MainNav() {
   return (
     <>
       <SidebarHeader>
-        <div className={cn("transition-opacity duration-300", state === 'collapsed' && 'opacity-0')}>
+        <div className="flex items-center justify-between w-full">
             <ShopWiseLogo />
+            <SidebarCollapseButton />
         </div>
-        <SidebarCollapseButton />
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
