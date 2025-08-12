@@ -135,7 +135,7 @@ export function PreferencesForm() {
                  <h4 className="text-base font-medium mb-2">{t('preferences_form_notifications_title')}</h4>
                 <FormField
                     control={form.control}
-                    name="settings.notifications"
+                    name="notifications"
                     render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
@@ -166,3 +166,5 @@ export function PreferencesForm() {
     </Card>
   );
 }
+
+    
