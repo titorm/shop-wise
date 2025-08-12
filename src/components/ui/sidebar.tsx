@@ -4,7 +4,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft, ChevronsLeft } from "lucide-react"
+import { PanelLeft, ChevronsLeft, ChevronsRight } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -249,7 +249,7 @@ const Sidebar = React.forwardRef<
         >
           <div
             data-sidebar="sidebar"
-            className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+            className="relative flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
           >
             {children}
           </div>
@@ -270,11 +270,18 @@ const SidebarCollapseButton = React.forwardRef<
             ref={ref}
             variant="ghost"
             size="icon"
-            className={cn("h-8 w-8", className)}
+            className={cn(
+              "absolute top-3 z-20 h-8 w-8",
+              "transition-all duration-300 ease-in-out",
+              "data-[state=expanded]:right-3",
+              "data-[state=collapsed]:right-[-1rem] data-[state=collapsed]:border data-[state=collapsed]:bg-background data-[state=collapsed]:hover:bg-accent",
+              className
+            )}
             onClick={toggleSidebar}
+            data-state={state}
             {...props}
         >
-            <ChevronsLeft className={cn("h-5 w-5 transition-transform duration-300", state === 'collapsed' && 'rotate-180')} />
+            {state === 'expanded' ? <ChevronsLeft className="h-5 w-5" /> : <ChevronsRight className="h-5 w-5" />}
             <span className="sr-only">Toggle Sidebar</span>
         </Button>
     )
@@ -381,7 +388,7 @@ const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn("flex h-16 shrink-0 items-center justify-between gap-2 p-3 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:py-3", className)}
+      className={cn("flex h-16 shrink-0 items-center gap-2 p-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:py-3", className)}
       {...props}
     />
   )

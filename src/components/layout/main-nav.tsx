@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
   SidebarCollapseButton,
   useSidebar,
+  Sidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -60,14 +61,19 @@ export function MainNav() {
   const isAdmin = profile?.isAdmin || false;
   const { state } = useSidebar();
 
+  const isActive = (href: string) => {
+    if (href === '/admin') {
+        return pathname === href;
+    }
+    return pathname.startsWith(href);
+  }
+
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center justify-between w-full">
-            <ShopWiseLogo />
-            <SidebarCollapseButton />
-        </div>
+        <ShopWiseLogo />
       </SidebarHeader>
+      <SidebarCollapseButton />
       <SidebarContent>
         <SidebarMenu>
           {menuItems.map((item) => (
@@ -92,7 +98,7 @@ export function MainNav() {
                     <SidebarMenuItem key={item.href}>
                     <Link href={item.href}>
                         <SidebarMenuButton 
-                        isActive={pathname === item.href}
+                        isActive={isActive(item.href)}
                         tooltip={item.label}
                         asChild={false}
                         >
