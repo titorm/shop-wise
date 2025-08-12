@@ -151,64 +151,64 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
               </TableHeader>
               <TableBody>
                 {fields.map((field, index) => (
-                  <TableRow key={field.id} className="align-top">
-                    <TableCell className="p-1">
+                  <TableRow key={field.id}>
+                    <TableCell className="align-top py-1">
                       <FormField
                         control={form.control}
                         name={`items.${index}.name`}
                         render={({ field }) => (
-                            <FormItem>
+                            <div className="flex flex-col gap-1.5">
                                 <FormControl>
                                     <Input {...field} placeholder={t('item_name_placeholder')} />
                                 </FormControl>
                                 <FormMessage />
-                            </FormItem>
+                            </div>
                         )}
                       />
                     </TableCell>
-                    <TableCell className="p-1">
+                    <TableCell className="align-top py-1">
                       <FormField
                         control={form.control}
                         name={`items.${index}.volume`}
                         render={({ field }) => (
-                            <FormItem>
+                             <div className="flex flex-col gap-1.5">
                                 <FormControl>
                                      <Input {...field} placeholder="ex: 1kg, 500ml" />
                                 </FormControl>
                                 <FormMessage />
-                            </FormItem>
+                            </div>
                         )}
                       />
                     </TableCell>
-                    <TableCell className="p-1">
+                    <TableCell className="align-top py-1">
                       <FormField
                         control={form.control}
                         name={`items.${index}.quantity`}
                         render={({ field }) => (
-                            <FormItem>
+                             <div className="flex flex-col gap-1.5">
                                 <FormControl>
                                     <Input type="number" step="0.01" {...field} className="text-center" />
                                 </FormControl>
                                 <FormMessage />
-                            </FormItem>
+                            </div>
                         )}
                       />
                     </TableCell>
-                    <TableCell className="p-1">
+                    <TableCell className="align-top py-1">
                        <FormField
                         control={form.control}
                         name={`items.${index}.price`}
                         render={({ field }) => (
-                            <FormItem>
+                             <div className="flex flex-col gap-1.5">
                                 <FormControl>
                                     <Input type="number" step="0.01" {...field} className="text-center" />
                                 </FormControl>
                                 <FormMessage />
-                            </FormItem>
+                            </div>
                         )}
                       />
                     </TableCell>
-                    <TableCell className="p-1 text-right">
+                    <TableCell className="align-middle py-1 text-right">
                       <Button
                         type="button"
                         variant="ghost"
