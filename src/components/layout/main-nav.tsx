@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Home, List, QrCode, Settings, Shield, History } from "lucide-react";
 import {
   SidebarContent,
@@ -18,6 +18,7 @@ const menuItems = [
     { href: "/list", label: "Lista de Compras", icon: List },
     { href: "/scan", label: "Escanear Cupom", icon: QrCode },
     { href: "/history", label: "Histórico", icon: History },
+    { href: "/settings", label: "Configurações", icon: Settings },
     { href: "/admin", label: "Admin", icon: Shield },
 ];
 
@@ -35,7 +36,7 @@ export function MainNav() {
       <SidebarContent>
         <SidebarMenu>
           {menuItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
+            <SidebarMenuItem key={item.href} asChild>
               <Link href={item.href}>
                 <SidebarMenuButton 
                   isActive={pathname.startsWith(item.href)}
