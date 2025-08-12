@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, DocumentReference } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import i18n from '@/lib/i18n';
 
@@ -13,7 +13,7 @@ interface Profile {
   uid: string;
   displayName: string;
   email: string;
-  familyId: string;
+  familyId: string | DocumentReference; // Allow for old reference type for backwards compatibility
   family?: {
     adults: number;
     children: number;
@@ -64,7 +64,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             // Fetch family data if familyId exists
             if (userData.familyId) {
-                const familyRef = doc(db, Collections.Families, userData.familyId);
+                const familyId = typeof userData.familyId === 'string' ? userData.familyId : (userData.familyId as DocumentReference).id;
+                const familyRef = doc(db, Collections.Families, familyId);
                 const familySnap = await getDoc(familyRef);
                 if (familySnap.exists()) {
                     profileData.family = familySnap.data().familyComposition;

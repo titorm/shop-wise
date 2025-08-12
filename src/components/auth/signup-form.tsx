@@ -80,7 +80,7 @@ export function SignupForm() {
         await setDoc(userRef, {
             displayName: values.name,
             email: values.email,
-            familyId: familyRef.id, // Store the ID as a string
+            familyId: familyRef.id,
             isAdmin: true, // The user who creates the family is an admin
             settings: {
                 theme: "system",
@@ -117,7 +117,7 @@ export function SignupForm() {
         await setDoc(userRef, {
             displayName: user.displayName,
             email: user.email,
-            familyId: familyRef.id, // Store the ID as a string
+            familyId: familyRef.id,
             isAdmin: true,
             settings: {
                 theme: "system",
