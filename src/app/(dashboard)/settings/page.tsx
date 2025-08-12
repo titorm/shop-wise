@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { DeleteConfirmationDialog } from "@/components/settings/delete-confirmation-dialog";
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faUsers, faShieldHalved, faTrash, faUserXmark, faGear } from '@fortawesome/free-solid-svg-icons';
+import { faShieldHalved, faTrash, faUserXmark, faGear } from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
 
 
 export default function SettingsPage() {

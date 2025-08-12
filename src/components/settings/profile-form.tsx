@@ -28,11 +28,10 @@ import { useEffect, useState } from "react";
 import { updateProfile, linkWithPopup, GoogleAuthProvider, OAuthProvider, User, AuthProvider } from "firebase/auth";
 import { auth, db, googleProvider } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye as faEyeSolid, faEyeSlash as faEyeSlashSolid } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 const profileSchema = z.object({
@@ -246,9 +245,9 @@ export function ProfileForm() {
                             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                             >
                             {showCurrentPassword ? (
-                                <FontAwesomeIcon icon={faEyeSlashSolid} className="h-4 w-4" aria-hidden="true" />
+                                <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" aria-hidden="true" />
                             ) : (
-                                <FontAwesomeIcon icon={faEyeSolid} className="h-4 w-4" aria-hidden="true" />
+                                <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                             )}
                             <span className="sr-only">
                                 {showCurrentPassword ? "Hide password" : "Show password"}
@@ -277,9 +276,9 @@ export function ProfileForm() {
                             onClick={() => setShowNewPassword(!showNewPassword)}
                             >
                             {showNewPassword ? (
-                                <FontAwesomeIcon icon={faEyeSlashSolid} className="h-4 w-4" aria-hidden="true" />
+                                <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" aria-hidden="true" />
                             ) : (
-                                <FontAwesomeIcon icon={faEyeSolid} className="h-4 w-4" aria-hidden="true" />
+                                <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                             )}
                             <span className="sr-only">
                                 {showNewPassword ? "Hide password" : "Show password"}

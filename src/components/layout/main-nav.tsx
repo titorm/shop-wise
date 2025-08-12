@@ -16,7 +16,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Logo } from "../icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartColumn, faCog, faFileLines, faGears, faHistory, faHome, faList, faMessage, faMicroscope, faQrcode, faShield, faShieldHalved, faShoppingBasket, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faChartColumn, faCog, faGears, faHistory, faHome, faList, faMicroscope, faQrcode, faShield, faShieldHalved, faShoppingBasket, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faFileLines, faMessage } from "@fortawesome/free-regular-svg-icons";
 
 const menuItems = [
     { href: "/dashboard", label: "Insights", icon: faHome },
@@ -115,4 +116,3 @@ export function MainNav() {
     </>
   );
 }
-

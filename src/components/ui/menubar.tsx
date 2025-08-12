@@ -1,8 +1,10 @@
+
 "use client"
 
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
-import { faCheck, faChevronRight, faCircle } from "@fortawesome/free-solid-svg-icons"
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons"
+import { faCheck, faCircle } from "@fortawesome/free-regular-svg-icons"
 
 import { cn } from "@/lib/utils"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"

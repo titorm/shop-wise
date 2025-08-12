@@ -13,7 +13,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserInitials, cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faSignOutAlt, faShoppingCart, faUser, faUsers, faShieldHalved } from "@fortawesome/free-solid-svg-icons";
+import { faSignOutAlt, faShoppingCart, faUsers, faShieldHalved } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faUser } from "@fortawesome/free-regular-svg-icons";
 
 export function Header() {
   const { user } = useAuth();
