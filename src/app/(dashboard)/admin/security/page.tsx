@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShieldCheck } from "@fortawesome/free-solid-svg-icons";
+import { faShield } from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminSecurityPage() {
     return (
@@ -9,7 +9,7 @@ export default function AdminSecurityPage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2">
-                        <FontAwesomeIcon icon={faShieldCheck} className="w-6 h-6" />
+                        <FontAwesomeIcon icon={faShield} className="w-6 h-6" />
                         Segurança e Conformidade
                     </CardTitle>
                     <CardDescription>Controle de acesso e auditoria de ações administrativas.</CardDescription>
@@ -21,3 +21,4 @@ export default function AdminSecurityPage() {
         </div>
     );
 }
+

@@ -16,7 +16,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { Logo } from "../icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartColumn, faCog, faFileLines, faGears, faHistory, faHome, faList, faMessage, faMicroscope, faQrcode, faShieldCheck, faShieldHalved, faShoppingBasket, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faChartColumn, faCog, faFileLines, faGears, faHistory, faHome, faList, faMessage, faMicroscope, faQrcode, faShield, faShieldHalved, faShoppingBasket, faUsers } from "@fortawesome/free-solid-svg-icons";
 
 const menuItems = [
     { href: "/dashboard", label: "Insights", icon: faHome },
@@ -34,7 +34,7 @@ const adminMenuItems = [
     { href: "/admin/settings", label: "Configurações Globais", icon: faCog },
     { href: "/admin/notifications", label: "Gerenciar Notificações", icon: faMessage },
     { href: "/admin/audit", label: "Auditoria e Testes", icon: faMicroscope },
-    { href: "/admin/security", label: "Segurança", icon: faShieldCheck },
+    { href: "/admin/security", label: "Segurança", icon: faShield },
     { href: "/admin/logs", label: "Logs do Sistema", icon: faFileLines },
 ];
 
@@ -115,3 +115,4 @@ export function MainNav() {
     </>
   );
 }
+
