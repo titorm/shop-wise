@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { PT_Sans } from 'next/font/google';
 import './globals.css';
@@ -7,7 +8,6 @@ import { AuthProvider } from '@/hooks/use-auth';
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import "@/lib/i18n";
-import "@/lib/firebase"; // Import to initialize firebase and app check
 
 config.autoAddCss = false
 
