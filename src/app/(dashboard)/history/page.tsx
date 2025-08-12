@@ -95,15 +95,15 @@ export default function HistoryPage() {
         <div className="container mx-auto py-8 space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-6 h-6"/> {t('purchaseHistory_title')}</CardTitle>
-                    <CardDescription>{t('purchaseHistory_description')}</CardDescription>
+                    <CardTitle className="text-2xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-6 h-6"/> {t('purchase_history_title')}</CardTitle>
+                    <CardDescription>{t('purchase_history_description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col md:flex-row gap-4 mb-6">
                         <div className="relative flex-grow">
                             <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input 
-                                placeholder={t('searchByStoreOrProduct')}
+                                placeholder={t('search_by_store_or_product')}
                                 className="pl-10"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -111,24 +111,24 @@ export default function HistoryPage() {
                         </div>
                         <Select value={selectedStore} onValueChange={setSelectedStore}>
                             <SelectTrigger className="w-full md:w-[200px]">
-                                <SelectValue placeholder={t('filterByStore')} />
+                                <SelectValue placeholder={t('filter_by_store')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">{t('allStores')}</SelectItem>
+                                <SelectItem value="all">{t('all_stores')}</SelectItem>
                                 <SelectItem value="Supermercado Exemplo">Supermercado Exemplo</SelectItem>
                                 <SelectItem value="Atacarejo Preço Baixo">Atacarejo Preço Baixo</SelectItem>
                             </SelectContent>
                         </Select>
                         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                              <SelectTrigger className="w-full md:w-[200px]">
-                                <SelectValue placeholder={t('filterByPeriod')} />
+                                <SelectValue placeholder={t('filter_by_period')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">{t('allPeriods')}</SelectItem>
-                                <SelectItem value="last_month">{t('lastMonth')}</SelectItem>
-                                <SelectItem value="last_3_months">{t('last3Months')}</SelectItem>
-                                <SelectItem value="last_6_months">{t('last6Months')}</SelectItem>
-                                <SelectItem value="last_year">{t('lastYear')}</SelectItem>
+                                <SelectItem value="all">{t('all_periods')}</SelectItem>
+                                <SelectItem value="last_month">{t('last_month')}</SelectItem>
+                                <SelectItem value="last_3_months">{t('last_3_months')}</SelectItem>
+                                <SelectItem value="last_6_months">{t('last_6_months')}</SelectItem>
+                                <SelectItem value="last_year">{t('last_year')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -140,7 +140,7 @@ export default function HistoryPage() {
                     </div>
                      {filteredPurchases.length === 0 && (
                         <div className="text-center py-12 text-muted-foreground">
-                            <p>{t('noPurchasesFound')}</p>
+                            <p>{t('no_purchases_found')}</p>
                         </div>
                     )}
                 </CardContent>
@@ -153,16 +153,16 @@ export default function HistoryPage() {
                 <CardContent className="grid md:grid-cols-2 gap-6">
                     <Alert>
                         <FontAwesomeIcon icon={faShoppingCart} className="h-4 w-4" />
-                        <AlertTitle>{t('recommendations_recentlyBought')}</AlertTitle>
+                        <AlertTitle>{t('recommendations_recently_bought')}</AlertTitle>
                         <AlertDescription>
-                          <Trans i18nKey="recommendations_recentlyBought_desc" values={{ items: "Leite, Pão, Café" }} components={{ 1: <span className="font-semibold" /> }} />
+                          <Trans i18nKey="recommendations_recently_bought_desc" values={{ items: "Leite, Pão, Café" }} components={{ 1: <span className="font-semibold" /> }} />
                         </AlertDescription>
                     </Alert>
                      <Alert>
                         <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4" />
-                        <AlertTitle>{t('recommendations_potentialSavings')}</AlertTitle>
+                        <AlertTitle>{t('recommendations_potential_savings')}</AlertTitle>
                         <AlertDescription>
-                           <Trans i18nKey="recommendations_potentialSavings_desc" values={{ item: "Arroz 5kg", store: "Atacarejo Preço Baixo" }} components={{ 1: <span className="font-semibold" />, 3: <span className="font-semibold" /> }} />
+                           <Trans i18nKey="recommendations_potential_savings_desc" values={{ item: "Arroz 5kg", store: "Atacarejo Preço Baixo" }} components={{ 1: <span className="font-semibold" />, 3: <span className="font-semibold" /> }} />
                         </AlertDescription>
                     </Alert>
                 </CardContent>
@@ -186,7 +186,7 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
                     <CardContent className="flex justify-between items-center text-sm">
                         <div className="flex items-center gap-2 text-muted-foreground">
                             <FontAwesomeIcon icon={faShoppingCart} className="w-4 h-4"/>
-                            <span>{t('purchaseCard_items', {count: purchase.items.length})}</span>
+                            <span>{t('purchase_card_items', {count: purchase.items.length})}</span>
                         </div>
                         <div className="flex items-center gap-2 font-bold text-lg text-foreground">
                             <FontAwesomeIcon icon={faDollarSign} className="w-5 h-5 text-primary"/>
@@ -197,7 +197,7 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle>{t('purchaseDetails_title', { store: purchase.store })}</DialogTitle>
+                    <DialogTitle>{t('purchase_details_title', { store: purchase.store })}</DialogTitle>
                     <DialogDescription>
                          {new Date(purchase.date).toLocaleString('pt-BR', {dateStyle: 'full', timeStyle: 'short'})}
                     </DialogDescription>
@@ -230,3 +230,5 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
         </Dialog>
     );
 }
+
+    

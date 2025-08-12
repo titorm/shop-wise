@@ -11,8 +11,8 @@ export default function ListPage() {
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-headline">{t('shoppingList_title')}</CardTitle>
-                    <CardDescription>{t('shoppingList_description')}</CardDescription>
+                    <CardTitle className="text-2xl font-headline">{t('shopping_list_title')}</CardTitle>
+                    <CardDescription>{t('shopping_list_description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ShoppingListComponent />
@@ -21,3 +21,5 @@ export default function ListPage() {
         </div>
     );
 }
+
+    

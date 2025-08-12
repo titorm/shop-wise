@@ -23,7 +23,7 @@ export default function Home() {
             <Button variant="ghost">{t('login')}</Button>
           </Link>
           <Link href="/signup" passHref>
-            <Button>{t('createAccount')}</Button>
+            <Button>{t('create_account')}</Button>
           </Link>
         </nav>
       </header>
@@ -45,7 +45,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex justify-center gap-4">
                <Link href="/signup" passHref>
-                <Button size="lg">{t('startNowFree')}</Button>
+                <Button size="lg">{t('start_now_free')}</Button>
               </Link>
             </div>
           </div>
@@ -54,29 +54,29 @@ export default function Home() {
         <section id="features" className="bg-card/50 py-20 md:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h3 className="text-3xl md:text-4xl font-bold font-headline text-foreground">{t('powerfulFeatures')}</h3>
-              <p className="mt-4 text-lg text-muted-foreground">{t('powerfulFeaturesDescription')}</p>
+              <h3 className="text-3xl md:text-4xl font-bold font-headline text-foreground">{t('powerful_features')}</h3>
+              <p className="mt-4 text-lg text-muted-foreground">{t('powerful_features_description')}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <FeatureCard
                 icon={<FontAwesomeIcon icon={faChartSimple} className="w-10 h-10 text-primary" />}
-                title={t('feature_visualInsights_title')}
-                description={t('feature_visualInsights_description')}
+                title={t('feature_visual_insights_title')}
+                description={t('feature_visual_insights_description')}
               />
               <FeatureCard
                 icon={<FontAwesomeIcon icon={faQrcode} className="w-10 h-10 text-primary" />}
-                title={t('feature_cameraRegister_title')}
-                description={t('feature_cameraRegister_description')}
+                title={t('feature_camera_register_title')}
+                description={t('feature_camera_register_description')}
               />
               <FeatureCard
                 icon={<FontAwesomeIcon icon={faShoppingCart} className="w-10 h-10 text-primary" />}
-                title={t('feature_smartLists_title')}
-                description={t('feature_smartLists_description')}
+                title={t('feature_smart_lists_title')}
+                description={t('feature_smart_lists_description')}
               />
               <FeatureCard
                 icon={<FontAwesomeIcon icon={faSliders} className="w-10 h-10 text-primary" />}
-                title={t('feature_fullControl_title')}
-                description={t('feature_fullControl_description')}
+                title={t('feature_full_control_title')}
+                description={t('feature_full_control_description')}
               />
             </div>
           </div>
@@ -101,3 +101,5 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode, titl
     </div>
   );
 }
+
+    

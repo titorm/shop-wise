@@ -72,21 +72,21 @@ export default function SettingsPage() {
                         <TabsContent value="privacy" className="mt-6 space-y-8">
                            <Card className="border-destructive">
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faTrash} className="w-5 h-5 text-destructive" /> {t('privacy_deleteData_title')}</CardTitle>
-                                    <CardDescription>{t('privacy_deleteData_desc')}</CardDescription>
+                                    <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faTrash} className="w-5 h-5 text-destructive" /> {t('privacy_delete_data_title')}</CardTitle>
+                                    <CardDescription>{t('privacy_delete_data_desc')}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-sm text-muted-foreground">{t('privacy_deleteData_note')}</p>
+                                    <p className="text-sm text-muted-foreground">{t('privacy_delete_data_note')}</p>
                                 </CardContent>
                                 <CardFooter>
                                      <DeleteConfirmationDialog 
                                         onConfirm={handleDeleteData}
-                                        title={t('privacy_deleteData_confirm_title')}
-                                        description={t('privacy_deleteData_confirm_desc')}
-                                        confirmButtonText={t('privacy_deleteData_confirm_button')}
+                                        title={t('privacy_delete_data_confirm_title')}
+                                        description={t('privacy_delete_data_confirm_desc')}
+                                        confirmButtonText={t('privacy_delete_data_confirm_button')}
                                         triggerButton={
                                             <Button variant="destructive">
-                                                <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" /> {t('privacy_deleteData_button')}
+                                                <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" /> {t('privacy_delete_data_button')}
                                             </Button>
                                         }
                                     />
@@ -94,21 +94,21 @@ export default function SettingsPage() {
                            </Card>
                            <Card className="border-destructive">
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faUserXmark} className="w-5 h-5 text-destructive" /> {t('privacy_deleteAccount_title')}</CardTitle>
-                                    <CardDescription>{t('privacy_deleteAccount_desc')}</CardDescription>
+                                    <CardTitle className="flex items-center gap-2"><FontAwesomeIcon icon={faUserXmark} className="w-5 h-5 text-destructive" /> {t('privacy_delete_account_title')}</CardTitle>
+                                    <CardDescription>{t('privacy_delete_account_desc')}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-sm text-muted-foreground">{t('privacy_deleteAccount_note')}</p>
+                                    <p className="text-sm text-muted-foreground">{t('privacy_delete_account_note')}</p>
                                 </CardContent>
                                 <CardFooter>
                                     <DeleteConfirmationDialog 
                                         onConfirm={handleDeleteAccount}
-                                        title={t('privacy_deleteAccount_confirm_title')}
-                                        description={t('privacy_deleteAccount_confirm_desc')}
-                                        confirmButtonText={t('privacy_deleteAccount_confirm_button')}
+                                        title={t('privacy_delete_account_confirm_title')}
+                                        description={t('privacy_delete_account_confirm_desc')}
+                                        confirmButtonText={t('privacy_delete_account_confirm_button')}
                                         triggerButton={
                                             <Button variant="destructive" >
-                                                <FontAwesomeIcon icon={faUserXmark} className="mr-2 h-4 w-4" /> {t('privacy_deleteAccount_button')}
+                                                <FontAwesomeIcon icon={faUserXmark} className="mr-2 h-4 w-4" /> {t('privacy_delete_account_button')}
                                             </Button>
                                         }
                                     />
@@ -121,3 +121,5 @@ export default function SettingsPage() {
         </div>
     );
 }
+
+    

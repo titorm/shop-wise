@@ -100,7 +100,7 @@ export function LoginForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('emailLabel')}</FormLabel>
+                    <FormLabel>{t('email_label')}</FormLabel>
                     <FormControl>
                       <Input placeholder="seu@email.com" {...field} />
                     </FormControl>
@@ -114,10 +114,10 @@ export function LoginForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center justify-between">
-                      <FormLabel>{t('passwordLabel')}</FormLabel>
+                      <FormLabel>{t('password_label')}</FormLabel>
                       <Link href="/forgot-password" passHref>
                         <Button variant="link" className="px-0 h-auto text-sm">
-                          {t('forgotPassword')}
+                          {t('forgot_password')}
                         </Button>
                       </Link>
                     </div>
@@ -138,7 +138,7 @@ export function LoginForm() {
                           <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                         )}
                         <span className="sr-only">
-                          {showPassword ? t('hidePassword') : t('showPassword')}
+                          {showPassword ? t('hide_password') : t('show_password')}
                         </span>
                       </Button>
                     </div>
@@ -157,19 +157,19 @@ export function LoginForm() {
             <div className="space-y-2">
                  <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn}>
                     <FontAwesomeIcon icon={faGoogle} className="mr-2 h-4 w-4" />
-                    {t('signInWithGoogle')}
+                    {t('sign_in_with_google')}
                 </Button>
                 <Button variant="outline" className="w-full" type="button">
                     <FontAwesomeIcon icon={faApple} className="mr-2 h-4 w-4" />
-                    {t('signInWithApple')}
+                    {t('sign_in_with_apple')}
                 </Button>
             </div>
           </CardContent>
           <CardFooter className="flex-col gap-2">
             <p className="text-sm text-muted-foreground">
-              {t('noAccount')}{" "}
+              {t('no_account')}{" "}
               <Link href="/signup" passHref>
-                <Button variant="link" className="px-0 h-auto">{t('createAccount')}</Button>
+                <Button variant="link" className="px-0 h-auto">{t('create_account')}</Button>
               </Link>
             </p>
           </CardFooter>
@@ -178,3 +178,5 @@ export function LoginForm() {
     </Card>
   );
 }
+
+    
