@@ -235,7 +235,7 @@ export default function DashboardPage() {
                 <CardTitle>{t('dashboard_spending_by_category_title')}</CardTitle>
                 <CardDescription>{t('dashboard_spending_by_category_desc')}</CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 pb-0">
+            <CardContent className="flex-1 pb-0 flex items-center justify-center">
                 {pieChartData.length > 0 ? (
                     <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full max-h-[300px] w-full">
                         <RechartsPieChart>
@@ -255,7 +255,7 @@ export default function DashboardPage() {
                     <EmptyState
                         title={t('empty_state_no_chart_title')}
                         description={t('empty_state_no_chart_desc')}
-                        className="h-full"
+                        className="h-[300px] w-full"
                     />
                 )}
             </CardContent>
