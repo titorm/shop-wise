@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* #FFFFFF */
+    --background: 220 14% 96%; /* #F5F5F5 */
     --foreground: 240 10% 4%; /* #212121 */
-    --card: 220 14% 96%; /* #F5F5F5 */
+    --card: 0 0% 100%; /* #FFFFFF */
     --card-foreground: 240 10% 4%; /* #212121 */
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 4%;
@@ -25,7 +25,7 @@
     --ring: 122 46% 34%;
     --radius: 0.8rem;
 
-    --sidebar: 220 14% 96%;
+    --sidebar: 0 0% 100%;
     --sidebar-foreground: 240 10% 4%;
     --sidebar-border: 0 0% 88%;
     --sidebar-accent: 122 46% 95%; /* Lighter green */
@@ -61,9 +61,9 @@
   }
 
   .dark {
-    --background: 0 0% 12%; /* #1E1E1E */
+    --background: 0 0% 7%; /* #121212 */
     --foreground: 0 0% 100%; /* #FFFFFF */
-    --card: 0 0% 7%; /* #121212 */
+    --card: 0 0% 12%; /* #1E1E1E */
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 12%;
     --popover-foreground: 0 0% 100%;
@@ -82,7 +82,7 @@
     --ring: 122 46% 44%;
     --radius: 0.8rem;
 
-    --sidebar: 0 0% 7%;
+    --sidebar: 0 0% 12%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 20%;
     --sidebar-accent: 122 46% 18%; /* Darker green */
