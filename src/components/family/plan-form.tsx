@@ -158,7 +158,7 @@ export function PlanForm() {
                                                             <TabsTrigger value="monthly">Mensal</TabsTrigger>
                                                             <TabsTrigger value="annually">
                                                                 Anual
-                                                                <Badge variant="secondary" className="ml-2 bg-primary/20 text-primary">Economize 2 meses!</Badge>
+                                                                <Badge variant="outline" className="ml-2 border-primary text-primary bg-primary/10">Economize 2 meses!</Badge>
                                                             </TabsTrigger>
                                                         </TabsList>
                                                     </Tabs>
