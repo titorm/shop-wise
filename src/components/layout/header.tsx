@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -36,8 +37,10 @@ export function Header() {
       <div className="flex w-full items-center justify-end gap-2">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/list">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="sr-only">Lista de Compras Ativa</span>
+            <span>
+              <ShoppingCart className="h-5 w-5" />
+              <span className="sr-only">Lista de Compras Ativa</span>
+            </span>
           </Link>
         </Button>
         <Button variant="ghost" size="icon">
