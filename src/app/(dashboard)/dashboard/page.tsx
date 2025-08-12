@@ -187,9 +187,9 @@ export default function DashboardPage() {
             <CardTitle>{t('dashboard_consumption_overview_title')}</CardTitle>
             <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
           </CardHeader>
-          <CardContent className="pl-2">
+          <CardContent>
             {barChartData.length > 0 ? (
-             <ChartContainer config={barChartConfig} className="h-[300px] w-full">
+             <ChartContainer config={barChartConfig} className="h-[300px] w-full pl-2">
                 <ResponsiveContainer>
                     <RechartsBarChart data={barChartData} stackOffset="sign">
                         <XAxis
