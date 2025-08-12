@@ -45,7 +45,7 @@ export function Header() {
         {user && (
            <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                  <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full p-0">
                     <Avatar className="h-9 w-9">
                       <AvatarImage src={user?.photoURL ?? ""} alt={user?.displayName ?? "User Avatar"} />
                       <AvatarFallback>{getUserInitials(user?.displayName)}</AvatarFallback>
