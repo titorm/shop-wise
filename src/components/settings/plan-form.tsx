@@ -10,7 +10,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
 } from "@/components/ui/form";
 import {
   Card,
@@ -28,6 +27,7 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faGem, faRocket } from "@fortawesome/free-solid-svg-icons";
+import { Label } from "@/components/ui/label";
 
 const planSchema = z.object({
     plan: z.enum(["free", "premium"]).default("free"),
