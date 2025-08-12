@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, BarChart, QrCode, SlidersHorizontal } from "lucide-react";
+import { BarChart, QrCode, ShoppingCart, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/icons";
 import { cn } from "@/lib/utils";
