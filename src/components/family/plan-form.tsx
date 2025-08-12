@@ -29,12 +29,16 @@ import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faGem, faRocket } from "@fortawesome/free-solid-svg-icons";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { Badge } from "../ui/badge";
 
 const planSchema = z.object({
     plan: z.enum(["free", "premium"]).default("free"),
 });
 
 type PlanFormData = z.infer<typeof planSchema>;
+type BillingCycle = "monthly" | "annually";
+
 
 const planFeatures = {
     free: [
@@ -57,6 +61,8 @@ export function PlanForm() {
     const { toast } = useToast();
     const { t } = useTranslation();
     const [isSaving, setIsSaving] = useState(false);
+    const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
+
 
     const form = useForm<PlanFormData>({
         resolver: zodResolver(planSchema),
@@ -72,7 +78,7 @@ export function PlanForm() {
     }, [profile, form]);
 
     const onSubmit = async (values: PlanFormData) => {
-        console.log("Upgrade plan", values);
+        console.log("Upgrade plan", values, "Cycle:", billingCycle);
         // Here you would handle the logic for upgrading a plan,
         // likely involving a payment provider like Stripe.
         setIsSaving(true);
@@ -109,7 +115,7 @@ export function PlanForm() {
                                             <RadioGroupItem value="free" id="free" className="sr-only" />
                                         </FormControl>
                                         <Label htmlFor="free">
-                                            <Card className={cn("cursor-pointer", selectedPlan === 'free' && "border-primary ring-2 ring-primary")}>
+                                            <Card className={cn("cursor-pointer h-full", selectedPlan === 'free' && "border-primary ring-2 ring-primary")}>
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center justify-between">
                                                         <span>{t('plan_form_free_title')}</span>
@@ -133,18 +139,29 @@ export function PlanForm() {
                                             <RadioGroupItem value="premium" id="premium" className="sr-only" />
                                         </FormControl>
                                         <Label htmlFor="premium">
-                                            <Card className={cn("cursor-pointer", selectedPlan === 'premium' && "border-primary ring-2 ring-primary")}>
+                                            <Card className={cn("cursor-pointer h-full", selectedPlan === 'premium' && "border-primary ring-2 ring-primary")}>
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center justify-between">
                                                          <span className="flex items-center gap-2">
                                                             <FontAwesomeIcon icon={faGem} className="w-5 h-5 text-primary" />
                                                             {t('plan_form_premium_title')}
                                                          </span>
-                                                        <span className="text-lg font-bold">R$ 19,90/mês</span>
+                                                        <span className="text-lg font-bold">
+                                                            {billingCycle === 'monthly' ? "R$ 19,90/mês" : "R$ 199,00/ano"}
+                                                        </span>
                                                     </CardTitle>
                                                     <CardDescription>{t('plan_form_premium_desc')}</CardDescription>
                                                 </CardHeader>
-                                                <CardContent className="space-y-2 text-sm">
+                                                <CardContent className="space-y-4 text-sm">
+                                                    <Tabs defaultValue="monthly" onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="w-full">
+                                                        <TabsList className="grid w-full grid-cols-2">
+                                                            <TabsTrigger value="monthly">Mensal</TabsTrigger>
+                                                            <TabsTrigger value="annually">
+                                                                Anual
+                                                                <Badge variant="secondary" className="ml-2 bg-primary/20 text-primary">Economize 2 meses!</Badge>
+                                                            </TabsTrigger>
+                                                        </TabsList>
+                                                    </Tabs>
                                                     {planFeatures.premium.map(feature => (
                                                         <div key={feature} className="flex items-center gap-2">
                                                             <FontAwesomeIcon icon={faCheckCircle} className="w-4 h-4 text-primary" />
