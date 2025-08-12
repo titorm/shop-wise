@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -26,7 +25,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "../ui/separator";
@@ -34,15 +33,8 @@ import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
 
 const preferencesSchema = z.object({
-  family: z.object({
-    adults: z.coerce.number().min(1, { message: "Pelo menos um adulto é necessário." }),
-    children: z.coerce.number().min(0),
-    pets: z.coerce.number().min(0),
-  }),
-  settings: z.object({
-    theme: z.enum(["system", "light", "dark"]),
-    notifications: z.boolean(),
-  }),
+  theme: z.enum(["system", "light", "dark"]),
+  notifications: z.boolean(),
 });
 
 type PreferencesData = z.infer<typeof preferencesSchema>;
@@ -55,31 +47,17 @@ export function PreferencesForm() {
   const form = useForm<PreferencesData>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
-      family: {
-        adults: 2,
-        children: 1,
-        pets: 0,
-      },
-      settings: {
-        theme: "system",
-        notifications: true,
-      },
+      theme: "system",
+      notifications: true,
     },
     mode: "onChange",
   });
 
   useEffect(() => {
-    if (profile) {
+    if (profile?.settings) {
         form.reset({
-            family: {
-                adults: profile.family?.adults ?? 2,
-                children: profile.family?.children ?? 1,
-                pets: profile.family?.pets ?? 0,
-            },
-            settings: {
-                theme: profile.settings?.theme ?? "system",
-                notifications: profile.settings?.notifications ?? true,
-            }
+            theme: profile.settings.theme ?? "system",
+            notifications: profile.settings.notifications ?? true,
         });
     }
   }, [profile, form]);
@@ -96,17 +74,10 @@ export function PreferencesForm() {
     }
     try {
         const userRef = doc(db, Collections.Users, user.uid);
-        // We only update the settings part in the user document
-        await setDoc(userRef, { settings: values.settings }, { merge: true });
+        await setDoc(userRef, { settings: values }, { merge: true });
         
-        // We update the family part in the family document
-        if (profile?.familyId) {
-            const familyRef = doc(db, Collections.Families, profile.familyId);
-            await setDoc(familyRef, { familyComposition: values.family }, { merge: true });
-        }
-        
-        await reloadUser(); // Reload user to get fresh data into context
-        form.reset(values); // This will reset the isDirty state after successful submission
+        await reloadUser();
+        form.reset(values);
         toast({
             title: t('toast_success_title'),
             description: t('preferences_form_success_message'),
@@ -133,60 +104,10 @@ export function PreferencesForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CardContent className="space-y-6">
             <div>
-                <h4 className="text-base font-medium mb-2">{t('preferences_form_family_size_title')}</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                    {t('preferences_form_family_size_desc')}
-                </p>
-                <div className="grid grid-cols-3 gap-4">
-                    <FormField
-                        control={form.control}
-                        name="family.adults"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('preferences_form_adults')}</FormLabel>
-                            <FormControl>
-                                <Input type="number" min="1" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="family.children"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('preferences_form_children')}</FormLabel>
-                            <FormControl>
-                                <Input type="number" min="0" {...field} />
-                            </FormControl>
-                             <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                     <FormField
-                        control={form.control}
-                        name="family.pets"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>{t('preferences_form_pets')}</FormLabel>
-                            <FormControl>
-                                <Input type="number" min="0" {...field} />
-                            </FormControl>
-                             <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                </div>
-            </div>
-
-            <Separator />
-
-            <div>
                 <h4 className="text-base font-medium mb-2">{t('preferences_form_appearance_title')}</h4>
                 <FormField
                     control={form.control}
-                    name="settings.theme"
+                    name="theme"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>{t('preferences_form_theme')}</FormLabel>
@@ -245,5 +166,3 @@ export function PreferencesForm() {
     </Card>
   );
 }
-
-    

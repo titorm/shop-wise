@@ -10,12 +10,10 @@ import { Button } from "@/components/ui/button";
 import { DeleteConfirmationDialog } from "@/components/settings/delete-confirmation-dialog";
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShieldHalved, faTrash, faUserXmark, faGem } from '@fortawesome/free-solid-svg-icons';
+import { faShieldHalved, faTrash, faUserXmark } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { faGears } from '@fortawesome/free-solid-svg-icons/faGears';
-import { PlanForm } from '@/components/settings/plan-form';
-
 
 export default function SettingsPage() {
     const { t } = useTranslation();
@@ -30,22 +28,17 @@ export default function SettingsPage() {
 
     const handleTabChange = (value: string) => {
         setActiveTab(value);
-        // Optional: update URL without reloading the page, for bookmarking/sharing
         router.push(`/settings?tab=${value}`, { scroll: false });
     };
 
     const handleDeleteData = async () => {
-        // In a real app, you would call your backend to delete user data from the database.
         console.log("Deleting all user data...");
-        // This is a placeholder for the actual API call.
         await new Promise(resolve => setTimeout(resolve, 1000));
         console.log("User data deleted.");
     }
 
     const handleDeleteAccount = async () => {
-        // In a real app, you would call firebase auth to delete the user account.
         console.log("Deleting user account...");
-        // This is a placeholder for the actual API call.
         await new Promise(resolve => setTimeout(resolve, 1000));
         console.log("User account deleted.");
     }
@@ -60,10 +53,9 @@ export default function SettingsPage() {
                 </CardHeader>
                 <div className="p-6 pt-0">
                     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+                        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                             <TabsTrigger value="profile"><FontAwesomeIcon icon={faUser} className="mr-2 h-4 w-4" /> {t('tab_profile')}</TabsTrigger>
                             <TabsTrigger value="preferences"><FontAwesomeIcon icon={faGears} className="mr-2 h-4 w-4" /> {t('tab_preferences')}</TabsTrigger>
-                            <TabsTrigger value="plan"><FontAwesomeIcon icon={faGem} className="mr-2 h-4 w-4" /> {t('tab_plan')}</TabsTrigger>
                             <TabsTrigger value="privacy"><FontAwesomeIcon icon={faShieldHalved} className="mr-2 h-4 w-4" /> {t('tab_privacy')}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="profile" className="mt-6">
@@ -71,9 +63,6 @@ export default function SettingsPage() {
                         </TabsContent>
                         <TabsContent value="preferences" className="mt-6">
                             <PreferencesForm />
-                        </TabsContent>
-                         <TabsContent value="plan" className="mt-6">
-                            <PlanForm />
                         </TabsContent>
                         <TabsContent value="privacy" className="mt-6 space-y-8">
                            <Card className="border-destructive">
