@@ -2,7 +2,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { SidebarProvider, Sidebar } from "@/components/ui/sidebar";
+import { SidebarProvider, Sidebar, useSidebar } from "@/components/ui/sidebar";
 import { MainNav } from "@/components/layout/main-nav";
 import { Header } from "@/components/layout/header";
 import { useRequireAuth } from "@/hooks/use-auth";
@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useRequireAuth();
-  const { state } = useSidebar();
 
   if (loading || !user) {
     return (
@@ -39,20 +38,27 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-card">
-        <Sidebar>
-            <MainNav />
-        </Sidebar>
-        <div className="flex flex-1 flex-col">
-            <Header />
-            <main className={cn(
-                "flex-1 p-4 md:p-6 lg:p-8 bg-background rounded-tl-2xl transition-[margin-left] duration-300 ease-in-out",
-                state === 'expanded' ? "md:ml-0" : "md:ml-0" 
-            )}>
-                {children}
-            </main>
-        </div>
-      </div>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
     </SidebarProvider>
+  );
+}
+
+function DashboardLayoutContent({ children }: { children: ReactNode }) {
+  const { state } = useSidebar();
+  return (
+    <div className="flex min-h-screen bg-card">
+      <Sidebar>
+          <MainNav />
+      </Sidebar>
+      <div className="flex flex-1 flex-col">
+          <Header />
+          <main className={cn(
+              "flex-1 p-4 md:p-6 lg:p-8 bg-background rounded-tl-2xl transition-[margin-left] duration-300 ease-in-out",
+              state === 'expanded' ? "md:ml-0" : "md:ml-0" 
+          )}>
+              {children}
+          </main>
+      </div>
+    </div>
   );
 }
