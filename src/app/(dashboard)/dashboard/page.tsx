@@ -61,21 +61,21 @@ const pieChartConfig = {
   value: {
     label: "Gasto",
   },
-  "Hortifrúti e Ovos": { label: "Hortifrúti", color: "hsl(var(--color-category-produce-and-eggs))" },
-  "Açougue e Peixaria": { label: "Carnes", color: "hsl(var(--color-category-meat-and-seafood))" },
-  "Padaria e Confeitaria": { label: "Padaria", color: "hsl(var(--color-category-bakery-and-deli))" },
-  "Laticínios e Frios": { label: "Laticínios", color: "hsl(var(--color-category-dairy-and-chilled))" },
-  "Mercearia": { label: "Mercearia", color: "hsl(var(--color-category-pantry-and-dry-goods))" },
-  "Matinais e Doces": { label: "Matinais", color: "hsl(var(--color-category-breakfast-and-snacks))" },
-  "Congelados": { label: "Congelados", color: "hsl(var(--color-category-frozen-foods))" },
-  "Bebidas": { label: "Bebidas", color: "hsl(var(--color-category-beverages))" },
-  "Limpeza": { label: "Limpeza", color: "hsl(var(--color-category-cleaning-and-household))" },
-  "Higiene Pessoal": { label: "Higiene", color: "hsl(var(--color-category-personal-care))" },
-  "Bebês e Crianças": { label: "Bebês", color: "hsl(var(--color-category-baby-and-child-care))" },
-  "Pet Shop": { label: "Pet", color: "hsl(var(--color-category-pet-supplies))" },
-  "Utilidades e Bazar": { label: "Utilidades", color: "hsl(var(--color-category-home-and-general))" },
-  "Farmácia": { label: "Farmácia", color: "hsl(var(--color-category-pharmacy))" },
-  "Outros": { label: "Outros", color: "hsl(var(--muted))" },
+  'Hortifrúti e Ovos': { label: "Hortifrúti", color: "hsl(var(--color-category-produce-and-eggs))" },
+  'Açougue e Peixaria': { label: "Carnes", color: "hsl(var(--color-category-meat-and-seafood))" },
+  'Padaria e Confeitaria': { label: "Padaria", color: "hsl(var(--color-category-bakery-and-deli))" },
+  'Laticínios e Frios': { label: "Laticínios", color: "hsl(var(--color-category-dairy-and-chilled))" },
+  'Mercearia': { label: "Mercearia", color: "hsl(var(--color-category-pantry-and-dry-goods))" },
+  'Matinais e Doces': { label: "Matinais", color: "hsl(var(--color-category-breakfast-and-snacks))" },
+  'Congelados': { label: "Congelados", color: "hsl(var(--color-category-frozen-foods))" },
+  'Bebidas': { label: "Bebidas", color: "hsl(var(--color-category-beverages))" },
+  'Limpeza': { label: "Limpeza", color: "hsl(var(--color-category-cleaning-and-household))" },
+  'Higiene Pessoal': { label: "Higiene", color: "hsl(var(--color-category-personal-care))" },
+  'Bebês e Crianças': { label: "Bebês", color: "hsl(var(--color-category-baby-and-child-care))" },
+  'Pet Shop': { label: "Pet", color: "hsl(var(--color-category-pet-supplies))" },
+  'Utilidades e Bazar': { label: "Utilidades", color: "hsl(var(--color-category-home-and-general))" },
+  'Farmácia': { label: "Farmácia", color: "hsl(var(--color-category-pharmacy))" },
+  'Outros': { label: "Outros", color: "hsl(var(--muted))" },
 };
 
 
@@ -130,11 +130,10 @@ export default function DashboardPage() {
         setLoading(true);
 
         const now = new Date();
-        const startOf12MonthsAgo = startOfMonth(subMonths(now, 11));
 
         // 1. Fetch all purchases for the family
         const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
-        const purchasesQuery = query(purchasesRef, where("date", ">=", Timestamp.fromDate(startOf12MonthsAgo)));
+        const purchasesQuery = query(purchasesRef);
         const purchasesSnapshot = await getDocs(purchasesQuery);
 
         let allItems: PurchaseItem[] = [];
@@ -199,7 +198,10 @@ export default function DashboardPage() {
             monthlyData[monthKey] = { month: monthKey, ...Object.fromEntries(Object.keys(barChartConfig).filter(k => k !== 'total').map(k => [k, 0])) };
         }
 
-        allItems.forEach(item => {
+        const startOf12MonthsAgo = startOfMonth(subMonths(now, 11));
+        const last12MonthsItems = allItems.filter(item => item.purchaseDate >= startOf12MonthsAgo);
+
+        last12MonthsItems.forEach(item => {
             const monthKey = format(item.purchaseDate, 'MMM/yy', { locale: ptBR });
             if (monthlyData[monthKey]) {
                 const category = item.category || 'Outros';
