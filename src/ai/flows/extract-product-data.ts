@@ -24,13 +24,16 @@ export type ExtractProductDataInput = z.infer<typeof ExtractProductDataInputSche
 const ExtractProductDataOutputSchema = z.object({
   products: z.array(
     z.object({
-      name: z.string().describe('The name of the product.'),
-      quantity: z.number().describe('The quantity of the product.'),
-      price: z.number().describe('The price of the product.'),
+      barcode: z.string().describe("The product's barcode (Código)."),
+      name: z.string().describe('The name of the product (Descrição).'),
+      quantity: z.number().describe('The quantity of the product (Qtde.).'),
+      volume: z.string().describe("The unit of measurement for the product (UN). Ex: UN, KG, L"),
+      unitPrice: z.number().describe("The unit price of the product (Vl. Unit.)."),
+      price: z.number().describe('The total price of the product (Vl. Total).'),
     })
   ).describe('An array of products extracted from the receipt.'),
   storeName: z.string().describe('The name of the store.'),
-  date: z.string().describe('The date of the purchase.'),
+  date: z.string().describe('The date of the purchase (dd/mm/yyyy).'),
 });
 export type ExtractProductDataOutput = z.infer<typeof ExtractProductDataOutputSchema>;
 
@@ -42,10 +45,37 @@ const prompt = ai.definePrompt({
   name: 'extractProductDataPrompt',
   input: {schema: ExtractProductDataInputSchema},
   output: {schema: ExtractProductDataOutputSchema},
-  prompt: `You are an expert data extractor specializing in extracting data from receipts.
+  prompt: `You are an expert data extractor specializing in extracting data from Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipts.
 
-  You will use the receipt QR code to extract the product name, quantity, price, store name, and date of purchase.
+  You will use the information from the receipt's QR code to extract the store name, purchase date, and a list of all products.
 
+  Here is an example of the data structure you will encounter and how to extract it:
+
+  - **Store Name**: Look for the emitter's name, usually at the top.
+    - Example: "ANGELONI CIA LTDA"
+  - **Date**: Look for the emission date ("Data de Emissão"). Format it as YYYY-MM-DD.
+    - Example: "22/01/2024 19:24:26" becomes "2024-01-22"
+  - **Products**: The products are in a table. For each product, extract the following fields:
+    - **Código**: This is the 'barcode'.
+    - **Descrição**: This is the 'name'.
+    - **Qtde.**: This is the 'quantity'.
+    - **UN**: This is the 'volume'.
+    - **Vl. Unit.**: This is the 'unitPrice'.
+    - **Vl. Total**: This is the 'price'.
+
+  Example of a product line:
+  "001 7891000312515 REFRI COCA-COLA S/ACUCAR PET 2L | Qtde.:1 UN | Vl. Unit.:  9,19 | Vl. Total: 9,19"
+  Should be extracted as:
+  {
+    barcode: "7891000312515",
+    name: "REFRI COCA-COLA S/ACUCAR PET 2L",
+    quantity: 1,
+    volume: "UN",
+    unitPrice: 9.19,
+    price: 9.19
+  }
+
+  Now, analyze the following receipt data and extract the information into the specified JSON format.
   Use the following as the primary source of information about the receipt.
   Receipt QR Code: {{media url=receiptQrCodeDataUri}}
   `,
@@ -62,4 +92,3 @@ const extractProductDataFlow = ai.defineFlow(
     return output!;
   }
 );
-
