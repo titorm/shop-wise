@@ -26,11 +26,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle, faStore, faTrash, faThumbsUp, faThumbsDown, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { Separator } from "../ui/separator";
+import { Label } from "../ui/label";
+import { cn } from "@/lib/utils";
 
 const marketSchema = z.object({
   name: z.string().min(2, "market_form_error_name_min"),
@@ -58,6 +60,8 @@ export function MarketsForm() {
   // In a real app, these would be populated from the family document in Firestore
   const [favoriteStores, setFavoriteStores] = useState([allStores[0], allStores[1]]);
   const [ignoredStores, setIgnoredStores] = useState([allStores[3]]);
+
+  const marketTypes = ["supermercado", "atacado", "feira", "acougue", "padaria", "marketplace", "outro"];
 
   const form = useForm<MarketData>({
     resolver: zodResolver(marketSchema),
@@ -122,22 +126,6 @@ export function MarketsForm() {
                                     <FormMessage />
                                 </FormItem>
                             )}/>
-                            <FormField control={form.control} name="type" render={({ field }) => (
-                                <FormItem><FormLabel>{t('market_form_type_label')}</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl><SelectTrigger><SelectValue placeholder={t('market_form_type_placeholder')} /></SelectTrigger></FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="supermercado">{t('market_type_supermarket')}</SelectItem>
-                                            <SelectItem value="atacado">{t('market_type_wholesale')}</SelectItem>
-                                            <SelectItem value="feira">{t('market_type_fair')}</SelectItem>
-                                            <SelectItem value="acougue">{t('market_type_butcher')}</SelectItem>
-                                            <SelectItem value="padaria">{t('market_type_bakery')}</SelectItem>
-                                            <SelectItem value="marketplace">{t('market_type_marketplace')}</SelectItem>
-                                            <SelectItem value="outro">{t('market_type_other')}</SelectItem>
-                                        </SelectContent>
-                                    </Select><FormMessage />
-                                </FormItem>
-                            )}/>
                             <FormField control={form.control} name="cnpj" render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>{t('market_form_cnpj_label')}</FormLabel>
@@ -146,9 +134,40 @@ export function MarketsForm() {
                                 </FormItem>
                             )}/>
                             <FormField control={form.control} name="address" render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="col-span-1 md:col-span-2">
                                     <FormLabel>{t('market_form_address_label')}</FormLabel>
                                     <FormControl><Input placeholder={t('market_form_address_placeholder')} {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}/>
+                            <FormField control={form.control} name="type" render={({ field }) => (
+                                <FormItem className="col-span-1 md:col-span-2 space-y-3">
+                                    <FormLabel>{t('market_form_type_label')}</FormLabel>
+                                    <FormControl>
+                                        <RadioGroup
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                            className="flex flex-wrap gap-2"
+                                        >
+                                            {marketTypes.map(type => (
+                                                <FormItem key={type} className="flex items-center space-x-2 space-y-0">
+                                                    <FormControl>
+                                                        <RadioGroupItem value={type} id={`type-${type}`} className="sr-only" />
+                                                    </FormControl>
+                                                    <Label 
+                                                        htmlFor={`type-${type}`}
+                                                        className={cn(
+                                                            "rounded-full border px-3 py-1 text-sm font-medium transition-colors cursor-pointer",
+                                                            "hover:bg-muted/50",
+                                                            field.value === type && "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                                                        )}
+                                                    >
+                                                        {t(`market_type_${type}`)}
+                                                    </Label>
+                                                </FormItem>
+                                            ))}
+                                        </RadioGroup>
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}/>

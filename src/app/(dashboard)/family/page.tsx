@@ -40,7 +40,7 @@ export default function FamilyPage() {
                     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                         <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
                             <TabsTrigger value="composition"><FontAwesomeIcon icon={faUsers} className="mr-2 h-4 w-4" /> {t('tab_composition')}</TabsTrigger>
-                            <TabsTrigger value="markets"><FontAwesomeIcon icon={faStore} className="mr-2 h-4 w-4" /> {t('tab_markets')}</TabsTrigger>
+                            <TabsTrigger value="markets"><FontAwesomeIcon icon={faStore} className="mr-2 h-4 w-4" /> {t('tab_establishments')}</TabsTrigger>
                             <TabsTrigger value="history"><FontAwesomeIcon icon={faHistory} className="mr-2 h-4 w-4" /> {t('tab_history')}</TabsTrigger>
                             <TabsTrigger value="plan"><FontAwesomeIcon icon={faGem} className="mr-2 h-4 w-4" /> {t('tab_plan')}</TabsTrigger>
                         </TabsList>
