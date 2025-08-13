@@ -9,29 +9,54 @@ import { Logo } from "@/components/icons";
 import { useAuth } from "@/hooks/use-auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
-import { faBell } from "@fortawesome/free-regular-svg-icons";
 import { useTranslation } from "react-i18next";
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, onSnapshot, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Collections } from '@/lib/enums';
+import type { Notification } from '@/lib/types';
+import { NotificationPopover } from './notification-popover';
 
 export function Header() {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const [hasActiveList, setHasActiveList] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
-    const checkActiveList = async () => {
-      if (profile?.familyId) {
-        const listsRef = collection(db, Collections.Families, profile.familyId, 'shopping_lists');
-        const q = query(listsRef, where("status", "==", "active"), limit(1));
-        const querySnapshot = await getDocs(q);
-        setHasActiveList(!querySnapshot.empty);
-      }
-    };
+    if (!profile?.familyId) return;
 
-    checkActiveList();
+    // Check for active shopping list
+    const listsRef = collection(db, Collections.Families, profile.familyId, 'shopping_lists');
+    const qLists = query(listsRef, where("status", "==", "active"), limit(1));
+    const listUnsubscribe = onSnapshot(qLists, (querySnapshot) => {
+      setHasActiveList(!querySnapshot.empty);
+    });
+
+    // Fetch notifications
+    const notifsRef = collection(db, Collections.Families, profile.familyId, 'notifications');
+    const qNotifs = query(notifsRef);
+    const notifUnsubscribe = onSnapshot(qNotifs, (snapshot) => {
+        const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+        setNotifications(notifs);
+    });
+
+    return () => {
+        listUnsubscribe();
+        notifUnsubscribe();
+    };
   }, [profile]);
+
+  const unreadNotifications = notifications.filter(n => !n.read);
+
+  const markAllAsRead = async () => {
+    if (!profile?.familyId || unreadNotifications.length === 0) return;
+    const batch = writeBatch(db);
+    unreadNotifications.forEach(notif => {
+        const notifRef = doc(db, Collections.Families, profile.familyId!, 'notifications', notif.id);
+        batch.update(notifRef, { read: true });
+    });
+    await batch.commit();
+  };
 
 
   return (
@@ -47,16 +72,18 @@ export function Header() {
             <Button variant="ghost" size="icon" asChild>
             <Link href="/list">
                 <FontAwesomeIcon icon={faShoppingCart} className="h-5 w-5" />
-                <span>
                 <span className="sr-only">{t('active_shopping_list')}</span>
-                </span>
             </Link>
             </Button>
         )}
-        <Button variant="ghost" size="icon">
-          <FontAwesomeIcon icon={faBell} className="h-5 w-5" />
-          <span className="sr-only">{t('notifications')}</span>
-        </Button>
+        
+        {unreadNotifications.length > 0 && (
+          <NotificationPopover 
+            notifications={notifications} 
+            unreadCount={unreadNotifications.length} 
+            onMarkAllAsRead={markAllAsRead} 
+          />
+        )}
       </div>
     </header>
   );
