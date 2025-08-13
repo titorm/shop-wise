@@ -8,10 +8,13 @@ import { Pie, PieChart as RechartsPieChart, Cell, ResponsiveContainer } from "re
 import { useTranslation } from "react-i18next";
 import { ReactNode } from "react";
 import { EmptyState } from "../ui/empty-state";
-import { faStore, faBox, faCalendar, faTags, faDollarSign, faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
+import { faStore, faBox, faCalendar, faTags, faDollarSign, faWandMagicSparkles, faGem, faRocket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Badge } from "../ui/badge";
 import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
+import Link from "next/link";
+import { Alert, AlertTitle } from "../ui/alert";
 
 interface InsightModalProps {
     title: string;
@@ -23,6 +26,7 @@ interface InsightModalProps {
     analysis?: string | null;
     isLoading?: boolean;
     onOpen?: () => void;
+    isPremium?: boolean;
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF", "#FF19AF", "#19AFFF", "#AFFF19"];
@@ -36,7 +40,7 @@ const PIE_CHART_COLORS = [
 ];
 
 
-export function InsightModal({ title, description, children, data, chartData, type, analysis, isLoading, onOpen }: InsightModalProps) {
+export function InsightModal({ title, description, children, data, chartData, type, analysis, isLoading, onOpen, isPremium }: InsightModalProps) {
     const { t } = useTranslation();
 
     const renderContent = () => {
@@ -110,7 +114,7 @@ export function InsightModal({ title, description, children, data, chartData, ty
                                 <TableRow key={index}>
                                     <TableCell className="font-medium">{item.name}</TableCell>
                                     <TableCell>{item.purchaseDate?.toLocaleDateString('pt-BR')}</TableCell>
-                                    <TableCell className="text-right">R$ {item.price.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right">R$ {item.price?.toFixed(2)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -181,6 +185,23 @@ export function InsightModal({ title, description, children, data, chartData, ty
                     </Table>
                 );
             case 'consumptionAnalysis':
+                if (!isPremium) {
+                    return (
+                        <Alert className="border-primary/50 text-center">
+                             <FontAwesomeIcon icon={faGem} className="h-5 w-5 text-primary" />
+                            <AlertTitle className="text-lg font-bold text-primary">{t('premium_feature_title')}</AlertTitle>
+                            <DialogDescription>
+                                {t('premium_feature_desc_consumption')}
+                            </DialogDescription>
+                            <Button asChild className="mt-4">
+                                <Link href="/family?tab=plan">
+                                    <FontAwesomeIcon icon={faRocket} className="mr-2" />
+                                    {t('upgrade_plan_button')}
+                                </Link>
+                            </Button>
+                        </Alert>
+                    )
+                }
                  if (isLoading) {
                     return (
                         <div className="space-y-4">
@@ -220,5 +241,3 @@ export function InsightModal({ title, description, children, data, chartData, ty
         </Dialog>
     );
 }
-
-    

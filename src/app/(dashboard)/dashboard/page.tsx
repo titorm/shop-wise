@@ -149,7 +149,7 @@ export default function DashboardPage() {
   }, [profile]);
   
   const handleConsumptionAnalysis = async () => {
-    if (consumptionAnalysis) return; // Don't re-fetch if analysis already exists
+    if (consumptionAnalysis || profile?.plan !== 'premium') return;
     setIsAnalysisLoading(true);
     try {
         const result = await analyzeConsumptionData({ consumptionData: JSON.stringify(barChartData) });
@@ -289,6 +289,7 @@ export default function DashboardPage() {
             isLoading={isAnalysisLoading}
             onOpen={handleConsumptionAnalysis}
             data={barChartData}
+            isPremium={profile?.plan === 'premium'}
         >
             <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl col-span-1 lg:col-span-2">
             <CardHeader>
