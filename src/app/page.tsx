@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Logo } from "@/components/icons";
+import { ShopWiseLogo, ShopWiseIcon } from "@/components/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faQrcode, faShoppingCart, faSliders } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
@@ -15,8 +15,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Logo className="w-8 h-8 text-primary" />
-          <h1 className="text-2xl font-bold font-headline text-foreground">{t('shopwise')}</h1>
+          <ShopWiseLogo className="w-auto h-7 text-foreground" />
         </div>
         <nav className="flex items-center gap-2">
           <Link href="/login" passHref>
@@ -101,5 +100,3 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode, titl
     </div>
   );
 }
-
-    
