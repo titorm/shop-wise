@@ -9,24 +9,48 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode, faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode, faArrowDown, faArrowUp, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, limit, orderBy, query, where, Timestamp, doc } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, where, Timestamp, doc, collectionGroup } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/empty-state";
 import { InsightModal } from "@/components/dashboard/insight-modal";
 import { analyzeConsumptionData } from "./actions";
+import { Skeleton } from "@/components/ui/skeleton";
+import { subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+interface PurchaseItem {
+    id: string;
+    barcode: string;
+    name: string;
+    volume: string;
+    quantity: number;
+    price: number;
+    totalPrice: number;
+    category?: string;
+    subcategory?: string;
+    brand?: string;
+}
+interface Purchase {
+    id: string;
+    storeName: string;
+    date: Timestamp;
+    totalAmount: number;
+    items: PurchaseItem[];
+}
 
 const barChartConfig = {
   total: { label: "Total" },
-  hortifruti: { label: "Hortifrúti", color: "hsl(var(--category-hortifruti))" },
-  acougue: { label: "Carnes", color: "hsl(var(--category-acougue))" },
-  laticinios: { label: "Laticínios", color: "hsl(var(--category-laticinios))" },
-  mercearia: { label: "Mercearia", color: "hsl(var(--category-mercearia))" },
-  bebidas: { label: "Bebidas", color: "hsl(var(--category-bebidas))" },
-  limpeza: { label: "Limpeza", color: "hsl(var(--category-limpeza))" },
+  'Hortifrúti e Ovos': { label: "Hortifrúti", color: "hsl(var(--category-hortifruti))" },
+  'Açougue e Peixaria': { label: "Carnes", color: "hsl(var(--category-acougue))" },
+  'Laticínios e Frios': { label: "Laticínios", color: "hsl(var(--category-laticinios))" },
+  'Mercearia': { label: "Mercearia", color: "hsl(var(--category-mercearia))" },
+  'Bebidas': { label: "Bebidas", color: "hsl(var(--category-bebidas))" },
+  'Limpeza': { label: "Limpeza", color: "hsl(var(--category-limpeza))" },
+  'Outros': { label: "Outros", color: "hsl(var(--muted))" },
 };
 
 const pieChartConfig = {
@@ -57,11 +81,18 @@ const pieChartConfig = {
     label: "Limpeza",
     color: "hsl(var(--category-limpeza))",
   },
+  "Outros": {
+    label: "Outros",
+    color: "hsl(var(--muted))",
+  },
 };
 
 
-const ComparisonBadge = ({ value }: { value: number }) => {
+const ComparisonBadge = ({ value }: { value: number | null }) => {
     const { t } = useTranslation();
+    if (value === null) {
+      return <div className="h-4 w-16 bg-muted rounded-md animate-pulse" />;
+    }
     const isPositive = value > 0;
     const colorClass = isPositive ? "text-destructive" : "text-green-600 dark:text-green-500";
     const icon = isPositive ? faArrowUp : faArrowDown;
@@ -78,99 +109,127 @@ const ComparisonBadge = ({ value }: { value: number }) => {
 export default function DashboardPage() {
   const { t } = useTranslation();
   const { profile } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  // States for data
   const [barChartData, setBarChartData] = useState<any[]>([]);
   const [pieChartData, setPieChartData] = useState<any[]>([]);
   const [topExpensesData, setTopExpensesData] = useState<any[]>([]);
-  
-  // States for modal data
   const [monthlySpendingByStore, setMonthlySpendingByStore] = useState<any[]>([]);
   const [recentItems, setRecentItems] = useState<any[]>([]);
   const [spendingByCategory, setSpendingByCategory] = useState<any[]>([]);
-  const [savingsOpportunities, setSavingsOpportunities] = useState<any[]>([]);
+  const [totalSpentMonth, setTotalSpentMonth] = useState<number | null>(null);
+  const [totalItemsBought, setTotalItemsBought] = useState<number | null>(null);
+  
+  // States for comparison
+  const [totalSpentChange, setTotalSpentChange] = useState<number | null>(null);
+  const [totalItemsChange, setTotalItemsChange] = useState<number | null>(null);
+
+  // AI analysis states
   const [consumptionAnalysis, setConsumptionAnalysis] = useState<string | null>(null);
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
   
-  // States for comparison
-  const [totalSpentChange, setTotalSpentChange] = useState(0);
-  const [totalItemsChange, setTotalItemsChange] = useState(0);
-
-
-  const totalSpentMonth = useMemo(() => {
-    return monthlySpendingByStore.reduce((acc, store) => acc + store.value, 0);
-  }, [monthlySpendingByStore]);
-
-  const topCategory = useMemo(() => {
-    if (spendingByCategory.length === 0) return { name: "N/A", value: 0 };
-    return spendingByCategory.reduce((prev, current) => (prev.value > current.value) ? prev : current);
-  }, [spendingByCategory]);
-
-  const totalItemsBought = useMemo(() => {
-    return recentItems.reduce((acc, item) => acc + item.quantity, 0);
-  }, [recentItems]);
-
-
   useEffect(() => {
     async function fetchData() {
-        if (!profile || !profile.familyId) return;
+        if (!profile || !profile.familyId) {
+            setLoading(false);
+            return
+        };
 
-        // MOCK DATA INJECTION
-        const mockBarData = [
-            { month: "Jul '23", limpeza: 90, bebidas: 150, mercearia: 400, laticinios: 280, acougue: 320, hortifruti: 180 },
-            { month: "Ago '23", limpeza: 95, bebidas: 160, mercearia: 410, laticinios: 290, acougue: 330, hortifruti: 190 },
-            { month: "Set '23", limpeza: 100, bebidas: 170, mercearia: 420, laticinios: 300, acougue: 350, hortifruti: 200 },
-            { month: "Out '23", limpeza: 105, bebidas: 180, mercearia: 430, laticinios: 310, acougue: 360, hortifruti: 210 },
-            { month: "Nov '23", limpeza: 110, bebidas: 200, mercearia: 480, laticinios: 330, acougue: 390, hortifruti: 220 },
-            { month: "Dez '23", limpeza: 150, bebidas: 300, mercearia: 700, laticinios: 400, acougue: 500, hortifruti: 280 },
-            { month: "Jan '24", limpeza: 120, bebidas: 220, mercearia: 500, laticinios: 340, acougue: 400, hortifruti: 230 },
-            { month: "Fev '24", limpeza: 115, bebidas: 210, mercearia: 490, laticinios: 330, acougue: 390, hortifruti: 220 },
-            { month: "Mar '24", limpeza: 125, bebidas: 230, mercearia: 520, laticinios: 360, acougue: 420, hortifruti: 250 },
-            { month: "Abr '24", limpeza: 110, bebidas: 190, mercearia: 450, laticinios: 320, acougue: 380, hortifruti: 210 },
-            { month: "Mai '24", limpeza: 130, bebidas: 210, mercearia: 550, laticinios: 350, acougue: 410, hortifruti: 240 },
-            { month: "Jun '24", limpeza: 140, bebidas: 240, mercearia: 600, laticinios: 380, acougue: 440, hortifruti: 260 },
-        ];
-        const mockPieData = [
-            { category: "Mercearia", value: 600, fill: "hsl(var(--category-mercearia))" },
-            { category: "Açougue e Peixaria", value: 440, fill: "hsl(var(--category-acougue))" },
-            { category: "Laticínios e Frios", value: 380, fill: "hsl(var(--category-laticinios))" },
-            { category: "Hortifrúti e Ovos", value: 260, fill: "hsl(var(--category-hortifruti))" },
-            { category: "Bebidas", value: 240, fill: "hsl(var(--category-bebidas))" },
-            { category: "Limpeza", value: 140, fill: "hsl(var(--category-limpeza))" },
-        ];
-        const mockTopExpenses = [
-            { id: '1', barcode: '7891000123456', name: 'Picanha Gold 1kg', category: 'Açougue e Peixaria', subcategory: 'Carne Bovina', volume: '1kg', quantity: 2, price: 89.90, totalPrice: 179.80 },
-            { id: '2', barcode: '7892000234567', name: 'Azeite Extra Virgem 500ml', category: 'Mercearia', subcategory: 'Óleos', volume: '500ml', quantity: 3, price: 45.50, totalPrice: 136.50 },
-            { id: '3', barcode: '7893000345678', name: 'Vinho Tinto Chileno 750ml', category: 'Bebidas', subcategory: 'Vinhos', volume: '750ml', quantity: 2, price: 65.00, totalPrice: 130.00 },
-            { id: '4', barcode: '7894000456789', name: 'Salmão Fresco (Kg)', category: 'Açougue e Peixaria', subcategory: 'Peixes', volume: '0.8kg', quantity: 1, price: 96.00, totalPrice: 96.00 },
-            { id: '5', barcode: '7895000567890', name: 'Queijo Parmesão Peça', category: 'Laticínios e Frios', subcategory: 'Queijos', volume: '300g', quantity: 1, price: 55.80, totalPrice: 55.80 },
-        ];
-        const mockRecentItems = mockTopExpenses.map(item => ({...item, purchaseDate: new Date() }));
-        const mockSpendingByStore = [
-          { name: "Supermercado Principal", value: 2450.50 },
-          { name: "Atacarejo Preço Baixo", value: 1237.00 },
-          { name: "Mercadinho do Bairro", value: 600.00 },
-        ];
-        const mockSpendingByCategory = mockPieData.map(d => ({ name: d.category, value: d.value }));
-        const mockSavings = [
-          { name: "Azeite Extra Virgem 500ml", store: "Atacarejo Preço Baixo", saving: 8.50 },
-          { name: "Pão de Forma Integral", store: "Supermercado Principal", saving: 2.10 },
-          { name: "Sabão em Pó 2kg", store: "Atacarejo Preço Baixo", saving: 5.40 },
-        ];
+        setLoading(true);
 
-        setBarChartData(mockBarData);
-        setPieChartData(mockPieData);
-        setTopExpensesData(mockTopExpenses);
-        setRecentItems(mockRecentItems);
-        setMonthlySpendingByStore(mockSpendingByStore);
-        setSpendingByCategory(mockSpendingByCategory);
-        setSavingsOpportunities(mockSavings);
-        setTotalSpentChange(8.2); // Mocked data: +8.2%
-        setTotalItemsChange(-3.5); // Mocked data: -3.5%
+        const now = new Date();
+        const startOfThisMonth = startOfMonth(now);
+        const endOfThisMonth = endOfMonth(now);
+        const startOfLastMonth = startOfMonth(subMonths(now, 1));
+        const endOfLastMonth = endOfMonth(subMonths(now, 1));
+        const startOf12MonthsAgo = startOfMonth(subMonths(now, 11));
+
+        // Fetch all items from the last 12 months
+        const itemsQuery = query(
+            collectionGroup(db, 'purchase_items'),
+            where('familyId', '==', profile.familyId),
+            where('purchaseDate', '>=', startOf12MonthsAgo)
+        );
+        const itemsSnapshot = await getDocs(itemsQuery);
+        const allItems = itemsSnapshot.docs.map(d => ({...d.data(), id: d.id, purchaseDate: (d.data().purchaseDate as Timestamp).toDate() }) as any);
+
+        // -- Process current month data --
+        const thisMonthItems = allItems.filter(item => item.purchaseDate >= startOfThisMonth && item.purchaseDate <= endOfThisMonth);
+        const thisMonthTotalSpent = thisMonthItems.reduce((acc, item) => acc + item.totalPrice, 0);
+        const thisMonthTotalItems = thisMonthItems.reduce((acc, item) => acc + item.quantity, 0);
+
+        // -- Process last month data for comparison --
+        const lastMonthItems = allItems.filter(item => item.purchaseDate >= startOfLastMonth && item.purchaseDate <= endOfLastMonth);
+        const lastMonthTotalSpent = lastMonthItems.reduce((acc, item) => acc + item.totalPrice, 0);
+        const lastMonthTotalItems = lastMonthItems.reduce((acc, item) => acc + item.quantity, 0);
+
+        // -- Calculate comparison percentages --
+        setTotalSpentChange(lastMonthTotalSpent > 0 ? ((thisMonthTotalSpent - lastMonthTotalSpent) / lastMonthTotalSpent) * 100 : thisMonthTotalSpent > 0 ? 100 : 0);
+        setTotalItemsChange(lastMonthTotalItems > 0 ? ((thisMonthTotalItems - lastMonthTotalItems) / lastMonthTotalItems) * 100 : thisMonthTotalItems > 0 ? 100 : 0);
+
+        // -- Process Bar Chart data (last 12 months) --
+        const monthlyData: {[key: string]: any} = {};
+        for(let i=11; i>=0; i--) {
+            const date = subMonths(now, i);
+            const monthKey = format(date, 'MMM/yy', { locale: ptBR });
+            monthlyData[monthKey] = { month: monthKey, ...Object.fromEntries(Object.keys(barChartConfig).filter(k => k !== 'total').map(k => [k, 0])) };
+        }
+
+        allItems.forEach(item => {
+            const monthKey = format(item.purchaseDate, 'MMM/yy', { locale: ptBR });
+            if (monthlyData[monthKey]) {
+                const category = item.category || 'Outros';
+                if(barChartConfig[category as keyof typeof barChartConfig]){
+                     monthlyData[monthKey][category] = (monthlyData[monthKey][category] || 0) + item.totalPrice;
+                } else {
+                     monthlyData[monthKey]['Outros'] = (monthlyData[monthKey]['Outros'] || 0) + item.totalPrice;
+                }
+            }
+        });
+        setBarChartData(Object.values(monthlyData));
+        
+        // -- Process Pie Chart data (this month) --
+        const thisMonthCategorySpending = thisMonthItems.reduce((acc, item) => {
+             const category = item.category || 'Outros';
+             acc[category] = (acc[category] || 0) + item.totalPrice;
+             return acc;
+        }, {} as {[key: string]: number});
+        
+        const pieData = Object.entries(thisMonthCategorySpending).map(([category, value]) => ({
+            category,
+            value,
+            fill: (pieChartConfig[category as keyof typeof pieChartConfig] as any)?.color || pieChartConfig['Outros'].color
+        }));
+        setPieChartData(pieData);
+        setSpendingByCategory(Object.entries(thisMonthCategorySpending).map(([name, value]) => ({ name, value })));
+
+        // -- Process Top Expenses (this month) --
+        const top5Expenses = thisMonthItems.sort((a,b) => b.totalPrice - a.totalPrice).slice(0, 5);
+        setTopExpensesData(top5Expenses);
+        
+        // -- Process other card data --
+        setTotalSpentMonth(thisMonthTotalSpent);
+        setTotalItemsBought(thisMonthTotalItems);
+        setRecentItems(thisMonthItems.sort((a,b) => b.purchaseDate - a.purchaseDate).slice(0, 10));
+
+        // -- Set Monthly Spending By Store (this month) --
+        const spendingByStore = thisMonthItems.reduce((acc, item) => {
+            acc[item.storeName] = (acc[item.storeName] || 0) + item.totalPrice;
+            return acc;
+        }, {} as {[key: string]: number});
+        setMonthlySpendingByStore(Object.entries(spendingByStore).map(([name, value]) => ({name, value})));
+
+        // For now, savings opportunities are left empty
+        // setSavingsOpportunities([]); 
+
+        setLoading(false);
     }
     fetchData();
   }, [profile]);
   
   const handleConsumptionAnalysis = async () => {
-    if (consumptionAnalysis || profile?.plan !== 'premium') return;
+    if (consumptionAnalysis || profile?.plan !== 'premium' || barChartData.length === 0) return;
     setIsAnalysisLoading(true);
     try {
         const result = await analyzeConsumptionData({ consumptionData: JSON.stringify(barChartData) });
@@ -182,6 +241,10 @@ export default function DashboardPage() {
     }
 };
 
+  const topCategory = useMemo(() => {
+    if (spendingByCategory.length === 0) return { name: t('not_available_short'), value: 0 };
+    return spendingByCategory.reduce((prev, current) => (prev.value > current.value) ? prev : current);
+  }, [spendingByCategory, t]);
 
   const getCategoryClass = (category: string) => {
     const categoryMap: { [key: string]: string } = {
@@ -223,6 +286,27 @@ export default function DashboardPage() {
     return subcategoryMap[category] || subcategoryMap.Default;
   }
   
+  const formattedBarChartData = useMemo(() => barChartData.map(monthData => {
+    const formatted: any = { month: monthData.month };
+    Object.keys(barChartConfig).forEach(key => {
+        if (key !== 'total') {
+            formatted[key] = monthData[key] || 0;
+        }
+    });
+    return formatted;
+  }), [barChartData]);
+
+  if (loading) {
+    return (
+        <div className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-[108px]" />)}
+            </div>
+            <Skeleton className="h-[434px] w-full" />
+            <Skeleton className="h-[300px] w-full" />
+        </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -239,7 +323,7 @@ export default function DashboardPage() {
               <FontAwesomeIcon icon={faDollarSign} className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">R$ {totalSpentMonth.toFixed(2)}</div>
+              <div className="text-2xl font-bold">R$ {totalSpentMonth?.toFixed(2) ?? '0.00'}</div>
               <ComparisonBadge value={totalSpentChange} />
             </CardContent>
           </Card>
@@ -257,7 +341,7 @@ export default function DashboardPage() {
               <FontAwesomeIcon icon={faShoppingBag} className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalItemsBought}</div>
+              <div className="text-2xl font-bold">{totalItemsBought ?? 0}</div>
               <ComparisonBadge value={totalItemsChange} />
             </CardContent>
           </Card>
@@ -277,7 +361,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{topCategory.name}</div>
-              <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage', { percentage: totalSpentMonth > 0 ? ((topCategory.value / totalSpentMonth) * 100).toFixed(0) : 0 })}</p>
+              <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage', { percentage: totalSpentMonth! > 0 ? ((topCategory.value / totalSpentMonth!) * 100).toFixed(0) : 0 })}</p>
             </CardContent>
           </Card>
         </InsightModal>
@@ -285,7 +369,7 @@ export default function DashboardPage() {
         <InsightModal 
           title={t('modal_potential_savings_title')}
           description={t('modal_potential_savings_desc')}
-          data={savingsOpportunities}
+          data={[]}
           type="savingsOpportunities"
         >
           <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
@@ -294,7 +378,7 @@ export default function DashboardPage() {
               <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">R$ {savingsOpportunities.reduce((acc, s) => acc + s.saving, 0).toFixed(2)}</div>
+              <div className="text-2xl font-bold">R$ 0.00</div>
               <p className="text-xs text-muted-foreground">{t('dashboard_potential_savings_desc')}</p>
             </CardContent>
           </Card>
@@ -321,7 +405,7 @@ export default function DashboardPage() {
                 {barChartData.length > 0 ? (
                 <ChartContainer config={barChartConfig} className="h-[350px] w-full">
                     <ResponsiveContainer>
-                        <RechartsBarChart data={barChartData} stackOffset="sign">
+                        <RechartsBarChart data={formattedBarChartData} stackOffset="sign">
                             <XAxis
                             dataKey="month"
                             stroke="#888888"
@@ -341,12 +425,9 @@ export default function DashboardPage() {
                                 content={<ChartTooltipContent />}
                             />
                             <ChartLegend content={<ChartLegendContent />} />
-                            <Bar dataKey="hortifruti" fill="var(--color-hortifruti)" stackId="a" radius={[0, 0, 0, 0]} />
-                            <Bar dataKey="acougue" fill="var(--color-acougue)" stackId="a" radius={[0, 0, 0, 0]} />
-                            <Bar dataKey="laticinios" fill="var(--color-laticinios)" stackId="a" radius={[0, 0, 0, 0]} />
-                            <Bar dataKey="mercearia" fill="var(--color-mercearia)" stackId="a" radius={[0, 0, 0, 0]} />
-                            <Bar dataKey="bebidas" fill="var(--color-bebidas)" stackId="a" radius={[0, 0, 0, 0]} />
-                            <Bar dataKey="limpeza" fill="var(--color-limpeza)" stackId="a" radius={[4, 4, 0, 0]} />
+                            {Object.keys(barChartConfig).filter(k => k !== 'total').map((key) => (
+                                <Bar key={key} dataKey={key} fill={barChartConfig[key as keyof typeof barChartConfig].color} stackId="a" radius={key === 'Limpeza' ? [4, 4, 0, 0] : [0,0,0,0]} />
+                            ))}
                         </RechartsBarChart>
                     </ResponsiveContainer>
                 </ChartContainer>

@@ -32,7 +32,9 @@ export default function ScanPage() {
         if (!querySnapshot.empty) {
             return querySnapshot.docs[0].ref;
         } else {
-            const newStoreRef = await addDoc(storesRef, {
+            const newStoreRef = doc(collection(db, Collections.Stores)); // Create a new doc reference
+            await addDoc(storesRef, {
+                id: newStoreRef.id,
                 name: purchaseData.storeName,
                 cnpj: purchaseData.cnpj,
                 address: purchaseData.address,
@@ -64,7 +66,7 @@ export default function ScanPage() {
             const purchaseDate = purchaseData.date instanceof Date ? Timestamp.fromDate(purchaseData.date) : Timestamp.fromDate(new Date(purchaseData.date));
 
             let storeRef = null;
-            if ('cnpj' in purchaseData) {
+            if ('cnpj' in purchaseData && (purchaseData as any).cnpj) { // Check if cnpj exists
                  storeRef = await getOrCreateStore(purchaseData as ExtractProductDataOutput);
             }
 
@@ -93,8 +95,11 @@ export default function ScanPage() {
                     brand: product.brand || null,
                     category: product.category || null,
                     subcategory: product.subcategory || null,
-                    // In a real app, you'd link to the global product
-                    productId: null, 
+                    // Pass along purchase and family info for collectionGroup queries
+                    purchaseId: purchaseRef.id,
+                    purchaseDate: purchaseDate,
+                    familyId: profile.familyId,
+                    storeName: purchaseData.storeName,
                 });
             });
 
@@ -146,3 +151,5 @@ export default function ScanPage() {
         </div>
     );
 }
+
+    

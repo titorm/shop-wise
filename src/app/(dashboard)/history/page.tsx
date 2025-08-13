@@ -67,8 +67,10 @@ export default function HistoryPage() {
                     const items = itemsSnap.docs.map(doc => ({...doc.data(), id: doc.id } as PurchaseItem));
 
                     return {
-                        ...purchaseData,
                         id: purchaseDoc.id,
+                        storeName: purchaseData.storeName,
+                        date: purchaseData.date,
+                        totalAmount: purchaseData.totalAmount, // Use the pre-calculated total
                         items,
                     } as Purchase;
                 }));
@@ -260,3 +262,6 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
 
     
 
+
+
+    
