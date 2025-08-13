@@ -82,7 +82,7 @@ export default function HistoryPage() {
                         id: purchaseDoc.id,
                         storeName: purchaseData.storeName,
                         date: purchaseData.date,
-                        totalAmount: purchaseData.totalAmount, // Use the pre-calculated total
+                        totalAmount: purchaseData.totalAmount,
                         items,
                     } as Purchase;
                 }));
@@ -275,6 +275,8 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
     
 
 
+
+    
 
     
 

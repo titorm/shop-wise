@@ -34,7 +34,7 @@ interface PurchaseItem {
     quantity: number;
     price: number;
     totalPrice: number;
-    purchaseDate: Timestamp;
+    purchaseDate: Date;
     storeName: string;
 }
 
@@ -135,43 +135,53 @@ export default function DashboardPage() {
         setLoading(true);
 
         const now = new Date();
+        const startOf12MonthsAgo = startOfMonth(subMonths(now, 11));
+
+        // 1. Fetch all purchases for the family
+        const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
+        const purchasesQuery = query(purchasesRef, where("date", ">=", Timestamp.fromDate(startOf12MonthsAgo)));
+        const purchasesSnapshot = await getDocs(purchasesQuery);
+
+        let allItems: PurchaseItem[] = [];
+
+        // 2. For each purchase, fetch its items
+        for (const purchaseDoc of purchasesSnapshot.docs) {
+            const itemsRef = collection(db, purchaseDoc.ref, "purchase_items");
+            const itemsSnapshot = await getDocs(itemsRef);
+            
+            for (const itemDoc of itemsSnapshot.docs) {
+                const itemData = itemDoc.data();
+                const purchaseItem: PurchaseItem = {
+                    id: itemDoc.id,
+                    productRef: itemData.productRef,
+                    quantity: itemData.quantity,
+                    price: itemData.price,
+                    totalPrice: itemData.totalPrice,
+                    purchaseDate: (itemData.purchaseDate as Timestamp).toDate(),
+                    storeName: itemData.storeName,
+                };
+                
+                if (purchaseItem.productRef) {
+                    const productSnap = await getDoc(purchaseItem.productRef);
+                    if (productSnap.exists()) {
+                        const productData = productSnap.data();
+                        purchaseItem.name = productData.name;
+                        purchaseItem.barcode = productData.barcode;
+                        purchaseItem.volume = productData.volume;
+                        purchaseItem.brand = productData.brand;
+                        purchaseItem.category = productData.category;
+                        purchaseItem.subcategory = productData.subcategory;
+                    }
+                }
+                allItems.push(purchaseItem);
+            }
+        }
+        
         const startOfThisMonth = startOfMonth(now);
         const endOfThisMonth = endOfMonth(now);
         const startOfLastMonth = startOfMonth(subMonths(now, 1));
         const endOfLastMonth = endOfMonth(subMonths(now, 1));
-        const startOf12MonthsAgo = startOfMonth(subMonths(now, 11));
-
-        // Fetch all purchase items for the family
-        const itemsGroupRef = collectionGroup(db, 'purchase_items');
-        const itemsQuery = query(itemsGroupRef, where("familyId", "==", profile.familyId));
-        const itemsSnapshot = await getDocs(itemsQuery);
         
-        let allItems: PurchaseItem[] = [];
-        for (const itemDoc of itemsSnapshot.docs) {
-            const itemData = itemDoc.data() as PurchaseItem;
-            itemData.id = itemDoc.id;
-            // Ensure purchaseDate is a JS Date object
-            itemData.purchaseDate = (itemData.purchaseDate as Timestamp).toDate();
-
-             if (itemData.productRef) {
-                const productSnap = await getDoc(itemData.productRef);
-                if (productSnap.exists()) {
-                    const productData = productSnap.data();
-                    itemData.name = productData.name;
-                    itemData.barcode = productData.barcode;
-                    itemData.volume = productData.volume;
-                    itemData.brand = productData.brand;
-                    itemData.category = productData.category;
-                    itemData.subcategory = productData.subcategory;
-                }
-            }
-            allItems.push(itemData);
-        }
-
-        // Filter items for the last 12 months in the client
-        allItems = allItems.filter(item => item.purchaseDate >= startOf12MonthsAgo);
-
-
         // -- Process current month data --
         const thisMonthItems = allItems.filter(item => item.purchaseDate >= startOfThisMonth && item.purchaseDate <= endOfThisMonth);
         const thisMonthTotalSpent = thisMonthItems.reduce((acc, item) => acc + item.totalPrice, 0);
@@ -209,7 +219,7 @@ export default function DashboardPage() {
         
         // -- Process Pie Chart data (this month) --
         const thisMonthCategorySpending = thisMonthItems.reduce((acc, item) => {
-            const category = item.category && pieChartConfig.hasOwnProperty(item.category) ? item.category : 'Outros';
+            const category = (item.category && pieChartConfig.hasOwnProperty(item.category)) ? item.category : 'Outros';
             acc[category] = (acc[category] || 0) + item.totalPrice;
             return acc;
         }, {} as { [key: string]: number });
@@ -237,9 +247,6 @@ export default function DashboardPage() {
             return acc;
         }, {} as {[key: string]: number});
         setMonthlySpendingByStore(Object.entries(spendingByStore).map(([name, value]) => ({name, value})));
-
-        // For now, savings opportunities are left empty
-        // setSavingsOpportunities([]); 
 
         setLoading(false);
     }
@@ -521,5 +528,7 @@ export default function DashboardPage() {
     
 
 
+
+    
 
     
