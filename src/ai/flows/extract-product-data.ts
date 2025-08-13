@@ -55,16 +55,17 @@ const prompt = ai.definePrompt({
   output: {schema: ExtractProductDataOutputSchema},
   prompt: `You are an expert data extractor specializing in extracting data from Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipts.
 
-  You will use the information from the receipt's QR code to extract the store name, purchase date, and a list of all products. Make sure to extract ALL products.
+  You will use the information from the receipt's QR code to extract the store name, purchase date, and a list of all products. It is critical that you extract ALL products listed on the receipt.
 
   **Data Extraction Rules:**
-  - **Store Name**: Look for the emitter's name, usually at the top. (e.g., "ANGELONI CIA LTDA")
-  - **CNPJ**: Look for the emitter's CNPJ. (e.g., "83.646.984/0035-71")
-  - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "AV CENTENARIO, 2605, CENTRO, CRICIUMA, SC")
+  - **Store Name**: Look for the emitter's name, usually at the top. (e.g., "SDB COMERCIO DE ALIMENTOS LTDA")
+  - **CNPJ**: Look for the emitter's CNPJ. (e.g., "09.477.652/0090-61")
+  - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "SC401 RF JOSE CARLOS DAUX, 9580, STO ANTONIO DE LISBOA, FLORIANOPOLIS, SC")
   - **Date**: Look for the authorization date ("Protocolo de Autorização"). Format it as YYYY-MM-DD. (e.g., "Protocolo de Autorização 123456 - 22/01/2024 19:24:30" becomes "2024-01-22")
   
   **Product Extraction Rules:**
   - The products are in a table. For each product, extract all fields. **It is critical that you extract ALL products listed on the receipt.**
+  - **Price**: Use the "Vl. Total" field for the final price of the item line.
   - **Brand**: Infer the product's brand from its name. If no brand is evident, leave it empty.
   - **Category/Subcategory**: Classify each product into a category and subcategory from the list below. Be as specific as possible. If a product doesn't fit, use your best judgment.
 
@@ -83,20 +84,19 @@ const prompt = ai.definePrompt({
   - Pet Shop (Ração, Petiscos)
   - Utilidades e Bazar (Pilhas, Lâmpadas, Utensílios)
 
-
   **Example of a product line:**
-  "001 7891000312515 REFRI COCA-COLA S/ACUCAR PET 2L | Qtde.:1 UN | Vl. Unit.:  9,19 | Vl. Total: 9,19"
+  "SALSICHA AURORA 500G (Código: 7891164005412) | Qtde.:1 UN | Vl. Unit.: 8,99 | Vl. Total: 8,99"
   **Should be extracted as:**
   {
-    barcode: "7891000312515",
-    name: "REFRI COCA-COLA S/ACUCAR PET 2L",
+    barcode: "7891164005412",
+    name: "SALSICHA AURORA 500G",
     quantity: 1,
     volume: "UN",
-    unitPrice: 9.19,
-    price: 9.19,
-    brand: "Coca-Cola",
-    category: "Bebidas",
-    subcategory: "Refrigerantes"
+    unitPrice: 8.99,
+    price: 8.99,
+    brand: "Aurora",
+    category: "Açougue e Peixaria",
+    subcategory: "Aves"
   }
 
   Now, analyze the following receipt data and extract the information into the specified JSON format.
