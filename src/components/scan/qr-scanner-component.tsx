@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faLink, faWandMagicSparkles, faTags, faCopyright } from '@fortawesome/free-solid-svg-icons';
+import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faLink, faWandMagicSparkles, faTags, faCopyright, faBug } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -22,6 +22,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 interface Product {
     id: number;
@@ -47,6 +48,7 @@ const formSchema = z.object({
 export function QrScannerComponent({ onSave }: QrScannerProps) {
   const { t } = useTranslation();
   const [scanResult, setScanResult] = useState<ExtractProductDataOutput | null>(null);
+  const [debugResult, setDebugResult] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -108,10 +110,12 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     setIsLoading(true);
     setScanResult(null);
     setProducts([]);
+    setDebugResult(null);
     
     try {
         const result = await importDataFromUrl({ url: values.url });
         
+        setDebugResult(JSON.stringify(result, null, 2));
         setScanResult(result);
         setProducts(result.products.map((p, i) => ({
             ...p,
@@ -281,13 +285,28 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                             </Button>
                         </CardContent>
                     </Card>
-                    <CardFooter className="p-0">
+                    <CardFooter className="p-0 flex flex-col items-start gap-4">
                         <Button size="lg" onClick={handleConfirmPurchase} disabled={isSaving}>
                             <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
                             {isSaving ? t('saving') : t('confirm_and_save_button')}
                         </Button>
                     </CardFooter>
                 </div>
+            )}
+
+             {debugResult && (
+                <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>
+                            <span className='flex items-center gap-2'><FontAwesomeIcon icon={faBug} /> Dados brutos da IA (para depuração)</span>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <pre className="mt-4 p-4 bg-muted rounded-md text-xs overflow-auto max-h-96">
+                                {debugResult}
+                            </pre>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             )}
         </CardContent>
 
@@ -336,3 +355,5 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     </>
   );
 }
+
+    
