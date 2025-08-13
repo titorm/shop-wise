@@ -64,7 +64,8 @@ const prompt = ai.definePrompt({
   - **Date**: Look for the authorization date ("Protocolo de Autorização"). Format it as YYYY-MM-DD. (e.g., "Protocolo de Autorização 123456 - 22/01/2024 19:24:30" becomes "2024-01-22")
   
   **Product Extraction Rules:**
-  - The products are in a table. For each product, extract all fields. **It is critical that you extract ALL products listed on the receipt.**
+  - The products are in a table. For each product, extract all fields.
+  - **Item Unification**: If a product with the same barcode appears multiple times on the receipt, you must unify them into a single item. Sum the quantities ("Qtde.") and the total prices ("Vl. Total"). Use the name and unit price from the first occurrence.
   - **Price**: Use the "Vl. Total" field for the final price of the item line.
   - **Brand**: Infer the product's brand from its name. If no brand is evident, leave it empty.
   - **Category/Subcategory**: Classify each product into a category and subcategory from the list below. Be as specific as possible. If a product doesn't fit, use your best judgment.
