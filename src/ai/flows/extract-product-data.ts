@@ -34,6 +34,10 @@ const ExtractProductDataOutputSchema = z.object({
   ).describe('An array of products extracted from the receipt.'),
   storeName: z.string().describe('The name of the store.'),
   date: z.string().describe('The date of the purchase (dd/mm/yyyy).'),
+  cnpj: z.string().describe("The store's CNPJ (Cadastro Nacional da Pessoa Jurídica)."),
+  address: z.string().describe("The full address of the store."),
+  latitude: z.number().optional().describe("The latitude of the store's location."),
+  longitude: z.number().optional().describe("The longitude of the store's location."),
 });
 export type ExtractProductDataOutput = z.infer<typeof ExtractProductDataOutputSchema>;
 
@@ -53,6 +57,10 @@ const prompt = ai.definePrompt({
 
   - **Store Name**: Look for the emitter's name, usually at the top.
     - Example: "ANGELONI CIA LTDA"
+  - **CNPJ**: Look for the emitter's CNPJ.
+    - Example: "83.646.984/0035-71"
+  - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude.
+    - Example: "AV CENTENARIO, 2605, CENTRO, CRICIUMA, SC"
   - **Date**: Look for the emission date ("Data de Emissão"). Format it as YYYY-MM-DD.
     - Example: "22/01/2024 19:24:26" becomes "2024-01-22"
   - **Products**: The products are in a table. For each product, extract the following fields:
