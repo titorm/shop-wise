@@ -61,9 +61,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-4 md:px-6">
-      <div className="flex h-full items-center justify-center w-[var(--sidebar-width-icon)]">
-        <SidebarTrigger />
-      </div>
+      <SidebarTrigger />
       <ShopWiseLogo className="w-auto h-7 text-foreground" />
       
       <div className="flex w-full items-center justify-end gap-2">
