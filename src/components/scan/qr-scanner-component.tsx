@@ -121,7 +121,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
           toast({
               variant: "destructive",
               title: t('scan_error_title'),
-              description: t('scan_error_desc_pdf'),
+              description: t('scan_error_desc_pdf_detailed'),
           });
         } finally {
             setIsLoading(false);
@@ -199,7 +199,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                 disabled={isLoading}
             />
             <Button asChild className='w-full' size="lg" disabled={isLoading}>
-                 <Label htmlFor="pdf-upload" className={cn(isLoading ? 'cursor-not-allowed' : 'cursor-pointer')}>
+                 <Label htmlFor="pdf-upload" className={cn(isLoading ? 'cursor-not-allowed bg-muted text-muted-foreground' : 'cursor-pointer')}>
                     <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />
                     {isLoading ? t('processing') : t('select_pdf_button')}
                  </Label>
@@ -343,3 +343,5 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     </>
   );
 }
+
+    
