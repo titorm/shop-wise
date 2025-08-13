@@ -541,6 +541,7 @@ const SidebarMenuButton = React.forwardRef<
         data-active={isActive}
         className={cn(
             sidebarMenuButtonVariants({ variant, size }),
+            "justify-start",
             state === 'collapsed' && "w-9 justify-center",
             className
         )}

@@ -9,6 +9,8 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   useSidebar,
+  SidebarTrigger,
+  SidebarHeader,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -18,6 +20,7 @@ import { faFileLines, faMessage } from "@fortawesome/free-regular-svg-icons";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useTranslation } from "react-i18next";
+import { ShopWiseLogo } from "../icons";
 
 const menuItems = [
     { href: "/dashboard", label: "insights", icon: faHome },
@@ -67,6 +70,15 @@ export function MainNav() {
 
   return (
     <>
+      <SidebarHeader>
+        <SidebarTrigger className="h-8 w-8 shrink-0" />
+        <ShopWiseLogo
+          className={cn(
+            "h-7 w-auto text-foreground transition-all duration-300 ease-in-out",
+            state === "collapsed" && "opacity-0"
+          )}
+        />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           {menuItems.map((item) => (
@@ -78,7 +90,7 @@ export function MainNav() {
                   asChild={false}
                 >
                   <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                  <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' && "opacity-0 w-0")}>{t(item.label)}</span>
+                  <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t(item.label)}</span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
@@ -95,7 +107,7 @@ export function MainNav() {
                     asChild={false}
                     >
                     <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                    <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' && "opacity-0 w-0")}>{t(item.label)}</span>
+                    <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t(item.label)}</span>
                     </SidebarMenuButton>
                 </Link>
                 </SidebarMenuItem>
@@ -107,7 +119,7 @@ export function MainNav() {
                     asChild={false}
                 >
                     <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
-                    <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' && "opacity-0 w-0")}>{t('logout')}</span>
+                    <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t('logout')}</span>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             
@@ -123,7 +135,7 @@ export function MainNav() {
                             asChild={false}
                             >
                             <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                            <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' && "opacity-0 w-0")}>{t(item.label)}</span>
+                            <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t(item.label)}</span>
                             </SidebarMenuButton>
                         </Link>
                         </SidebarMenuItem>

@@ -7,30 +7,21 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ShopWiseLogo } from "@/components/icons";
 import { useAuth } from "@/hooks/use-auth";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
-import { collection, query, where, getDocs, limit, onSnapshot, writeBatch, doc } from 'firebase/firestore';
+import { collection, query, onSnapshot, writeBatch, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Collections } from '@/lib/enums';
 import type { Notification } from '@/lib/types';
 import { NotificationPopover } from './notification-popover';
+import { ShoppingListPopover } from './shopping-list-popover';
 
 export function Header() {
   const { t } = useTranslation();
   const { profile } = useAuth();
-  const [hasActiveList, setHasActiveList] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     if (!profile?.familyId) return;
-
-    // Check for active shopping list
-    const listsRef = collection(db, Collections.Families, profile.familyId, 'shopping_lists');
-    const qLists = query(listsRef, where("status", "==", "active"), limit(1));
-    const listUnsubscribe = onSnapshot(qLists, (querySnapshot) => {
-      setHasActiveList(!querySnapshot.empty);
-    });
 
     // Fetch notifications
     const notifsRef = collection(db, Collections.Families, profile.familyId, 'notifications');
@@ -41,7 +32,6 @@ export function Header() {
     });
 
     return () => {
-        listUnsubscribe();
         notifUnsubscribe();
     };
   }, [profile]);
@@ -61,18 +51,13 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-4 md:px-6">
-      <SidebarTrigger />
-      <ShopWiseLogo className="w-auto h-7 text-foreground" />
+       <div className="flex items-center gap-2">
+            <SidebarTrigger className="h-8 w-8 shrink-0 md:hidden" />
+            <ShopWiseLogo className="hidden h-7 w-auto text-foreground md:flex" />
+        </div>
       
       <div className="flex w-full items-center justify-end gap-2">
-        {hasActiveList && (
-            <Button variant="ghost" size="icon" asChild>
-            <Link href="/list">
-                <FontAwesomeIcon icon={faShoppingCart} className="h-5 w-5" />
-                <span className="sr-only">{t('active_shopping_list')}</span>
-            </Link>
-            </Button>
-        )}
+        <ShoppingListPopover />
         
         {unreadNotifications.length > 0 && (
           <NotificationPopover 
