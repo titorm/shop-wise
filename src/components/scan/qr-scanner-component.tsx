@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faPlusCircle, faSave, faCopyright, faBug, faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faPlusCircle, faSave, faCopyright, faBug, faFilePdf, faTags } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../ui/badge';
