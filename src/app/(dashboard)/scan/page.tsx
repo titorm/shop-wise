@@ -77,7 +77,7 @@ export default function ScanPage() {
                 date: purchaseDate,
                 totalAmount: totalAmount,
                 purchasedBy: user.uid,
-                entryMethod: 'products' in purchaseData ? 'qr_code' : 'manual',
+                entryMethod: 'products' in purchaseData ? 'import' : 'manual',
             });
 
             // Batch write all the items in the purchase
