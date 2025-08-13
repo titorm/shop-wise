@@ -61,10 +61,10 @@ const prompt = ai.definePrompt({
   - **Store Name**: Look for the emitter's name, usually at the top. (e.g., "ANGELONI CIA LTDA")
   - **CNPJ**: Look for the emitter's CNPJ. (e.g., "83.646.984/0035-71")
   - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "AV CENTENARIO, 2605, CENTRO, CRICIUMA, SC")
-  - **Date**: Look for the emission date ("Data de Emissão"). Format it as YYYY-MM-DD. (e.g., "22/01/2024 19:24:26" becomes "2024-01-22")
+  - **Date**: Look for the authorization date ("Protocolo de Autorização"). Format it as YYYY-MM-DD. (e.g., "Protocolo de Autorização 123456 - 22/01/2024 19:24:30" becomes "2024-01-22")
   
   **Product Extraction Rules:**
-  - The products are in a table. For each product, extract all fields.
+  - The products are in a table. For each product, extract all fields. **It is critical that you extract ALL products listed on the receipt.**
   - **Brand**: Infer the product's brand from its name. If no brand is evident, leave it empty.
   - **Category/Subcategory**: Classify each product into a category and subcategory from the list below. Be as specific as possible. If a product doesn't fit, use your best judgment.
 

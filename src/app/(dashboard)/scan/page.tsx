@@ -6,7 +6,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { useTranslation } from "react-i18next";
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc, getDocs, query, where } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { toast } from '@/hooks/use-toast';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
@@ -22,6 +22,29 @@ export default function ScanPage() {
     const { t } = useTranslation();
     const { user, profile } = useAuth();
     const router = useRouter();
+
+
+    const getOrCreateStore = async (purchaseData: ExtractProductDataOutput) => {
+        const storesRef = collection(db, Collections.Stores);
+        const q = query(storesRef, where("cnpj", "==", purchaseData.cnpj));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            return querySnapshot.docs[0].ref;
+        } else {
+            const newStoreRef = await addDoc(storesRef, {
+                name: purchaseData.storeName,
+                cnpj: purchaseData.cnpj,
+                address: purchaseData.address,
+                location: {
+                    latitude: purchaseData.latitude || null,
+                    longitude: purchaseData.longitude || null,
+                },
+                createdAt: serverTimestamp(),
+            });
+            return newStoreRef;
+        }
+    };
 
 
     const handleSavePurchase = async (purchaseData: ExtractProductDataOutput | PurchaseData, products: any[]) => {
@@ -40,10 +63,15 @@ export default function ScanPage() {
             // Ensure date is a Firestore Timestamp
             const purchaseDate = purchaseData.date instanceof Date ? Timestamp.fromDate(purchaseData.date) : Timestamp.fromDate(new Date(purchaseData.date));
 
+            let storeRef = null;
+            if ('cnpj' in purchaseData) {
+                 storeRef = await getOrCreateStore(purchaseData as ExtractProductDataOutput);
+            }
 
             // Create a new purchase document
             const purchaseRef = await addDoc(collection(db, Collections.Families, profile.familyId, 'purchases'), {
                 storeName: purchaseData.storeName,
+                storeRef: storeRef,
                 date: purchaseDate,
                 totalAmount: totalAmount,
                 purchasedBy: user.uid,
