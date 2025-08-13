@@ -202,10 +202,10 @@ export default function DashboardPage() {
         
         // -- Process Pie Chart data (this month) --
         const thisMonthCategorySpending = thisMonthItems.reduce((acc, item) => {
-             const category = item.category || 'Outros';
-             acc[category] = (acc[category] || 0) + item.totalPrice;
-             return acc;
-        }, {} as {[key: string]: number});
+            const category = item.category && pieChartConfig.hasOwnProperty(item.category) ? item.category : 'Outros';
+            acc[category] = (acc[category] || 0) + item.totalPrice;
+            return acc;
+        }, {} as { [key: string]: number });
         
         const pieData = Object.entries(thisMonthCategorySpending).map(([category, value]) => ({
             category,
@@ -510,3 +510,4 @@ export default function DashboardPage() {
 }
 
     
+
