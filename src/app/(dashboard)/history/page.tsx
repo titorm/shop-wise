@@ -18,6 +18,7 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy, Timestamp, collectionGroup, doc } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface PurchaseItem {
     id: string;
@@ -162,15 +163,17 @@ export default function HistoryPage() {
                         </div>
                     ) : (
                         <>
-                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                {filteredPurchases.map(purchase => (
-                                <PurchaseCard key={purchase.id} purchase={purchase} />
-                                ))}
-                            </div>
-                            {filteredPurchases.length === 0 && (
-                                <div className="text-center py-12 text-muted-foreground">
-                                    <p>{t('no_purchases_found')}</p>
+                            {filteredPurchases.length > 0 ? (
+                                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                    {filteredPurchases.map(purchase => (
+                                        <PurchaseCard key={purchase.id} purchase={purchase} />
+                                    ))}
                                 </div>
+                            ) : (
+                                <EmptyState 
+                                    title={t('empty_state_no_history_title')}
+                                    description={t('empty_state_no_history_desc')}
+                                />
                             )}
                         </>
                     )}
@@ -181,21 +184,12 @@ export default function HistoryPage() {
                 <CardHeader>
                     <CardTitle className="text-xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faLightbulb} className="w-5 h-5 text-primary"/> {t('recommendations_title')}</CardTitle>
                 </CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-6">
-                    <Alert>
-                        <FontAwesomeIcon icon={faShoppingCart} className="h-4 w-4" />
-                        <AlertTitle>{t('recommendations_recently_bought')}</AlertTitle>
-                        <AlertDescription>
-                          <Trans i18nKey="recommendations_recently_bought_desc" values={{ items: "Leite, Pão, Café" }} components={{ 1: <span className="font-semibold" /> }} />
-                        </AlertDescription>
-                    </Alert>
-                     <Alert>
-                        <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4" />
-                        <AlertTitle>{t('recommendations_potential_savings')}</AlertTitle>
-                        <AlertDescription>
-                           <Trans i18nKey="recommendations_potential_savings_desc" values={{ item: "Arroz 5kg", store: "Atacarejo Preço Baixo" }} components={{ 1: <span className="font-semibold" />, 3: <span className="font-semibold" /> }} />
-                        </AlertDescription>
-                    </Alert>
+                <CardContent>
+                    <EmptyState
+                        icon={faLightbulb}
+                        title={t('empty_state_no_recommendations_title')}
+                        description={t('empty_state_no_recommendations_desc')}
+                    />
                 </CardContent>
              </Card>
 
