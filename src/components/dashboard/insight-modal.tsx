@@ -8,9 +8,10 @@ import { Pie, PieChart as RechartsPieChart, Cell, ResponsiveContainer } from "re
 import { useTranslation } from "react-i18next";
 import { ReactNode } from "react";
 import { EmptyState } from "../ui/empty-state";
-import { faStore, faBox, faCalendar, faTags, faDollarSign } from "@fortawesome/free-solid-svg-icons";
+import { faStore, faBox, faCalendar, faTags, faDollarSign, faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Badge } from "../ui/badge";
+import { Skeleton } from "../ui/skeleton";
 
 interface InsightModalProps {
     title: string;
@@ -18,7 +19,10 @@ interface InsightModalProps {
     children: ReactNode;
     data: any[];
     chartData?: any[];
-    type: 'spendingByStore' | 'recentItems' | 'topCategories' | 'savingsOpportunities';
+    type: 'spendingByStore' | 'recentItems' | 'topCategories' | 'savingsOpportunities' | 'consumptionAnalysis';
+    analysis?: string | null;
+    isLoading?: boolean;
+    onOpen?: () => void;
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF", "#FF19AF", "#19AFFF", "#AFFF19"];
@@ -32,11 +36,11 @@ const PIE_CHART_COLORS = [
 ];
 
 
-export function InsightModal({ title, description, children, data, chartData, type }: InsightModalProps) {
+export function InsightModal({ title, description, children, data, chartData, type, analysis, isLoading, onOpen }: InsightModalProps) {
     const { t } = useTranslation();
 
     const renderContent = () => {
-        if (!data || data.length === 0) {
+        if (type !== 'consumptionAnalysis' && (!data || data.length === 0)) {
             return <EmptyState title={t('empty_state_no_modal_data_title')} description={t('empty_state_no_modal_data_desc')} />;
         }
         
@@ -176,20 +180,40 @@ export function InsightModal({ title, description, children, data, chartData, ty
                         </TableBody>
                     </Table>
                 );
+            case 'consumptionAnalysis':
+                 if (isLoading) {
+                    return (
+                        <div className="space-y-4">
+                             <div className="flex items-center gap-2 text-muted-foreground">
+                                <FontAwesomeIcon icon={faWandMagicSparkles} className="h-5 w-5 animate-pulse" />
+                                <p>{t('modal_analysis_loading')}</p>
+                            </div>
+                            <Skeleton className="h-6 w-3/4" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-5/6" />
+                            <Skeleton className="h-4 w-full" />
+                        </div>
+                    );
+                }
+                return (
+                     <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
+                        {analysis}
+                    </div>
+                );
             default:
                 return null;
         }
     }
 
     return (
-        <Dialog>
+        <Dialog onOpenChange={(open) => open && onOpen?.()}>
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent className="max-w-3xl">
                 <DialogHeader>
                     <DialogTitle className="text-xl">{title}</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
-                <div className="py-4">
+                <div className="py-4 max-h-[70vh] overflow-y-auto">
                     {renderContent()}
                 </div>
             </DialogContent>

@@ -17,6 +17,7 @@ import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/empty-state";
 import { InsightModal } from "@/components/dashboard/insight-modal";
+import { analyzeConsumptionData } from "./actions";
 
 const barChartConfig = {
   total: { label: "Total" },
@@ -71,6 +72,9 @@ export default function DashboardPage() {
   const [recentItems, setRecentItems] = useState<any[]>([]);
   const [spendingByCategory, setSpendingByCategory] = useState<any[]>([]);
   const [savingsOpportunities, setSavingsOpportunities] = useState<any[]>([]);
+  const [consumptionAnalysis, setConsumptionAnalysis] = useState<string | null>(null);
+  const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
+
 
   const totalSpentMonth = useMemo(() => {
     return monthlySpendingByStore.reduce((acc, store) => acc + store.value, 0);
@@ -117,7 +121,7 @@ export default function DashboardPage() {
             { id: '1', barcode: '7891000123456', name: 'Picanha Gold 1kg', category: 'Açougue e Peixaria', subcategory: 'Carne Bovina', volume: '1kg', quantity: 2, price: 89.90, totalPrice: 179.80 },
             { id: '2', barcode: '7892000234567', name: 'Azeite Extra Virgem 500ml', category: 'Mercearia', subcategory: 'Óleos', volume: '500ml', quantity: 3, price: 45.50, totalPrice: 136.50 },
             { id: '3', barcode: '7893000345678', name: 'Vinho Tinto Chileno 750ml', category: 'Bebidas', subcategory: 'Vinhos', volume: '750ml', quantity: 2, price: 65.00, totalPrice: 130.00 },
-            { id: '4', barcode: '7894000456789', name: 'Salmão Fresco (Kg)', category: 'Açougue e Peixaria', subcategory: 'Peixes', volume: '0.8kg', quantity: 1, price: 120.00, totalPrice: 96.00 },
+            { id: '4', barcode: '7894000456789', name: 'Salmão Fresco (Kg)', category: 'Açougue e Peixaria', subcategory: 'Peixes', volume: '0.8kg', quantity: 1, price: 96.00, totalPrice: 96.00 },
             { id: '5', barcode: '7895000567890', name: 'Queijo Parmesão Peça', category: 'Laticínios e Frios', subcategory: 'Queijos', volume: '300g', quantity: 1, price: 55.80, totalPrice: 55.80 },
         ];
         const mockRecentItems = mockTopExpenses.map(item => ({...item, purchaseDate: new Date() }));
@@ -143,6 +147,19 @@ export default function DashboardPage() {
     }
     fetchData();
   }, [profile]);
+  
+  const handleConsumptionAnalysis = async () => {
+    if (consumptionAnalysis) return; // Don't re-fetch if analysis already exists
+    setIsAnalysisLoading(true);
+    try {
+        const result = await analyzeConsumptionData({ consumptionData: JSON.stringify(barChartData) });
+        setConsumptionAnalysis(result.analysis);
+    } catch (error) {
+        console.error("Error fetching consumption analysis:", error);
+    } finally {
+        setIsAnalysisLoading(false);
+    }
+};
 
 
   const getCategoryClass = (category: string) => {
@@ -264,53 +281,63 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6">
-        <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl col-span-1 lg:col-span-2">
-          <CardHeader>
-            <CardTitle>{t('dashboard_consumption_overview_title')}</CardTitle>
-            <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {barChartData.length > 0 ? (
-             <ChartContainer config={barChartConfig} className="h-[350px] w-full">
-                <ResponsiveContainer>
-                    <RechartsBarChart data={barChartData} stackOffset="sign">
-                        <XAxis
-                        dataKey="month"
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        />
-                        <YAxis
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `R$${value}`}
-                        />
-                         <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent />}
-                        />
-                         <ChartLegend content={<ChartLegendContent />} />
-                        <Bar dataKey="hortifruti" fill="var(--color-hortifruti)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="acougue" fill="var(--color-acougue)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="laticinios" fill="var(--color-laticinios)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="mercearia" fill="var(--color-mercearia)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="bebidas" fill="var(--color-bebidas)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="limpeza" fill="var(--color-limpeza)" stackId="a" radius={[4, 4, 0, 0]} />
-                    </RechartsBarChart>
-                </ResponsiveContainer>
-            </ChartContainer>
-            ) : (
-                <EmptyState
-                    title={t('empty_state_no_chart_title')}
-                    description={t('empty_state_no_chart_desc')}
-                    className="h-[350px]"
-                />
-            )}
-          </CardContent>
-        </Card>
+        <InsightModal
+            title={t('dashboard_consumption_overview_title')}
+            description={t('dashboard_consumption_overview_desc')}
+            type="consumptionAnalysis"
+            analysis={consumptionAnalysis}
+            isLoading={isAnalysisLoading}
+            onOpen={handleConsumptionAnalysis}
+            data={barChartData}
+        >
+            <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl col-span-1 lg:col-span-2">
+            <CardHeader>
+                <CardTitle>{t('dashboard_consumption_overview_title')}</CardTitle>
+                <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {barChartData.length > 0 ? (
+                <ChartContainer config={barChartConfig} className="h-[350px] w-full">
+                    <ResponsiveContainer>
+                        <RechartsBarChart data={barChartData} stackOffset="sign">
+                            <XAxis
+                            dataKey="month"
+                            stroke="#888888"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={false}
+                            />
+                            <YAxis
+                            stroke="#888888"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={false}
+                            tickFormatter={(value) => `R$${value}`}
+                            />
+                            <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent />}
+                            />
+                            <ChartLegend content={<ChartLegendContent />} />
+                            <Bar dataKey="hortifruti" fill="var(--color-hortifruti)" stackId="a" radius={[0, 0, 0, 0]} />
+                            <Bar dataKey="acougue" fill="var(--color-acougue)" stackId="a" radius={[0, 0, 0, 0]} />
+                            <Bar dataKey="laticinios" fill="var(--color-laticinios)" stackId="a" radius={[0, 0, 0, 0]} />
+                            <Bar dataKey="mercearia" fill="var(--color-mercearia)" stackId="a" radius={[0, 0, 0, 0]} />
+                            <Bar dataKey="bebidas" fill="var(--color-bebidas)" stackId="a" radius={[0, 0, 0, 0]} />
+                            <Bar dataKey="limpeza" fill="var(--color-limpeza)" stackId="a" radius={[4, 4, 0, 0]} />
+                        </RechartsBarChart>
+                    </ResponsiveContainer>
+                </ChartContainer>
+                ) : (
+                    <EmptyState
+                        title={t('empty_state_no_chart_title')}
+                        description={t('empty_state_no_chart_desc')}
+                        className="h-[350px]"
+                    />
+                )}
+            </CardContent>
+            </Card>
+        </InsightModal>
       </div>
 
       <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
