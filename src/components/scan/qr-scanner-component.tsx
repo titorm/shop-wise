@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faLink, faWandMagicSparkles, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faLink, faWandMagicSparkles, faTags, faCopyright } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -32,6 +32,7 @@ interface Product {
     price: number;
     category?: string;
     subcategory?: string;
+    brand?: string;
 }
 
 interface QrScannerProps {
@@ -163,7 +164,8 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
         quantity: 1,
         price: 0.00,
         category: "Mercearia",
-        subcategory: "Outros"
+        subcategory: "Outros",
+        brand: ""
     };
     setProducts([...products, newItem]);
     handleEditClick(newItem);
@@ -234,6 +236,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> {t('table_product')}</TableHead>
+                                        <TableHead><FontAwesomeIcon icon={faCopyright} className="inline-block mr-1 w-4 h-4" /> {t('table_brand')}</TableHead>
                                         <TableHead className="w-[200px]"><FontAwesomeIcon icon={faTags} className="inline-block mr-1 w-4 h-4" /> {t('table_category')}</TableHead>
                                         <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
                                         <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_price_header')} (R$)</TableHead>
@@ -244,6 +247,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                                     {products.map((product) => (
                                         <TableRow key={product.id}>
                                             <TableCell className="font-medium">{product.name}</TableCell>
+                                            <TableCell>{product.brand}</TableCell>
                                             <TableCell>
                                                 <div className='flex flex-col gap-1'>
                                                     <Badge variant="tag" className={cn(getCategoryClass(product.category))}>
@@ -300,6 +304,10 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="name" className="text-right">{t('name_label')}</Label>
                             <Input id="name" value={editingProduct.name} onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})} className="col-span-3" />
+                        </div>
+                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="brand" className="text-right">{t('table_brand')}</Label>
+                            <Input id="brand" value={editingProduct.brand} onChange={(e) => setEditingProduct({...editingProduct, brand: e.target.value})} className="col-span-3" />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="category" className="text-right">{t('table_category')}</Label>

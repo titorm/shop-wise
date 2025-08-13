@@ -62,10 +62,11 @@ export default function ScanPage() {
                     totalPrice: product.price * product.quantity,
                     barcode: product.barcode || null,
                     volume: product.volume || null,
-                    // In a real app, you'd link to the global product and category
+                    brand: product.brand || null,
+                    category: product.category || null,
+                    subcategory: product.subcategory || null,
+                    // In a real app, you'd link to the global product
                     productId: null, 
-                    categoryId: null,
-                    subcategory: null,
                 });
             });
 
