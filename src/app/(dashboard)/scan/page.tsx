@@ -105,14 +105,6 @@ export default function ScanPage() {
 
             await batch.commit();
 
-            toast({
-                title: t('toast_success_title'),
-                description: t('purchase_saved_successfully'),
-            });
-
-            router.push('/history');
-
-
         } catch (error) {
             console.error("Error saving purchase: ", error);
             toast({
@@ -120,6 +112,7 @@ export default function ScanPage() {
                 title: t('toast_error_saving'),
                 description: t('error_saving_purchase'),
             });
+            throw error; // Re-throw to be caught by the calling component
         }
     };
 

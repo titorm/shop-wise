@@ -172,8 +172,21 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   const handleConfirmPurchase = async () => {
     if (scanResult) {
         setIsSaving(true);
-        await onSave(scanResult, products);
-        setIsSaving(false);
+        try {
+            await onSave(scanResult, products);
+            toast({
+                title: t('toast_success_title'),
+                description: t('purchase_saved_successfully'),
+            });
+            // Clear the state after successful save
+            setScanResult(null);
+            setProducts([]);
+            setDebugResult(null);
+        } catch (error) {
+            // Error toast is handled in the parent onSave function
+        } finally {
+            setIsSaving(false);
+        }
     }
   }
 
