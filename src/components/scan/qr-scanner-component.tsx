@@ -12,9 +12,8 @@ import { Input } from '../ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +32,9 @@ interface QrScannerProps {
 
 export function QrScannerComponent({ onSave }: QrScannerProps) {
   const { t } = useTranslation();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [scanResult, setScanResult] = useState<ExtractProductDataOutput | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -41,59 +42,84 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      handleScan(file);
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        setHasCameraPermission(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: t('toast_error_camera_title'),
+          description: t('toast_error_camera_desc'),
+        });
+      }
+    };
+
+    getCameraPermission();
+    
+    return () => {
+        if (videoRef.current && videoRef.current.srcObject) {
+            const stream = videoRef.current.srcObject as MediaStream;
+            stream.getTracks().forEach(track => track.stop());
+        }
     }
-  };
+  }, [t, toast]);
 
-  const handleScan = async (file: File) => {
+
+  const handleScan = async () => {
+    if (!videoRef.current || !canvasRef.current || !hasCameraPermission) {
+        toast({
+            variant: "destructive",
+            title: t('toast_error_camera_not_ready_title'),
+            description: t('toast_error_camera_not_ready_desc'),
+          });
+        return;
+    };
+
     setIsLoading(true);
     setScanResult(null);
     setProducts([]);
+    
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d')?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+    
+    const base64Image = canvas.toDataURL('image/png');
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-        try {
-            const base64Image = reader.result as string;
-            const result = await extractProductData({ receiptImage: base64Image });
-            
-            setScanResult(result);
-            setProducts(result.products.map((p, i) => ({
-                ...p,
-                id: Date.now() + i,
-                price: p.price ?? p.unitPrice * p.quantity,
-            })));
+    try {
+        const result = await extractProductData({ receiptImage: base64Image });
+        
+        setScanResult(result);
+        setProducts(result.products.map((p, i) => ({
+            ...p,
+            id: Date.now() + i,
+            price: p.price ?? p.unitPrice * p.quantity,
+        })));
 
-            toast({
-                title: "Leitura com Sucesso!",
-                description: "Os dados da nota fiscal foram extraídos.",
-            });
-
-        } catch (error) {
-          console.error("Failed to extract data:", error);
-          toast({
-            variant: "destructive",
-            title: "Erro na Leitura",
-            description: "Não foi possível extrair os dados do QR Code. Tente novamente com uma imagem mais nítida.",
-          });
-        } finally {
-          setIsLoading(false);
-        }
-    };
-    reader.onerror = (error) => {
-        console.error("Error reading file:", error);
         toast({
-            variant: "destructive",
-            title: "Erro ao carregar arquivo",
-            description: "Não foi possível ler a imagem selecionada.",
+            title: t('scan_success_title'),
+            description: t('scan_success_desc'),
         });
+
+    } catch (error) {
+        console.error("Failed to extract data:", error);
+        toast({
+        variant: "destructive",
+        title: t('scan_error_title'),
+        description: t('scan_error_desc'),
+        });
+    } finally {
         setIsLoading(false);
-    };
+    }
   };
 
   const handleEditClick = (product: Product) => {
@@ -139,21 +165,28 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   return (
     <>
         <CardContent className="flex flex-col items-center gap-8 p-0">
-            <div className="w-full max-w-sm aspect-square bg-muted rounded-lg flex flex-col items-center justify-center p-4 relative">
-                <FontAwesomeIcon icon={faQrcode} className="w-24 h-24 text-muted-foreground/50 mb-4" />
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    accept="image/png, image/jpeg"
-                />
-                <Button onClick={() => fileInputRef.current?.click()} disabled={isLoading}>
-                    <FontAwesomeIcon icon={faUpload} className="mr-2 h-5 w-5" />
-                    {isLoading ? t('processing') : t('upload_qr_code_button')}
-                </Button>
-                 <p className="text-xs text-muted-foreground mt-4 text-center">{t('upload_qr_code_desc')}</p>
+            <div className="w-full max-w-sm aspect-video bg-muted rounded-lg flex flex-col items-center justify-center p-4 relative overflow-hidden">
+                <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                <canvas ref={canvasRef} className="hidden" />
+
+                {hasCameraPermission === false && (
+                     <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center text-center p-4">
+                        <FontAwesomeIcon icon={faVideoSlash} className="w-12 h-12 text-destructive mb-4" />
+                        <AlertTitle>{t('toast_error_camera_title')}</AlertTitle>
+                        <AlertDescription>{t('toast_error_camera_desc')}</AlertDescription>
+                    </div>
+                )}
+                 {hasCameraPermission === null && (
+                     <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center text-center p-4">
+                        <p>{t('loading_camera')}</p>
+                    </div>
+                )}
             </div>
+             <Button onClick={handleScan} disabled={isLoading || hasCameraPermission !== true}>
+                <FontAwesomeIcon icon={faCamera} className="mr-2 h-5 w-5" />
+                {isLoading ? t('processing') : t('scan_qr_code_with_camera')}
+            </Button>
+
 
             {scanResult && products.length > 0 && (
                 <div className="w-full space-y-6">
@@ -262,3 +295,5 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     </>
   );
 }
+
+    
