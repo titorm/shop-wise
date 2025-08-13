@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode, faArrowDown, faArrowUp, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode, faArrowDown, faArrowUp, faSpinner, faCopyright } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, limit, orderBy, query, where, Timestamp, doc, collectionGroup, getDoc } from "firebase/firestore";
@@ -171,6 +171,32 @@ export default function DashboardPage() {
             }
         }
         
+        // 3. Consolidate items
+        const consolidatedItemsMap = new Map<string, PurchaseItem>();
+        allItems.forEach(item => {
+            const key = item.productRef.id;
+            if (consolidatedItemsMap.has(key)) {
+                const existingItem = consolidatedItemsMap.get(key)!;
+                existingItem.quantity += item.quantity;
+                existingItem.totalPrice += item.totalPrice;
+                // Keep the latest purchase date for recency
+                if (item.purchaseDate > existingItem.purchaseDate) {
+                    existingItem.purchaseDate = item.purchaseDate;
+                }
+            } else {
+                consolidatedItemsMap.set(key, { ...item });
+            }
+        });
+        
+        // Recalculate average price for consolidated items
+        consolidatedItemsMap.forEach(item => {
+            if (item.quantity > 0) {
+                item.price = item.totalPrice / item.quantity;
+            }
+        });
+
+        const consolidatedItems = Array.from(consolidatedItemsMap.values());
+        
         const startOfThisMonth = startOfMonth(now);
         const endOfThisMonth = endOfMonth(now);
         const startOfLastMonth = startOfMonth(subMonths(now, 1));
@@ -226,8 +252,9 @@ export default function DashboardPage() {
         setPieChartData(pieData);
         setSpendingByCategory(Object.entries(thisMonthCategorySpending).map(([name, value]) => ({ name, value })));
 
-        // -- Process Top Expenses (this month) --
-        const top5Expenses = [...thisMonthItems].sort((a,b) => b.totalPrice - a.totalPrice).slice(0, 5);
+        // -- Process Top Expenses (this month, from consolidated items) --
+        const thisMonthConsolidatedItems = consolidatedItems.filter(item => item.purchaseDate >= startOfThisMonth && item.purchaseDate <= endOfThisMonth);
+        const top5Expenses = [...thisMonthConsolidatedItems].sort((a,b) => b.totalPrice - a.totalPrice).slice(0, 5);
         setTopExpensesData(top5Expenses);
         
         // -- Process other card data --
@@ -476,9 +503,8 @@ export default function DashboardPage() {
                         <TableRow>
                             <TableHead><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> {t('table_barcode')}</TableHead>
                             <TableHead>{t('table_product')}</TableHead>
+                            <TableHead><FontAwesomeIcon icon={faCopyright} className="inline-block mr-1 w-4 h-4" /> {t('table_brand')}</TableHead>
                             <TableHead className="w-[200px]"><FontAwesomeIcon icon={faTag} className="inline-block mr-1 w-4 h-4" /> {t('table_category')}</TableHead>
-                            <TableHead>{t('table_subcategory')}</TableHead>
-                            <TableHead><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> {t('table_volume')}</TableHead>
                             <TableHead className="w-[80px] text-center"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
                             <TableHead className="text-right"><FontAwesomeIcon icon={faScaleBalanced} className="inline-block mr-1 w-4 h-4" /> {t('table_unit_price')}</TableHead>
                             <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_total_price')}</TableHead>
@@ -489,18 +515,13 @@ export default function DashboardPage() {
                             <TableRow key={item.id}>
                                 <TableCell className="font-mono">{item.barcode}</TableCell>
                                 <TableCell className="font-medium">{item.name}</TableCell>
+                                <TableCell>{item.brand}</TableCell>
                                 <TableCell>
                                     <Badge variant="tag" className={cn(getCategoryClass(item.category!))}>
                                         {item.category}
                                     </Badge>
                                 </TableCell>
-                                <TableCell>
-                                    <Badge variant="tag" className={cn(getSubcategoryClass(item.category!))}>
-                                        {item.subcategory}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>{item.volume}</TableCell>
-                                <TableCell className="text-center">{item.quantity}</TableCell>
+                                <TableCell className="text-center">{item.quantity.toFixed(2)}</TableCell>
                                 <TableCell className="text-right">R$ {item.price?.toFixed(2)}</TableCell>
                                 <TableCell className="text-right">R$ {item.totalPrice?.toFixed(2)}</TableCell>
                             </TableRow>
@@ -518,3 +539,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
