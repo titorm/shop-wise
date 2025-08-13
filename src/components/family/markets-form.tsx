@@ -34,7 +34,7 @@ import { Separator } from "../ui/separator";
 
 const marketSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres."),
-  type: z.enum(["supermercado", "atacado", "feira", "acougue", "padaria", "outro"]),
+  type: z.enum(["supermercado", "atacado", "feira", "acougue", "padaria", "marketplace", "outro"]),
   cnpj: z.string().optional(),
   address: z.string().optional(),
 });
@@ -128,6 +128,7 @@ export function MarketsForm() {
                                             <SelectItem value="feira">Feira</SelectItem>
                                             <SelectItem value="acougue">Açougue</SelectItem>
                                             <SelectItem value="padaria">Padaria</SelectItem>
+                                            <SelectItem value="marketplace">Marketplace</SelectItem>
                                             <SelectItem value="outro">Outro</SelectItem>
                                         </SelectContent>
                                     </Select><FormMessage />
