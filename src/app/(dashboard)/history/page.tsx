@@ -15,19 +15,19 @@ import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy, Timestamp, collectionGroup, doc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, Timestamp, getDoc } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 
 interface PurchaseItem {
     id: string;
-    barcode: string;
-    name: string;
-    volume: string;
+    productRef: any;
+    barcode?: string;
+    name?: string;
+    volume?: string;
     quantity: number;
     price: number;
-    totalPrice: number;
 }
 interface Purchase {
     id: string;
@@ -64,7 +64,19 @@ export default function HistoryPage() {
                     const purchaseData = purchaseDoc.data();
                     const itemsRef = collection(db, Collections.Families, profile.familyId!, "purchases", purchaseDoc.id, "purchase_items");
                     const itemsSnap = await getDocs(itemsRef);
-                    const items = itemsSnap.docs.map(doc => ({...doc.data(), id: doc.id } as PurchaseItem));
+                    const items = await Promise.all(itemsSnap.docs.map(async (itemDoc) => {
+                        const itemData = itemDoc.data();
+                         if (itemData.productRef) {
+                            const productSnap = await getDoc(itemData.productRef);
+                            if (productSnap.exists()) {
+                                const productData = productSnap.data();
+                                itemData.name = productData.name;
+                                itemData.barcode = productData.barcode;
+                                itemData.volume = productData.volume;
+                            }
+                        }
+                        return {...itemData, id: itemDoc.id } as PurchaseItem;
+                    }));
 
                     return {
                         id: purchaseDoc.id,
@@ -90,7 +102,7 @@ export default function HistoryPage() {
         const lowerSearchTerm = searchTerm.toLowerCase();
         const matchesSearch = lowerSearchTerm === '' ||
             purchase.storeName.toLowerCase().includes(lowerSearchTerm) ||
-            purchase.items.some(item => item.name.toLowerCase().includes(lowerSearchTerm));
+            purchase.items.some(item => item.name?.toLowerCase().includes(lowerSearchTerm));
 
         const matchesStore = selectedStore === 'all' || purchase.storeName === selectedStore;
         
@@ -263,5 +275,7 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
     
 
 
+
+    
 
     

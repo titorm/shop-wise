@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode, faArrowDown, faArrowUp, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, limit, orderBy, query, where, Timestamp, doc, collectionGroup } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, where, Timestamp, doc, collectionGroup, getDoc } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -24,22 +24,18 @@ import { ptBR } from 'date-fns/locale';
 
 interface PurchaseItem {
     id: string;
-    barcode: string;
-    name: string;
-    volume: string;
+    productRef: any;
+    name?: string;
+    barcode?: string;
+    volume?: string;
+    brand?: string;
+    category?: string;
+    subcategory?: string;
     quantity: number;
     price: number;
     totalPrice: number;
-    category?: string;
-    subcategory?: string;
-    brand?: string;
-}
-interface Purchase {
-    id: string;
+    purchaseDate: Timestamp;
     storeName: string;
-    date: Timestamp;
-    totalAmount: number;
-    items: PurchaseItem[];
 }
 
 const barChartConfig = {
@@ -114,9 +110,9 @@ export default function DashboardPage() {
   // States for data
   const [barChartData, setBarChartData] = useState<any[]>([]);
   const [pieChartData, setPieChartData] = useState<any[]>([]);
-  const [topExpensesData, setTopExpensesData] = useState<any[]>([]);
+  const [topExpensesData, setTopExpensesData] = useState<PurchaseItem[]>([]);
   const [monthlySpendingByStore, setMonthlySpendingByStore] = useState<any[]>([]);
-  const [recentItems, setRecentItems] = useState<any[]>([]);
+  const [recentItems, setRecentItems] = useState<PurchaseItem[]>([]);
   const [spendingByCategory, setSpendingByCategory] = useState<any[]>([]);
   const [totalSpentMonth, setTotalSpentMonth] = useState<number | null>(null);
   const [totalItemsBought, setTotalItemsBought] = useState<number | null>(null);
@@ -145,20 +141,31 @@ export default function DashboardPage() {
         const endOfLastMonth = endOfMonth(subMonths(now, 1));
         const startOf12MonthsAgo = startOfMonth(subMonths(now, 11));
 
-        // Fetch all purchases for the family first
-        const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
-        const purchasesSnapshot = await getDocs(purchasesRef);
+        // Fetch all purchase items for the family
+        const itemsGroupRef = collectionGroup(db, 'purchase_items');
+        const itemsQuery = query(itemsGroupRef, where("familyId", "==", profile.familyId));
+        const itemsSnapshot = await getDocs(itemsQuery);
+        
+        let allItems: PurchaseItem[] = [];
+        for (const itemDoc of itemsSnapshot.docs) {
+            const itemData = itemDoc.data() as PurchaseItem;
+            itemData.id = itemDoc.id;
+            // Ensure purchaseDate is a JS Date object
+            itemData.purchaseDate = (itemData.purchaseDate as Timestamp).toDate();
 
-        let allItems: any[] = [];
-        for (const purchaseDoc of purchasesSnapshot.docs) {
-            const itemsRef = collection(purchaseDoc.ref, "purchase_items");
-            const itemsSnapshot = await getDocs(itemsRef);
-            const items = itemsSnapshot.docs.map(d => ({
-                ...d.data(), 
-                id: d.id, 
-                purchaseDate: (d.data().purchaseDate as Timestamp).toDate() 
-            }));
-            allItems = allItems.concat(items);
+             if (itemData.productRef) {
+                const productSnap = await getDoc(itemData.productRef);
+                if (productSnap.exists()) {
+                    const productData = productSnap.data();
+                    itemData.name = productData.name;
+                    itemData.barcode = productData.barcode;
+                    itemData.volume = productData.volume;
+                    itemData.brand = productData.brand;
+                    itemData.category = productData.category;
+                    itemData.subcategory = productData.subcategory;
+                }
+            }
+            allItems.push(itemData);
         }
 
         // Filter items for the last 12 months in the client
@@ -216,13 +223,13 @@ export default function DashboardPage() {
         setSpendingByCategory(Object.entries(thisMonthCategorySpending).map(([name, value]) => ({ name, value })));
 
         // -- Process Top Expenses (this month) --
-        const top5Expenses = thisMonthItems.sort((a,b) => b.totalPrice - a.totalPrice).slice(0, 5);
+        const top5Expenses = [...thisMonthItems].sort((a,b) => b.totalPrice - a.totalPrice).slice(0, 5);
         setTopExpensesData(top5Expenses);
         
         // -- Process other card data --
         setTotalSpentMonth(thisMonthTotalSpent);
         setTotalItemsBought(thisMonthTotalItems);
-        setRecentItems(thisMonthItems.sort((a,b) => b.purchaseDate - a.purchaseDate).slice(0, 10));
+        setRecentItems([...thisMonthItems].sort((a,b) => b.purchaseDate.getTime() - a.purchaseDate.getTime()).slice(0, 10));
 
         // -- Set Monthly Spending By Store (this month) --
         const spendingByStore = thisMonthItems.reduce((acc, item) => {
@@ -272,6 +279,7 @@ export default function DashboardPage() {
         "Bebês e Crianças": "bg-category-bebes/50 text-category-bebes-foreground border-category-bebes/20",
         "Pet Shop": "bg-category-pet/50 text-category-pet-foreground border-category-pet/20",
         "Utilidades e Bazar": "bg-category-utilidades/50 text-category-utilidades-foreground border-category-utilidades/20",
+        "Farmácia": "bg-category-pharmacy/50 text-category-pharmacy-foreground border-category-pharmacy/20",
         "Default": "bg-secondary text-secondary-foreground"
     };
     return categoryMap[category] || categoryMap.Default;
@@ -292,6 +300,7 @@ export default function DashboardPage() {
         "Bebês e Crianças": "bg-category-bebes/30 text-category-bebes-foreground border-category-bebes/10",
         "Pet Shop": "bg-category-pet/30 text-category-pet-foreground border-category-pet/10",
         "Utilidades e Bazar": "bg-category-utilidades/30 text-category-utilidades-foreground border-category-utilidades/10",
+        "Farmácia": "bg-category-pharmacy/30 text-category-pharmacy-foreground border-category-pharmacy/10",
         "Default": "bg-secondary/50 text-secondary-foreground"
     };
     return subcategoryMap[category] || subcategoryMap.Default;
@@ -480,12 +489,12 @@ export default function DashboardPage() {
                                 <TableCell className="font-mono">{item.barcode}</TableCell>
                                 <TableCell className="font-medium">{item.name}</TableCell>
                                 <TableCell>
-                                    <Badge variant="tag" className={cn(getCategoryClass(item.category))}>
+                                    <Badge variant="tag" className={cn(getCategoryClass(item.category!))}>
                                         {item.category}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge variant="tag" className={cn(getSubcategoryClass(item.category))}>
+                                    <Badge variant="tag" className={cn(getSubcategoryClass(item.category!))}>
                                         {item.subcategory}
                                     </Badge>
                                 </TableCell>
@@ -511,3 +520,6 @@ export default function DashboardPage() {
 
     
 
+
+
+    

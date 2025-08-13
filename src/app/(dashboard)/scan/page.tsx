@@ -6,7 +6,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { useTranslation } from "react-i18next";
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc, getDocs, query, where, setDoc } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { toast } from '@/hooks/use-toast';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
@@ -45,6 +45,30 @@ export default function ScanPage() {
             return newStoreRef;
         }
     };
+    
+    const getOrCreateProduct = async (productData: any) => {
+        if (!productData.barcode) return null;
+        const productsRef = collection(db, Collections.Products);
+        const q = query(productsRef, where("barcode", "==", productData.barcode), limit(1));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            return querySnapshot.docs[0].ref;
+        } else {
+            const newProductRef = doc(productsRef);
+            await setDoc(newProductRef, {
+                name: productData.name,
+                barcode: productData.barcode,
+                brand: productData.brand || null,
+                category: productData.category || null,
+                subcategory: productData.subcategory || null,
+                volume: productData.volume || null,
+                createdAt: serverTimestamp(),
+            });
+            return newProductRef;
+        }
+    }
+
 
     const handleSavePurchase = async (purchaseData: ExtractProductDataOutput | PurchaseData, products: any[], entryMethod: 'import' | 'manual') => {
         if (!user || !profile || !profile.familyId) {
@@ -77,24 +101,21 @@ export default function ScanPage() {
             const batch = writeBatch(db);
             const itemsColRef = collection(db, Collections.Families, profile.familyId, 'purchases', purchaseRef.id, 'purchase_items');
             
-            products.forEach(product => {
+            for (const product of products) {
+                const productRef = await getOrCreateProduct(product);
+
                 const itemRef = doc(itemsColRef);
                 batch.set(itemRef, {
-                    name: product.name,
+                    productRef: productRef,
                     quantity: product.quantity,
-                    price: product.price,
+                    price: product.price, // Unit price
                     totalPrice: product.price * product.quantity,
-                    barcode: product.barcode || null,
-                    volume: product.volume || null,
-                    brand: product.brand || null,
-                    category: product.category || null,
-                    subcategory: product.subcategory || null,
                     purchaseId: purchaseRef.id,
                     purchaseDate: purchaseDate,
                     familyId: profile.familyId,
                     storeName: purchaseData.storeName,
                 });
-            });
+            }
 
             await batch.commit();
 
@@ -142,3 +163,5 @@ export default function ScanPage() {
         </div>
     );
 }
+
+    
