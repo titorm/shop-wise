@@ -78,7 +78,7 @@ export function MainNav() {
                   asChild={false}
                 >
                   <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                  <span className={cn(state === 'collapsed' && 'hidden')}>{t(item.label)}</span>
+                  <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' && "opacity-0 w-0")}>{t(item.label)}</span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
@@ -95,7 +95,7 @@ export function MainNav() {
                     asChild={false}
                     >
                     <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                    <span className={cn(state === 'collapsed' && 'hidden')}>{t(item.label)}</span>
+                    <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' && "opacity-0 w-0")}>{t(item.label)}</span>
                     </SidebarMenuButton>
                 </Link>
                 </SidebarMenuItem>
@@ -107,7 +107,7 @@ export function MainNav() {
                     asChild={false}
                 >
                     <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
-                    <span className={cn(state === 'collapsed' && 'hidden')}>{t('logout')}</span>
+                    <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' && "opacity-0 w-0")}>{t('logout')}</span>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             
@@ -123,7 +123,7 @@ export function MainNav() {
                             asChild={false}
                             >
                             <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                            <span className={cn(state === 'collapsed' && 'hidden')}>{t(item.label)}</span>
+                            <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' && "opacity-0 w-0")}>{t(item.label)}</span>
                             </SidebarMenuButton>
                         </Link>
                         </SidebarMenuItem>
