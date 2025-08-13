@@ -32,31 +32,31 @@
     --sidebar-accent-foreground: 122 46% 24%; /* Darker green */
     --sidebar-ring: 122 46% 34%;
     
-    --category-hortifruti: 122 33% 75%;
+    --category-hortifruti: 122 33% 84%; /* #A5D6A7 */
     --category-hortifruti-foreground: 120 25% 25%;
-    --category-acougue: 0 71% 77%;
+    --category-acougue: 0 71% 80%; /* #EF9A9A */
     --category-acougue-foreground: 0 50% 30%;
-    --category-padaria: 45 100% 76%;
+    --category-padaria: 45 100% 75%; /* #FFE082 */
     --category-padaria-foreground: 35 50% 30%;
-    --category-laticinios: 211 89% 77%;
+    --category-laticinios: 211 89% 78%; /* #90CAF9 */
     --category-laticinios-foreground: 210 50% 30%;
-    --category-mercearia: 30 100% 75%;
+    --category-mercearia: 30 100% 75%; /* #FFCC80 */
     --category-mercearia-foreground: 25 50% 30%;
-    --category-matinais: 341 81% 77%;
+    --category-matinais: 341 81% 77%; /* #F48FB1 */
     --category-matinais-foreground: 340 50% 30%;
-    --category-congelados: 185 78% 71%;
+    --category-congelados: 185 78% 71%; /* #80DEEA */
     --category-congelados-foreground: 185 50% 30%;
-    --category-bebidas: 265 56% 79%;
+    --category-bebidas: 265 56% 79%; /* #B39DDB */
     --category-bebidas-foreground: 265 30% 30%;
-    --category-limpeza: 174 44% 71%;
+    --category-limpeza: 174 44% 71%; /* #80CBC4 */
     --category-limpeza-foreground: 175 30% 30%;
-    --category-higiene: 291 59% 81%;
+    --category-higiene: 291 59% 81%; /* #CE93D8 */
     --category-higiene-foreground: 290 30% 30%;
-    --category-bebes: 57 100% 80%;
+    --category-bebes: 57 100% 80%; /* #FFF59D */
     --category-bebes-foreground: 55 50% 30%;
-    --category-pet: 20 25% 76%;
+    --category-pet: 20 25% 76%; /* #BCAAA4 */
     --category-pet-foreground: 20 20% 30%;
-    --category-utilidades: 200 25% 80%;
+    --category-utilidades: 200 25% 80%; /* #B0BEC5 */
     --category-utilidades-foreground: 200 20% 30%;
     --category-pharmacy: 174 44% 78%; /* #B2DFDB */
     --category-pharmacy-foreground: 175 30% 30%;
@@ -91,33 +91,33 @@
     --sidebar-accent-foreground: 122 46% 78%; /* Lighter green */
     --sidebar-ring: 122 46% 44%;
     
-    --category-hortifruti: 122 39% 64%;
+    --category-hortifruti: 122 39% 64%; /* #81C784 */
     --category-hortifruti-foreground: 120 70% 95%;
-    --category-acougue: 0 65% 68%;
+    --category-acougue: 0 65% 68%; /* #E57373 */
     --category-acougue-foreground: 0 70% 95%;
-    --category-padaria: 45 100% 66%;
+    --category-padaria: 45 100% 65%; /* #FFD54F */
     --category-padaria-foreground: 45 70% 95%;
-    --category-laticinios: 211 85% 68%;
+    --category-laticinios: 211 85% 67%; /* #64B5F6 */
     --category-laticinios-foreground: 210 70% 95%;
-    --category-mercearia: 30 100% 65%;
+    --category-mercearia: 30 100% 65%; /* #FFB74D */
     --category-mercearia-foreground: 30 70% 95%;
-    --category-matinais: 341 81% 69%;
+    --category-matinais: 341 81% 69%; /* #F06292 */
     --category-matinais-foreground: 340 70% 95%;
-    --category-congelados: 185 70% 60%;
+    --category-congelados: 185 70% 60%; /* #4DD0E1 */
     --category-congelados-foreground: 185 70% 95%;
-    --category-bebidas: 265 58% 72%;
+    --category-bebidas: 265 58% 71%; /* #9575CD */
     --category-bebidas-foreground: 265 70% 95%;
-    --category-limpeza: 174 45% 58%;
+    --category-limpeza: 174 45% 58%; /* #4DB6AC */
     --category-limpeza-foreground: 175 70% 95%;
-    --category-higiene: 291 49% 70%;
+    --category-higiene: 291 49% 70%; /* #BA68C8 */
     --category-higiene-foreground: 290 70% 95%;
-    --category-bebes: 56 94% 72%;
+    --category-bebes: 56 94% 72%; /* #FFF176 */
     --category-bebes-foreground: 55 70% 95%;
-    --category-pet: 20 20% 63%;
+    --category-pet: 20 20% 63%; /* #A1887F */
     --category-pet-foreground: 20 70% 95%;
-    --category-utilidades: 200 17% 65%;
+    --category-utilidades: 200 17% 65%; /* #90A4AE */
     --category-utilidades-foreground: 200 70% 95%;
-    --category-pharmacy: 174 45% 51%; /* #4DB6AC */
+    --category-pharmacy: 174 45% 58%; /* #4DB6AC */
     --category-pharmacy-foreground: 175 70% 95%;
   }
 }

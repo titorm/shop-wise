@@ -141,7 +141,7 @@ export default function DashboardPage() {
 
         // 2. For each purchase, fetch its items
         for (const purchaseDoc of purchasesSnapshot.docs) {
-            const itemsRef = collection(db, purchaseDoc.ref, "purchase_items");
+            const itemsRef = collection(db, purchaseDoc.ref.path, "purchase_items");
             const itemsSnapshot = await getDocs(itemsRef);
             
             for (const itemDoc of itemsSnapshot.docs) {
@@ -516,5 +516,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
