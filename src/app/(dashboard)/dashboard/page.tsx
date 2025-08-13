@@ -105,11 +105,11 @@ export default function DashboardPage() {
             { category: "Limpeza", value: 140, fill: "hsl(var(--category-limpeza))" },
         ];
         const mockTopExpenses = [
-            { id: '1', barcode: '7891000123456', name: 'Picanha Gold 1kg', category: 'Açougue e Peixaria', subcategory: 'Carne Bovina', volume: '1kg', quantity: 2, unitPrice: 89.90, totalPrice: 179.80 },
-            { id: '2', barcode: '7892000234567', name: 'Azeite Extra Virgem 500ml', category: 'Mercearia', subcategory: 'Óleos', volume: '500ml', quantity: 3, unitPrice: 45.50, totalPrice: 136.50 },
-            { id: '3', barcode: '7893000345678', name: 'Vinho Tinto Chileno 750ml', category: 'Bebidas', subcategory: 'Vinhos', volume: '750ml', quantity: 2, unitPrice: 65.00, totalPrice: 130.00 },
-            { id: '4', barcode: '7894000456789', name: 'Salmão Fresco (Kg)', category: 'Açougue e Peixaria', subcategory: 'Peixes', volume: '0.8kg', quantity: 1, unitPrice: 120.00, totalPrice: 96.00 },
-            { id: '5', barcode: '7895000567890', name: 'Queijo Parmesão Peça', category: 'Laticínios e Frios', subcategory: 'Queijos', volume: '300g', quantity: 1, unitPrice: 55.80, totalPrice: 55.80 },
+            { id: '1', barcode: '7891000123456', name: 'Picanha Gold 1kg', category: 'Açougue e Peixaria', subcategory: 'Carne Bovina', volume: '1kg', quantity: 2, price: 89.90, totalPrice: 179.80 },
+            { id: '2', barcode: '7892000234567', name: 'Azeite Extra Virgem 500ml', category: 'Mercearia', subcategory: 'Óleos', volume: '500ml', quantity: 3, price: 45.50, totalPrice: 136.50 },
+            { id: '3', barcode: '7893000345678', name: 'Vinho Tinto Chileno 750ml', category: 'Bebidas', subcategory: 'Vinhos', volume: '750ml', quantity: 2, price: 65.00, totalPrice: 130.00 },
+            { id: '4', barcode: '7894000456789', name: 'Salmão Fresco (Kg)', category: 'Açougue e Peixaria', subcategory: 'Peixes', volume: '0.8kg', quantity: 1, price: 120.00, totalPrice: 96.00 },
+            { id: '5', barcode: '7895000567890', name: 'Queijo Parmesão Peça', category: 'Laticínios e Frios', subcategory: 'Queijos', volume: '300g', quantity: 1, price: 55.80, totalPrice: 55.80 },
         ];
         const mockRecentItems = mockTopExpenses.map(item => ({...item, purchaseDate: new Date() }));
         const mockSpendingByStore = [
@@ -371,7 +371,7 @@ export default function DashboardPage() {
                                 </TableCell>
                                 <TableCell>{item.volume}</TableCell>
                                 <TableCell>{item.quantity}</TableCell>
-                                <TableCell className="text-right">R$ {item.unitPrice?.toFixed(2)}</TableCell>
+                                <TableCell className="text-right">R$ {item.price?.toFixed(2)}</TableCell>
                                 <TableCell className="text-right">R$ {item.totalPrice?.toFixed(2)}</TableCell>
                             </TableRow>
                         ))}
