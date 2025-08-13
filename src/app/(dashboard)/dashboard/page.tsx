@@ -92,9 +92,18 @@ export default function DashboardPage() {
 
         // MOCK DATA INJECTION
         const mockBarData = [
-          { month: "Abril", limpeza: 110, bebidas: 190, mercearia: 450, laticinios: 320, acougue: 380, hortifruti: 210 },
-          { month: "Maio", limpeza: 130, bebidas: 210, mercearia: 550, laticinios: 350, acougue: 410, hortifruti: 240 },
-          { month: "Junho", limpeza: 140, bebidas: 240, mercearia: 600, laticinios: 380, acougue: 440, hortifruti: 260 },
+            { month: "Jul '23", limpeza: 90, bebidas: 150, mercearia: 400, laticinios: 280, acougue: 320, hortifruti: 180 },
+            { month: "Ago '23", limpeza: 95, bebidas: 160, mercearia: 410, laticinios: 290, acougue: 330, hortifruti: 190 },
+            { month: "Set '23", limpeza: 100, bebidas: 170, mercearia: 420, laticinios: 300, acougue: 350, hortifruti: 200 },
+            { month: "Out '23", limpeza: 105, bebidas: 180, mercearia: 430, laticinios: 310, acougue: 360, hortifruti: 210 },
+            { month: "Nov '23", limpeza: 110, bebidas: 200, mercearia: 480, laticinios: 330, acougue: 390, hortifruti: 220 },
+            { month: "Dez '23", limpeza: 150, bebidas: 300, mercearia: 700, laticinios: 400, acougue: 500, hortifruti: 280 },
+            { month: "Jan '24", limpeza: 120, bebidas: 220, mercearia: 500, laticinios: 340, acougue: 400, hortifruti: 230 },
+            { month: "Fev '24", limpeza: 115, bebidas: 210, mercearia: 490, laticinios: 330, acougue: 390, hortifruti: 220 },
+            { month: "Mar '24", limpeza: 125, bebidas: 230, mercearia: 520, laticinios: 360, acougue: 420, hortifruti: 250 },
+            { month: "Abr '24", limpeza: 110, bebidas: 190, mercearia: 450, laticinios: 320, acougue: 380, hortifruti: 210 },
+            { month: "Mai '24", limpeza: 130, bebidas: 210, mercearia: 550, laticinios: 350, acougue: 410, hortifruti: 240 },
+            { month: "Jun '24", limpeza: 140, bebidas: 240, mercearia: 600, laticinios: 380, acougue: 440, hortifruti: 260 },
         ];
         const mockPieData = [
             { category: "Mercearia", value: 600, fill: "hsl(var(--category-mercearia))" },
@@ -220,6 +229,7 @@ export default function DashboardPage() {
           title={t('modal_main_category_title')}
           description={t('modal_main_category_desc')}
           data={spendingByCategory}
+          chartData={pieChartData}
           type="topCategories"
         >
           <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
@@ -253,15 +263,15 @@ export default function DashboardPage() {
         </InsightModal>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-        <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
+      <div className="grid gap-6">
+        <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl col-span-1 lg:col-span-2">
           <CardHeader>
             <CardTitle>{t('dashboard_consumption_overview_title')}</CardTitle>
             <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
           </CardHeader>
           <CardContent>
             {barChartData.length > 0 ? (
-             <ChartContainer config={barChartConfig} className="h-[300px] w-full">
+             <ChartContainer config={barChartConfig} className="h-[350px] w-full">
                 <ResponsiveContainer>
                     <RechartsBarChart data={barChartData} stackOffset="sign">
                         <XAxis
@@ -296,41 +306,10 @@ export default function DashboardPage() {
                 <EmptyState
                     title={t('empty_state_no_chart_title')}
                     description={t('empty_state_no_chart_desc')}
-                    className="h-[300px]"
+                    className="h-[350px]"
                 />
             )}
           </CardContent>
-        </Card>
-
-        <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
-           <CardHeader>
-                <CardTitle>{t('dashboard_spending_by_category_title')}</CardTitle>
-                <CardDescription>{t('dashboard_spending_by_category_desc')}</CardDescription>
-            </CardHeader>
-            <CardContent className="h-[300px] w-full flex items-center justify-center">
-                {pieChartData.length > 0 ? (
-                    <ChartContainer config={pieChartConfig} className="mx-auto aspect-square h-full max-h-[300px] w-full">
-                        <RechartsPieChart>
-                            <ChartTooltip
-                                cursor={false}
-                                content={<ChartTooltipContent hideLabel nameKey="category" />}
-                            />
-                            <Pie data={pieChartData} dataKey="value" nameKey="category" innerRadius={60} strokeWidth={5}>
-                                {pieChartData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                                ))}
-                            </Pie>
-                            <ChartLegend content={<ChartLegendContent nameKey="category" />} />
-                        </RechartsPieChart>
-                    </ChartContainer>
-                ) : (
-                    <EmptyState
-                        title={t('empty_state_no_chart_title')}
-                        description={t('empty_state_no_chart_desc')}
-                        className="h-[300px] w-full"
-                    />
-                )}
-            </CardContent>
         </Card>
       </div>
 
@@ -388,5 +367,7 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
 
     

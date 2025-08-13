@@ -17,12 +17,22 @@ interface InsightModalProps {
     description: string;
     children: ReactNode;
     data: any[];
+    chartData?: any[];
     type: 'spendingByStore' | 'recentItems' | 'topCategories' | 'savingsOpportunities';
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF", "#FF19AF", "#19AFFF", "#AFFF19"];
+const PIE_CHART_COLORS = [
+    "hsl(var(--category-mercearia))",
+    "hsl(var(--category-acougue))",
+    "hsl(var(--category-laticinios))",
+    "hsl(var(--category-hortifruti))",
+    "hsl(var(--category-bebidas))",
+    "hsl(var(--category-limpeza))"
+];
 
-export function InsightModal({ title, description, children, data, type }: InsightModalProps) {
+
+export function InsightModal({ title, description, children, data, chartData, type }: InsightModalProps) {
     const { t } = useTranslation();
 
     const renderContent = () => {
@@ -104,22 +114,46 @@ export function InsightModal({ title, description, children, data, type }: Insig
                  );
             case 'topCategories':
                  return (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead><FontAwesomeIcon icon={faTags} className="mr-2 h-4 w-4" />{t('table_category')}</TableHead>
-                                <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />{t('table_amount_spent')}</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {data.map((item, index) => (
-                                <TableRow key={index}>
-                                    <TableCell><Badge variant="outline">{item.name}</Badge></TableCell>
-                                    <TableCell className="text-right">R$ {item.value.toFixed(2)}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                    <div className="grid md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead><FontAwesomeIcon icon={faTags} className="mr-2 h-4 w-4" />{t('table_category')}</TableHead>
+                                        <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />{t('table_amount_spent')}</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {data.map((item, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell><Badge variant="outline">{item.name}</Badge></TableCell>
+                                            <TableCell className="text-right">R$ {item.value.toFixed(2)}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                        {chartData && chartData.length > 0 && (
+                            <div className="flex items-center justify-center h-64">
+                                <ChartContainer config={{}} className="h-full w-full">
+                                    <ResponsiveContainer>
+                                        <RechartsPieChart>
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={<ChartTooltipContent hideLabel nameKey="category" />}
+                                            />
+                                            <Pie data={chartData} dataKey="value" nameKey="category" innerRadius={50}>
+                                                {chartData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={PIE_CHART_COLORS[index % PIE_CHART_COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <ChartLegend content={<ChartLegendContent nameKey="category" />} />
+                                        </RechartsPieChart>
+                                    </ResponsiveContainer>
+                                </ChartContainer>
+                            </div>
+                        )}
+                    </div>
                  );
             case 'savingsOpportunities':
                 return (
