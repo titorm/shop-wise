@@ -248,7 +248,7 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-8 w-8", className)}
+      className={cn("h-8 w-8 shrink-0", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
@@ -541,6 +541,7 @@ const SidebarMenuButton = React.forwardRef<
         data-active={isActive}
         className={cn(
             sidebarMenuButtonVariants({ variant, size }),
+            "justify-start",
             state === 'collapsed' && "w-9 justify-center",
             className
         )}
