@@ -14,7 +14,7 @@ import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash } from '@fortawesome/free-solid-svg-icons';
+import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 
@@ -33,8 +33,7 @@ interface QrScannerProps {
 
 export function QrScannerComponent({ onSave }: QrScannerProps) {
   const { t } = useTranslation();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [scanResult, setScanResult] = useState<ExtractProductDataOutput | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -43,75 +42,58 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   
-  useEffect(() => {
-    const getCameraPermission = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({video: true});
-        setHasCameraPermission(true);
 
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-        setHasCameraPermission(false);
-        toast({
-          variant: 'destructive',
-          title: t('camera_access_denied_title'),
-          description: t('camera_access_denied_desc'),
-        });
-      }
-    };
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleScan(file);
+    }
+  };
 
-    getCameraPermission();
-  }, [t, toast]);
-
-
-  const handleScan = async () => {
+  const handleScan = async (file: File) => {
     setIsLoading(true);
     setScanResult(null);
     setProducts([]);
 
-    try {
-      // Using mock data to simulate a successful scan and avoid the error.
-      const mockResult: ExtractProductDataOutput = {
-        storeName: "ANGELONI CIA LTDA",
-        date: "2024-01-22",
-        cnpj: "83.646.984/0035-71",
-        address: "AV CENTENARIO, 2605, CENTRO, CRICIUMA, SC",
-        products: [
-            { barcode: "7891000312515", name: "REFRI COCA-COLA S/ACUCAR PET 2L", quantity: 1, volume: "UN", unitPrice: 9.19, price: 9.19 },
-            { barcode: "7891991012353", name: "CERVEJA HEINEKEN LN 330ML", quantity: 1, volume: "UN", unitPrice: 6.29, price: 6.29 },
-            { barcode: "7894900013019", name: "AGUA MIN INDAIA S/GAS 500ML", quantity: 1, volume: "UN", unitPrice: 2.19, price: 2.19 },
-            { barcode: "7896005301032", name: "CHA MATE LEAO LIMAO COPO 300ML", quantity: 1, volume: "UN", unitPrice: 3.49, price: 3.49 },
-            { barcode: "7896065811019", name: "PAO DE ALHO STA MASSA 300G TRAD", quantity: 1, volume: "UN", unitPrice: 9.99, price: 9.99 },
-            { barcode: "7891149103254", name: "REFRIG SCHWEPPES CITRUS 1,5L", quantity: 1, volume: "UN", unitPrice: 8.19, price: 8.19 },
-            { barcode: "0000000032999", name: "Pao Frances", quantity: 6, volume: "UN", unitPrice: 0.8, price: 4.8 },
-            { barcode: "7896020460309", name: "LEITE COND MOCELAN 395G TP", quantity: 1, volume: "UN", unitPrice: 4.99, price: 4.99 },
-            { barcode: "7896005301032", name: "Refrigerante", quantity: 1, volume: "UN", unitPrice: 8.9, price: 8.9 },
-        ]
-      };
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setScanResult(mockResult);
-      setProducts(mockResult.products.map((p, i) => ({
-          ...p,
-          id: Date.now() + i,
-          price: p.price ?? p.unitPrice * p.quantity,
-      })));
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+        try {
+            const base64Image = reader.result as string;
+            const result = await extractProductData({ receiptImage: base64Image });
+            
+            setScanResult(result);
+            setProducts(result.products.map((p, i) => ({
+                ...p,
+                id: Date.now() + i,
+                price: p.price ?? p.unitPrice * p.quantity,
+            })));
 
-    } catch (error) {
-      console.error("Failed to extract data:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro na Leitura",
-        description: "Não foi possível extrair os dados do QR Code. Tente novamente.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+            toast({
+                title: "Leitura com Sucesso!",
+                description: "Os dados da nota fiscal foram extraídos.",
+            });
+
+        } catch (error) {
+          console.error("Failed to extract data:", error);
+          toast({
+            variant: "destructive",
+            title: "Erro na Leitura",
+            description: "Não foi possível extrair os dados do QR Code. Tente novamente com uma imagem mais nítida.",
+          });
+        } finally {
+          setIsLoading(false);
+        }
+    };
+    reader.onerror = (error) => {
+        console.error("Error reading file:", error);
+        toast({
+            variant: "destructive",
+            title: "Erro ao carregar arquivo",
+            description: "Não foi possível ler a imagem selecionada.",
+        });
+        setIsLoading(false);
+    };
   };
 
   const handleEditClick = (product: Product) => {
@@ -158,22 +140,19 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     <>
         <CardContent className="flex flex-col items-center gap-8 p-0">
             <div className="w-full max-w-sm aspect-square bg-muted rounded-lg flex flex-col items-center justify-center p-4 relative">
-                <video ref={videoRef} className="w-full h-full object-cover rounded-lg" autoPlay muted playsInline />
-                {hasCameraPermission === false && (
-                    <div className="absolute inset-0 bg-muted/80 flex flex-col items-center justify-center text-center p-4">
-                        <FontAwesomeIcon icon={faVideoSlash} className="w-16 h-16 text-destructive mb-4" />
-                         <Alert variant="destructive">
-                            <AlertTitle>{t('camera_access_denied_title')}</AlertTitle>
-                            <AlertDescription>{t('camera_access_denied_desc')}</AlertDescription>
-                        </Alert>
-                    </div>
-                )}
-                <div className="absolute bottom-4">
-                    <Button onClick={handleScan} disabled={isLoading || hasCameraPermission === false}>
-                        <FontAwesomeIcon icon={faQrcode} className="mr-2 h-5 w-5" />
-                        {isLoading ? t('processing') : t('scan_qr_code_button')}
-                    </Button>
-                </div>
+                <FontAwesomeIcon icon={faQrcode} className="w-24 h-24 text-muted-foreground/50 mb-4" />
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/png, image/jpeg"
+                />
+                <Button onClick={() => fileInputRef.current?.click()} disabled={isLoading}>
+                    <FontAwesomeIcon icon={faUpload} className="mr-2 h-5 w-5" />
+                    {isLoading ? t('processing') : t('upload_qr_code_button')}
+                </Button>
+                 <p className="text-xs text-muted-foreground mt-4 text-center">{t('upload_qr_code_desc')}</p>
             </div>
 
             {scanResult && products.length > 0 && (
@@ -283,5 +262,3 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     </>
   );
 }
-
-    

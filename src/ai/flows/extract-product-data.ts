@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -13,7 +14,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const ExtractProductDataInputSchema = z.object({
-  receiptQrCodeDataUri: z
+  receiptImage: z
     .string()
     .describe(
       'A receipt QR code, as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' /* e.g., data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w+bOnUAAAAA//LuF9sRi9gAAAABJRU5ErkJggg== */
@@ -85,7 +86,7 @@ const prompt = ai.definePrompt({
 
   Now, analyze the following receipt data and extract the information into the specified JSON format.
   Use the following as the primary source of information about the receipt.
-  Receipt QR Code: {{media url=receiptQrCodeDataUri}}
+  Receipt QR Code: {{media url=receiptImage}}
   `,
 });
 
