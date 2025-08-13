@@ -66,6 +66,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
         "Bebês e Crianças": "bg-category-bebes/50 text-category-bebes-foreground border-category-bebes/20",
         "Pet Shop": "bg-category-pet/50 text-category-pet-foreground border-category-pet/20",
         "Utilidades e Bazar": "bg-category-utilidades/50 text-category-utilidades-foreground border-category-utilidades/20",
+        "Farmácia": "bg-category-pharmacy/50 text-category-pharmacy-foreground border-category-pharmacy/20",
         "Default": "bg-secondary text-secondary-foreground"
     };
     return categoryMap[category] || categoryMap.Default;
@@ -87,6 +88,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
         "Bebês e Crianças": "bg-category-bebes/30 text-category-bebes-foreground border-category-bebes/10",
         "Pet Shop": "bg-category-pet/30 text-category-pet-foreground border-category-pet/10",
         "Utilidades e Bazar": "bg-category-utilidades/30 text-category-utilidades-foreground border-category-utilidades/10",
+        "Farmácia": "bg-category-pharmacy/30 text-category-pharmacy-foreground border-category-pharmacy/10",
         "Default": "bg-secondary/50 text-secondary-foreground"
     };
     return subcategoryMap[category] || subcategoryMap.Default;

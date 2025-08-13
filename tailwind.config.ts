@@ -94,6 +94,8 @@ export default {
           'pet-foreground': 'hsl(var(--category-pet-foreground))',
           utilidades: 'hsl(var(--category-utilidades))',
           'utilidades-foreground': 'hsl(var(--category-utilidades-foreground))',
+          pharmacy: 'hsl(var(--category-pharmacy))',
+          'pharmacy-foreground': 'hsl(var(--category-pharmacy-foreground))',
         }
       },
       borderRadius: {
@@ -142,5 +144,3 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-
-    

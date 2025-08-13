@@ -84,6 +84,7 @@ const prompt = ai.definePrompt({
   - Higiene Pessoal (Shampoo, Sabonete, Creme Dental)
   - Bebês e Crianças (Fraldas, Lenços Umedecidos)
   - Pet Shop (Ração, Petiscos)
+  - Farmácia (Medicamentos e Saúde, Primeiros Socorros, Higiene e Beleza Pessoal, Aparelhos e Acessórios de Saúde)
   - Utilidades e Bazar (Pilhas, Lâmpadas, Utensílios)
 
   **Example of a product line:**

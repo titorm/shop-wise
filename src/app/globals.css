@@ -58,6 +58,8 @@
     --category-pet-foreground: 20 20% 30%;
     --category-utilidades: 200 25% 80%;
     --category-utilidades-foreground: 200 20% 30%;
+    --category-pharmacy: 174 44% 78%; /* #B2DFDB */
+    --category-pharmacy-foreground: 175 30% 30%;
   }
 
   .dark {
@@ -115,6 +117,8 @@
     --category-pet-foreground: 20 70% 95%;
     --category-utilidades: 200 17% 65%;
     --category-utilidades-foreground: 200 70% 95%;
+    --category-pharmacy: 174 45% 51%; /* #4DB6AC */
+    --category-pharmacy-foreground: 175 70% 95%;
   }
 }
 
