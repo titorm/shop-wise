@@ -49,13 +49,20 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     try {
       // Using mock data to simulate a successful scan and avoid the error.
       const mockResult: ExtractProductDataOutput = {
-        storeName: "Supermercado Exemplo",
-        date: "2024-07-28",
+        storeName: "ANGELONI CIA LTDA",
+        date: "2024-01-22",
+        cnpj: "83.646.984/0035-71",
+        address: "AV CENTENARIO, 2605, CENTRO, CRICIUMA, SC",
         products: [
-            { name: "Leite Integral", quantity: 2, price: 5.50 },
-            { name: "Pão de Forma", quantity: 1, price: 7.20 },
-            { name: "Café em pó 500g", quantity: 1, price: 15.99 },
-            { name: "Maçã Fuji (Kg)", quantity: 1.5, price: 9.80 },
+            { barcode: "7891000312515", name: "REFRI COCA-COLA S/ACUCAR PET 2L", quantity: 1, volume: "UN", unitPrice: 9.19, price: 9.19 },
+            { barcode: "7891991012353", name: "CERVEJA HEINEKEN LN 330ML", quantity: 1, volume: "UN", unitPrice: 6.29, price: 6.29 },
+            { barcode: "7894900013019", name: "AGUA MIN INDAIA S/GAS 500ML", quantity: 1, volume: "UN", unitPrice: 2.19, price: 2.19 },
+            { barcode: "7896005301032", name: "CHA MATE LEAO LIMAO COPO 300ML", quantity: 1, volume: "UN", unitPrice: 3.49, price: 3.49 },
+            { barcode: "7896065811019", name: "PAO DE ALHO STA MASSA 300G TRAD", quantity: 1, volume: "UN", unitPrice: 9.99, price: 9.99 },
+            { barcode: "7891149103254", name: "REFRIG SCHWEPPES CITRUS 1,5L", quantity: 1, volume: "UN", unitPrice: 8.19, price: 8.19 },
+            { barcode: "0000000032999", name: "Pao Frances", quantity: 6, volume: "UN", unitPrice: 0.8, price: 4.8 },
+            { barcode: "7896020460309", name: "LEITE COND MOCELAN 395G TP", quantity: 1, volume: "UN", unitPrice: 4.99, price: 4.99 },
+            { barcode: "7896005301032", name: "Refrigerante", quantity: 1, volume: "UN", unitPrice: 8.9, price: 8.9 },
         ]
       };
       
@@ -66,8 +73,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
       setProducts(mockResult.products.map((p, i) => ({
           ...p,
           id: Date.now() + i,
-          barcode: `7890000000${100 + i}`,
-          volume: "1 un",
+          price: p.price ?? p.unitPrice * p.quantity,
       })));
 
     } catch (error) {
