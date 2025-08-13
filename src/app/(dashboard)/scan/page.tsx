@@ -6,7 +6,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { useTranslation } from "react-i18next";
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc, getDocs, query, where, setDoc } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc, getDocs, query, where, setDoc, limit } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { toast } from '@/hooks/use-toast';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
@@ -23,18 +23,17 @@ export default function ScanPage() {
 
     const getOrCreateStore = async (purchaseData: ExtractProductDataOutput) => {
         if (!purchaseData.cnpj) return null;
-        const storesRef = collection(db, Collections.Stores);
-        const q = query(storesRef, where("cnpj", "==", purchaseData.cnpj));
-        const querySnapshot = await getDocs(q);
+        
+        const formattedCnpj = purchaseData.cnpj.replace(/\D/g, ''); // Remove non-numeric characters
+        if (!formattedCnpj) return null;
 
-        if (!querySnapshot.empty) {
-            return querySnapshot.docs[0].ref;
-        } else {
-            const newStoreRef = doc(collection(db, Collections.Stores)); // Create a new doc reference
-            await addDoc(storesRef, {
-                id: newStoreRef.id,
+        const storeRef = doc(db, Collections.Stores, formattedCnpj);
+        const storeSnap = await getDocs(query(collection(db, Collections.Stores), where("cnpj", "==", purchaseData.cnpj)));
+
+        if (storeSnap.empty) {
+            await setDoc(storeRef, {
                 name: purchaseData.storeName,
-                cnpj: purchaseData.cnpj,
+                cnpj: purchaseData.cnpj, // Keep original format here
                 address: purchaseData.address,
                 location: {
                     latitude: purchaseData.latitude || null,
@@ -42,21 +41,22 @@ export default function ScanPage() {
                 },
                 createdAt: serverTimestamp(),
             });
-            return newStoreRef;
         }
+        return storeRef;
     };
     
     const getOrCreateProduct = async (productData: any) => {
         if (!productData.barcode) return null;
-        const productsRef = collection(db, Collections.Products);
-        const q = query(productsRef, where("barcode", "==", productData.barcode), limit(1));
-        const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-            return querySnapshot.docs[0].ref;
-        } else {
-            const newProductRef = doc(productsRef);
-            await setDoc(newProductRef, {
+        const formattedBarcode = productData.barcode.replace(/\D/g, '');
+        if(!formattedBarcode) return null;
+        
+        const productRef = doc(db, Collections.Products, formattedBarcode);
+        const productSnap = await getDocs(query(collection(db, Collections.Products), where("barcode", "==", productData.barcode), limit(1)));
+
+
+        if (productSnap.empty) {
+            await setDoc(productRef, {
                 name: productData.name,
                 barcode: productData.barcode,
                 brand: productData.brand || null,
@@ -65,8 +65,8 @@ export default function ScanPage() {
                 volume: productData.volume || null,
                 createdAt: serverTimestamp(),
             });
-            return newProductRef;
         }
+        return productRef;
     }
 
 
@@ -85,7 +85,7 @@ export default function ScanPage() {
             const purchaseDate = purchaseData.date instanceof Date ? Timestamp.fromDate(purchaseData.date) : Timestamp.fromDate(new Date(purchaseData.date));
 
             let storeRef = null;
-            if (entryMethod === 'import') {
+            if (entryMethod === 'import' && 'cnpj' in purchaseData) {
                  storeRef = await getOrCreateStore(purchaseData as ExtractProductDataOutput);
             }
 
