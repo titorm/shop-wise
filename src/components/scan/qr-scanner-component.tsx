@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface Product {
     id: number;
@@ -36,6 +37,26 @@ interface Product {
 interface QrScannerProps {
     onSave: (scanResult: ExtractProductDataOutput, products: Product[]) => Promise<void>;
 }
+
+const categoriesMap: Record<string, string[]> = {
+  "Hortifrúti e Ovos": ["Frutas", "Verduras", "Legumes", "Ovos"],
+  "Açougue e Peixaria": ["Carne Bovina", "Carne Suína", "Aves", "Peixes", "Frutos do Mar"],
+  "Padaria e Confeitaria": ["Pães", "Bolos", "Doces"],
+  "Laticínios e Frios": ["Leites", "Queijos", "Iogurtes", "Manteiga", "Frios"],
+  "Mercearia": ["Arroz", "Feijão", "Massas", "Óleos", "Molhos", "Enlatados", "Cereais"],
+  "Matinais e Doces": ["Café", "Achocolatados", "Biscoitos", "Doces"],
+  "Congelados": ["Pratos Prontos", "Sorvetes", "Vegetais Congelados"],
+  "Bebidas": ["Refrigerantes", "Sucos", "Água", "Bebidas Alcoólicas"],
+  "Limpeza": ["Sabão em Pó", "Detergente", "Desinfetante"],
+  "Higiene Pessoal": ["Shampoo", "Sabonete", "Creme Dental"],
+  "Bebês e Crianças": ["Fraldas", "Lenços Umedecidos"],
+  "Pet Shop": ["Ração", "Petiscos"],
+  "Farmácia": ["Medicamentos e Saúde", "Primeiros Socorros", "Higiene e Beleza Pessoal", "Aparelhos e Acessórios de Saúde"],
+  "Utilidades e Bazar": ["Pilhas", "Lâmpadas", "Utensílios"],
+  "Outros": [],
+};
+
+const mainCategories = Object.keys(categoriesMap);
 
 
 export function QrScannerComponent({ onSave }: QrScannerProps) {
@@ -328,11 +349,42 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="category" className="text-right">{t('table_category')}</Label>
-                            <Input id="category" value={editingProduct.category} onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value ?? ''})} className="col-span-3" />
+                            <Select
+                                value={editingProduct.category}
+                                onValueChange={(value) => {
+                                    setEditingProduct({
+                                        ...editingProduct,
+                                        category: value,
+                                        subcategory: categoriesMap[value]?.[0] ?? "", // Reset subcategory
+                                    });
+                                }}
+                            >
+                                <SelectTrigger className="col-span-3">
+                                    <SelectValue placeholder="Selecione a categoria" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {mainCategories.map((cat) => (
+                                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="subcategory" className="text-right">{t('table_subcategory')}</Label>
-                            <Input id="subcategory" value={editingProduct.subcategory} onChange={(e) => setEditingProduct({...editingProduct, subcategory: e.target.value ?? ''})} className="col-span-3" />
+                            <Select
+                                value={editingProduct.subcategory}
+                                onValueChange={(value) => setEditingProduct({ ...editingProduct, subcategory: value })}
+                                disabled={!editingProduct.category || categoriesMap[editingProduct.category]?.length === 0}
+                            >
+                                <SelectTrigger className="col-span-3">
+                                    <SelectValue placeholder="Selecione a subcategoria" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {editingProduct.category && categoriesMap[editingProduct.category]?.map((sub) => (
+                                        <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="quantity" className="text-right">{t('table_quantity')}</Label>
