@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, ReactNode } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Pie, PieChart as RechartsPieChart, Cell } from "recharts";
@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode } from "@fortawesome/free-solid-svg-icons";
+import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode, faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, limit, orderBy, query, where, Timestamp, doc } from "firebase/firestore";
@@ -60,6 +60,21 @@ const pieChartConfig = {
 };
 
 
+const ComparisonBadge = ({ value }: { value: number }) => {
+    const { t } = useTranslation();
+    const isPositive = value > 0;
+    const colorClass = isPositive ? "text-destructive" : "text-green-600 dark:text-green-500";
+    const icon = isPositive ? faArrowUp : faArrowDown;
+
+    return (
+        <p className={cn("text-xs flex items-center gap-1", colorClass)}>
+            <FontAwesomeIcon icon={icon} className="h-3 w-3" />
+            <span>{isPositive ? '+' : ''}{value.toFixed(1)}% {t('dashboard_comparison_suffix')}</span>
+        </p>
+    );
+};
+
+
 export default function DashboardPage() {
   const { t } = useTranslation();
   const { profile } = useAuth();
@@ -74,6 +89,10 @@ export default function DashboardPage() {
   const [savingsOpportunities, setSavingsOpportunities] = useState<any[]>([]);
   const [consumptionAnalysis, setConsumptionAnalysis] = useState<string | null>(null);
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
+  
+  // States for comparison
+  const [totalSpentChange, setTotalSpentChange] = useState(0);
+  const [totalItemsChange, setTotalItemsChange] = useState(0);
 
 
   const totalSpentMonth = useMemo(() => {
@@ -86,7 +105,7 @@ export default function DashboardPage() {
   }, [spendingByCategory]);
 
   const totalItemsBought = useMemo(() => {
-    return recentItems.length; // This is a simplification, might need adjustment based on real data structure
+    return recentItems.reduce((acc, item) => acc + item.quantity, 0);
   }, [recentItems]);
 
 
@@ -144,6 +163,8 @@ export default function DashboardPage() {
         setMonthlySpendingByStore(mockSpendingByStore);
         setSpendingByCategory(mockSpendingByCategory);
         setSavingsOpportunities(mockSavings);
+        setTotalSpentChange(8.2); // Mocked data: +8.2%
+        setTotalItemsChange(-3.5); // Mocked data: -3.5%
     }
     fetchData();
   }, [profile]);
@@ -219,7 +240,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">R$ {totalSpentMonth.toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground">{t('dashboard_total_spent_comparison')}</p>
+              <ComparisonBadge value={totalSpentChange} />
             </CardContent>
           </Card>
         </InsightModal>
@@ -237,7 +258,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalItemsBought}</div>
-              <p className="text-xs text-muted-foreground">{t('dashboard_items_bought_comparison')}</p>
+              <ComparisonBadge value={totalItemsChange} />
             </CardContent>
           </Card>
         </InsightModal>
@@ -395,7 +416,5 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
 
     
