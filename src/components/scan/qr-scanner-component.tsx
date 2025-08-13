@@ -14,7 +14,7 @@ import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging } from '@fortawesome/free-solid-svg-icons';
+import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 
@@ -33,6 +33,8 @@ interface QrScannerProps {
 
 export function QrScannerComponent({ onSave }: QrScannerProps) {
   const { t } = useTranslation();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [scanResult, setScanResult] = useState<ExtractProductDataOutput | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -40,6 +42,30 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({video: true});
+        setHasCameraPermission(true);
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: t('camera_access_denied_title'),
+          description: t('camera_access_denied_desc'),
+        });
+      }
+    };
+
+    getCameraPermission();
+  }, [t, toast]);
+
 
   const handleScan = async () => {
     setIsLoading(true);
@@ -131,13 +157,23 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   return (
     <>
         <CardContent className="flex flex-col items-center gap-8 p-0">
-            <div className="w-full max-w-sm aspect-square bg-muted rounded-lg flex flex-col items-center justify-center p-4">
-                <FontAwesomeIcon icon={faCamera} className="w-24 h-24 text-muted-foreground/50 mb-4" />
-                <p className="text-sm text-muted-foreground text-center mb-4">{t('scan_qr_code_description')}</p>
-                <Button onClick={handleScan} disabled={isLoading}>
-                <FontAwesomeIcon icon={faQrcode} className="mr-2 h-5 w-5" />
-                {isLoading ? t('processing') : t('scan_qr_code_button')}
-                </Button>
+            <div className="w-full max-w-sm aspect-square bg-muted rounded-lg flex flex-col items-center justify-center p-4 relative">
+                <video ref={videoRef} className="w-full h-full object-cover rounded-lg" autoPlay muted playsInline />
+                {hasCameraPermission === false && (
+                    <div className="absolute inset-0 bg-muted/80 flex flex-col items-center justify-center text-center p-4">
+                        <FontAwesomeIcon icon={faVideoSlash} className="w-16 h-16 text-destructive mb-4" />
+                         <Alert variant="destructive">
+                            <AlertTitle>{t('camera_access_denied_title')}</AlertTitle>
+                            <AlertDescription>{t('camera_access_denied_desc')}</AlertDescription>
+                        </Alert>
+                    </div>
+                )}
+                <div className="absolute bottom-4">
+                    <Button onClick={handleScan} disabled={isLoading || hasCameraPermission === false}>
+                        <FontAwesomeIcon icon={faQrcode} className="mr-2 h-5 w-5" />
+                        {isLoading ? t('processing') : t('scan_qr_code_button')}
+                    </Button>
+                </div>
             </div>
 
             {scanResult && products.length > 0 && (
