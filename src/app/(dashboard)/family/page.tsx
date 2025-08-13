@@ -6,10 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers, faGem } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faGem, faStore, faHistory } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { PlanForm } from '@/components/family/plan-form';
 import { FamilyCompositionForm } from '@/components/family/family-composition-form';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export default function FamilyPage() {
     const { t } = useTranslation();
@@ -39,12 +40,36 @@ export default function FamilyPage() {
                         <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
                             <TabsTrigger value="composition"><FontAwesomeIcon icon={faUsers} className="mr-2 h-4 w-4" /> {t('tab_composition')}</TabsTrigger>
                             <TabsTrigger value="plan"><FontAwesomeIcon icon={faGem} className="mr-2 h-4 w-4" /> {t('tab_plan')}</TabsTrigger>
+                            <TabsTrigger value="markets"><FontAwesomeIcon icon={faStore} className="mr-2 h-4 w-4" /> {t('tab_markets')}</TabsTrigger>
+                            <TabsTrigger value="history"><FontAwesomeIcon icon={faHistory} className="mr-2 h-4 w-4" /> {t('tab_history')}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="composition" className="mt-6">
                             <FamilyCompositionForm />
                         </TabsContent>
                          <TabsContent value="plan" className="mt-6">
                             <PlanForm />
+                        </TabsContent>
+                         <TabsContent value="markets" className="mt-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>{t('tab_markets_title')}</CardTitle>
+                                    <CardDescription>{t('tab_markets_desc')}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <EmptyState title={t('coming_soon')} description={t('coming_soon_markets_desc')} />
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                         <TabsContent value="history" className="mt-6">
+                             <Card>
+                                <CardHeader>
+                                    <CardTitle>{t('tab_history_title')}</CardTitle>
+                                    <CardDescription>{t('tab_history_desc')}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                     <EmptyState title={t('coming_soon')} description={t('coming_soon_history_desc')} />
+                                </CardContent>
+                            </Card>
                         </TabsContent>
                     </Tabs>
                 </div>
