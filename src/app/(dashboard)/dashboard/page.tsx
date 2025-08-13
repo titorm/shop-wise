@@ -345,11 +345,11 @@ export default function DashboardPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> {t('table_barcode')}</TableHead>
-                            <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> {t('table_product')}</TableHead>
-                            <TableHead><FontAwesomeIcon icon={faTag} className="inline-block mr-1 w-4 h-4" /> {t('table_category')}</TableHead>
+                            <TableHead>{t('table_product')}</TableHead>
+                            <TableHead className="w-[200px]"><FontAwesomeIcon icon={faTag} className="inline-block mr-1 w-4 h-4" /> {t('table_category')}</TableHead>
                             <TableHead>{t('table_subcategory')}</TableHead>
                             <TableHead><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> {t('table_volume')}</TableHead>
-                            <TableHead><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
+                            <TableHead className="w-[80px] text-center"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
                             <TableHead className="text-right"><FontAwesomeIcon icon={faScaleBalanced} className="inline-block mr-1 w-4 h-4" /> {t('table_unit_price')}</TableHead>
                             <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_total_price')}</TableHead>
                         </TableRow>
@@ -370,7 +370,7 @@ export default function DashboardPage() {
                                     </Badge>
                                 </TableCell>
                                 <TableCell>{item.volume}</TableCell>
-                                <TableCell>{item.quantity}</TableCell>
+                                <TableCell className="text-center">{item.quantity}</TableCell>
                                 <TableCell className="text-right">R$ {item.price?.toFixed(2)}</TableCell>
                                 <TableCell className="text-right">R$ {item.totalPrice?.toFixed(2)}</TableCell>
                             </TableRow>
