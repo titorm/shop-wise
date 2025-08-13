@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { importDataFromUrl } from '@/app/(dashboard)/scan/actions';
+import { extractDataFromPdf } from '@/app/(dashboard)/scan/actions';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
@@ -13,13 +13,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faLink, faWandMagicSparkles, faTags, faCopyright, faBug } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faPlusCircle, faSave, faBarcode, faWeightHanging, faWandMagicSparkles, faTags, faCopyright, faBug, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
@@ -40,10 +36,6 @@ interface QrScannerProps {
     onSave: (scanResult: ExtractProductDataOutput, products: Product[]) => Promise<void>;
 }
 
-const formSchema = z.object({
-  url: z.string().url({ message: "Por favor, insira uma URL válida." }),
-});
-
 
 export function QrScannerComponent({ onSave }: QrScannerProps) {
   const { t } = useTranslation();
@@ -55,13 +47,8 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      url: "",
-    },
-  });
 
   const getCategoryClass = (category?: string) => {
     if (!category) return "bg-secondary text-secondary-foreground";
@@ -105,41 +92,48 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     return subcategoryMap[category] || subcategoryMap.Default;
   }
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setIsLoading(true);
+      setScanResult(null);
+      setProducts([]);
+      setDebugResult(null);
 
-  const handleImport = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
-    setScanResult(null);
-    setProducts([]);
-    setDebugResult(null);
-    
-    try {
-        const result = await importDataFromUrl({ url: values.url });
-        
-        setDebugResult(JSON.stringify(result, null, 2));
-        setScanResult(result);
-        setProducts(result.products.map((p, i) => ({
-            ...p,
-            id: Date.now() + i,
-            price: p.price ?? p.unitPrice * p.quantity,
-        })));
-
-        toast({
-            title: t('scan_success_title'),
-            description: t('scan_success_desc'),
-        });
-        form.reset();
-
-    } catch (error) {
-        console.error("Failed to extract data:", error);
-        toast({
-            variant: "destructive",
-            title: t('scan_error_title'),
-            description: t('scan_error_desc'),
-        });
-    } finally {
-        setIsLoading(false);
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const dataUri = e.target?.result as string;
+        try {
+          const result = await extractDataFromPdf({ pdfDataUri: dataUri });
+          setDebugResult(JSON.stringify(result, null, 2));
+          setScanResult(result);
+          setProducts(result.products.map((p, i) => ({
+              ...p,
+              id: Date.now() + i,
+              price: p.price ?? p.unitPrice * p.quantity,
+          })));
+          toast({
+              title: t('scan_success_title'),
+              description: t('scan_success_desc_pdf'),
+          });
+        } catch (error) {
+          console.error("Failed to extract data:", error);
+          toast({
+              variant: "destructive",
+              title: t('scan_error_title'),
+              description: t('scan_error_desc_pdf'),
+          });
+        } finally {
+            setIsLoading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
+
 
   const handleEditClick = (product: Product) => {
     setEditingProduct({ ...product });
@@ -189,34 +183,27 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
         <CardContent className="flex flex-col items-center gap-8 p-0">
              <Alert>
                 <FontAwesomeIcon icon={faWandMagicSparkles} />
-                <AlertTitle>{t('import_from_url_title')}</AlertTitle>
+                <AlertTitle>{t('import_from_pdf_title')}</AlertTitle>
                 <AlertDescription>
-                    {t('import_from_url_desc')}
+                    {t('import_from_pdf_desc')}
                 </AlertDescription>
             </Alert>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleImport)} className='w-full space-y-4'>
-                    <FormField
-                    control={form.control}
-                    name="url"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormControl>
-                             <div className="relative">
-                                 <FontAwesomeIcon icon={faLink} className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="https://sat.sef.sc.gov.br/..." {...field} className="pl-10" />
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <Button type="submit" disabled={isLoading || !form.formState.isValid} className='w-full'>
-                        <FontAwesomeIcon icon={faWandMagicSparkles} className="mr-2 h-5 w-5" />
-                        {isLoading ? t('processing') : t('import_data_button')}
-                    </Button>
-                </form>
-            </Form>
+            
+            <Input 
+                type="file" 
+                accept="application/pdf"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                id="pdf-upload"
+            />
+            <Button asChild className='w-full' size="lg" disabled={isLoading}>
+                 <Label htmlFor="pdf-upload" className='cursor-pointer'>
+                    <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />
+                    {isLoading ? t('processing') : t('select_pdf_button')}
+                 </Label>
+            </Button>
+
 
             {scanResult && products.length > 0 && (
                 <div className="w-full space-y-6">
@@ -355,5 +342,3 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     </>
   );
 }
-
-    

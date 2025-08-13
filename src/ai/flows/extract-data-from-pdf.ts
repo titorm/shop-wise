@@ -2,24 +2,28 @@
 'use server';
 
 /**
- * @fileOverview This file defines a Genkit flow to extract product data from a receipt URL.
+ * @fileOverview This file defines a Genkit flow to extract product data from a PDF receipt.
  *
  * It includes:
- * - `importDataFromUrl`: An async function that takes a receipt URL and returns the extracted product information.
- * - `ImportDataFromUrlInput`: The input type for the `importDataFromUrl` function.
- * - `ImportDataFromUrlOutput`: The output type for the `importDataFromUrl` function.
+ * - `extractDataFromPdf`: An async function that takes a receipt PDF and returns the extracted product information.
+ * - `ExtractDataFromPdfInput`: The input type for the `extractDataFromPdf` function.
+ * - `ExtractDataFromPdfOutput`: The output type for the `extractDataFromPdf` function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const ImportDataFromUrlInputSchema = z.object({
-  url: z.string().url().describe("The URL of the electronic receipt (NFC-e)."),
+const ExtractDataFromPdfInputSchema = z.object({
+  pdfDataUri: z
+    .string()
+    .describe(
+      "A PDF of a receipt, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:application/pdf;base64,<encoded_data>'."
+    ),
 });
-export type ImportDataFromUrlInput = z.infer<typeof ImportDataFromUrlInputSchema>;
+export type ExtractDataFromPdfInput = z.infer<typeof ExtractDataFromPdfInputSchema>;
 
 
-const ImportDataFromUrlOutputSchema = z.object({
+const ExtractDataFromPdfOutputSchema = z.object({
   products: z.array(
     z.object({
       barcode: z.string().describe("The product's barcode (Código)."),
@@ -40,20 +44,20 @@ const ImportDataFromUrlOutputSchema = z.object({
   latitude: z.number().optional().describe("The latitude of the store's location."),
   longitude: z.number().optional().describe("The longitude of the store's location."),
 });
-export type ImportDataFromUrlOutput = z.infer<typeof ImportDataFromUrlOutputSchema>;
+export type ExtractDataFromPdfOutput = z.infer<typeof ExtractDataFromPdfOutputSchema>;
 
 
-export async function importDataFromUrl(input: ImportDataFromUrlInput): Promise<ImportDataFromUrlOutput> {
-  return importDataFromUrlFlow(input);
+export async function extractDataFromPdf(input: ExtractDataFromPdfInput): Promise<ExtractDataFromPdfOutput> {
+  return extractDataFromPdfFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'importDataFromUrlPrompt',
-  input: {schema: ImportDataFromUrlInputSchema},
-  output: {schema: ImportDataFromUrlOutputSchema},
-  prompt: `You are an expert data extractor specializing in extracting data from Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipts from a given URL.
+  name: 'extractDataFromPdfPrompt',
+  input: {schema: ExtractDataFromPdfInputSchema},
+  output: {schema: ExtractDataFromPdfOutputSchema},
+  prompt: `You are an expert data extractor specializing in extracting data from Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipts from a given PDF file.
 
-  Access the provided URL and extract the store name, purchase date, and a list of all products. It is critical that you extract ALL products listed on the receipt.
+  Access the provided PDF and extract the store name, purchase date, and a list of all products. It is critical that you extract ALL products listed on the receipt.
 
   **Data Extraction Rules:**
   - **Store Name**: Look for the emitter's name, usually at the top. (e.g., "SDB COMERCIO DE ALIMENTOS LTDA")
@@ -97,17 +101,17 @@ const prompt = ai.definePrompt({
     subcategory: "Aves"
   }
 
-  Now, analyze the following receipt URL and extract the information into the specified JSON format.
-  Receipt URL: {{{url}}}
+  Now, analyze the following receipt PDF and extract the information into the specified JSON format.
+  Receipt PDF: {{media url=pdfDataUri}}
   `,
 });
 
 
-const importDataFromUrlFlow = ai.defineFlow(
+const extractDataFromPdfFlow = ai.defineFlow(
   {
-    name: 'importDataFromUrlFlow',
-    inputSchema: ImportDataFromUrlInputSchema,
-    outputSchema: ImportDataFromUrlOutputSchema,
+    name: 'extractDataFromPdfFlow',
+    inputSchema: ExtractDataFromPdfInputSchema,
+    outputSchema: ExtractDataFromPdfOutputSchema,
   },
   async input => {
     const {output} = await prompt(input);
