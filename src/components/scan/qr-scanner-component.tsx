@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { extractProductData } from '@/app/(dashboard)/scan/actions';
+import { importDataFromUrl } from '@/app/(dashboard)/scan/actions';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
@@ -13,9 +13,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash } from '@fortawesome/free-solid-svg-icons';
+import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faLink, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
 
 interface Product {
     id: number;
@@ -30,11 +34,13 @@ interface QrScannerProps {
     onSave: (scanResult: ExtractProductDataOutput, products: Product[]) => Promise<void>;
 }
 
+const formSchema = z.object({
+  url: z.string().url({ message: "Por favor, insira uma URL válida." }),
+});
+
+
 export function QrScannerComponent({ onSave }: QrScannerProps) {
   const { t } = useTranslation();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [scanResult, setScanResult] = useState<ExtractProductDataOutput | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -43,60 +49,21 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const getCameraPermission = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        setHasCameraPermission(true);
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-        setHasCameraPermission(false);
-        toast({
-          variant: 'destructive',
-          title: t('toast_error_camera_title'),
-          description: t('toast_error_camera_desc'),
-        });
-      }
-    };
-
-    getCameraPermission();
-    
-    return () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-            const stream = videoRef.current.srcObject as MediaStream;
-            stream.getTracks().forEach(track => track.stop());
-        }
-    }
-  }, [t, toast]);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      url: "",
+    },
+  });
 
 
-  const handleScan = async () => {
-    if (!videoRef.current || !canvasRef.current || !hasCameraPermission) {
-        toast({
-            variant: "destructive",
-            title: t('toast_error_camera_not_ready_title'),
-            description: t('toast_error_camera_not_ready_desc'),
-          });
-        return;
-    };
-
+  const handleImport = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setScanResult(null);
     setProducts([]);
     
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d')?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-    
-    const base64Image = canvas.toDataURL('image/png');
-
     try {
-        const result = await extractProductData({ receiptImage: base64Image });
+        const result = await importDataFromUrl({ url: values.url });
         
         setScanResult(result);
         setProducts(result.products.map((p, i) => ({
@@ -109,13 +76,14 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
             title: t('scan_success_title'),
             description: t('scan_success_desc'),
         });
+        form.reset();
 
     } catch (error) {
         console.error("Failed to extract data:", error);
         toast({
-        variant: "destructive",
-        title: t('scan_error_title'),
-        description: t('scan_error_desc'),
+            variant: "destructive",
+            title: t('scan_error_title'),
+            description: t('scan_error_desc'),
         });
     } finally {
         setIsLoading(false);
@@ -165,28 +133,36 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   return (
     <>
         <CardContent className="flex flex-col items-center gap-8 p-0">
-            <div className="w-full max-w-sm aspect-video bg-muted rounded-lg flex flex-col items-center justify-center p-4 relative overflow-hidden">
-                <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
-                <canvas ref={canvasRef} className="hidden" />
-
-                {hasCameraPermission === false && (
-                     <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center text-center p-4">
-                        <FontAwesomeIcon icon={faVideoSlash} className="w-12 h-12 text-destructive mb-4" />
-                        <AlertTitle>{t('toast_error_camera_title')}</AlertTitle>
-                        <AlertDescription>{t('toast_error_camera_desc')}</AlertDescription>
-                    </div>
-                )}
-                 {hasCameraPermission === null && (
-                     <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center text-center p-4">
-                        <p>{t('loading_camera')}</p>
-                    </div>
-                )}
-            </div>
-             <Button onClick={handleScan} disabled={isLoading || hasCameraPermission !== true}>
-                <FontAwesomeIcon icon={faCamera} className="mr-2 h-5 w-5" />
-                {isLoading ? t('processing') : t('scan_qr_code_with_camera')}
-            </Button>
-
+             <Alert>
+                <FontAwesomeIcon icon={faWandMagicSparkles} />
+                <AlertTitle>{t('import_from_url_title')}</AlertTitle>
+                <AlertDescription>
+                    {t('import_from_url_desc')}
+                </AlertDescription>
+            </Alert>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleImport)} className='w-full space-y-4'>
+                    <FormField
+                    control={form.control}
+                    name="url"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormControl>
+                             <div className="relative">
+                                 <FontAwesomeIcon icon={faLink} className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="https://sat.sef.sc.gov.br/..." {...field} className="pl-10" />
+                            </div>
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <Button type="submit" disabled={isLoading || !form.formState.isValid} className='w-full'>
+                        <FontAwesomeIcon icon={faWandMagicSparkles} className="mr-2 h-5 w-5" />
+                        {isLoading ? t('processing') : t('import_data_button')}
+                    </Button>
+                </form>
+            </Form>
 
             {scanResult && products.length > 0 && (
                 <div className="w-full space-y-6">

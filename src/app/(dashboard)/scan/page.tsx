@@ -6,7 +6,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { useTranslation } from "react-i18next";
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp, writeBatch, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { toast } from '@/hooks/use-toast';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ManualPurchaseForm } from "@/components/scan/manual-purchase-form";
 import type { PurchaseData } from "@/components/scan/manual-purchase-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQrcode, faKeyboard } from "@fortawesome/free-solid-svg-icons";
+import { faQrcode, faKeyboard, faLink } from "@fortawesome/free-solid-svg-icons";
 
 
 export default function ScanPage() {
@@ -102,7 +102,7 @@ export default function ScanPage() {
                 <div className="p-6 pt-0">
                     <Tabs defaultValue="scan" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="scan"><FontAwesomeIcon icon={faQrcode} className="mr-2 h-4 w-4" /> {t('scan_qr_code_tab')}</TabsTrigger>
+                            <TabsTrigger value="scan"><FontAwesomeIcon icon={faLink} className="mr-2 h-4 w-4" /> {t('import_from_url_tab')}</TabsTrigger>
                             <TabsTrigger value="manual"><FontAwesomeIcon icon={faKeyboard} className="mr-2 h-4 w-4" /> {t('manual_entry_tab')}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="scan" className="mt-6">
