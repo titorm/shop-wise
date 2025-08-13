@@ -145,14 +145,25 @@ export default function DashboardPage() {
         const endOfLastMonth = endOfMonth(subMonths(now, 1));
         const startOf12MonthsAgo = startOfMonth(subMonths(now, 11));
 
-        // Fetch all items from the last 12 months
-        const itemsQuery = query(
-            collectionGroup(db, 'purchase_items'),
-            where('familyId', '==', profile.familyId),
-            where('purchaseDate', '>=', startOf12MonthsAgo)
-        );
-        const itemsSnapshot = await getDocs(itemsQuery);
-        const allItems = itemsSnapshot.docs.map(d => ({...d.data(), id: d.id, purchaseDate: (d.data().purchaseDate as Timestamp).toDate() }) as any);
+        // Fetch all purchases for the family first
+        const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
+        const purchasesSnapshot = await getDocs(purchasesRef);
+
+        let allItems: any[] = [];
+        for (const purchaseDoc of purchasesSnapshot.docs) {
+            const itemsRef = collection(purchaseDoc.ref, "purchase_items");
+            const itemsSnapshot = await getDocs(itemsRef);
+            const items = itemsSnapshot.docs.map(d => ({
+                ...d.data(), 
+                id: d.id, 
+                purchaseDate: (d.data().purchaseDate as Timestamp).toDate() 
+            }));
+            allItems = allItems.concat(items);
+        }
+
+        // Filter items for the last 12 months in the client
+        allItems = allItems.filter(item => item.purchaseDate >= startOf12MonthsAgo);
+
 
         // -- Process current month data --
         const thisMonthItems = allItems.filter(item => item.purchaseDate >= startOfThisMonth && item.purchaseDate <= endOfThisMonth);
