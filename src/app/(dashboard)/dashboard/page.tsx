@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Pie, PieChart as RechartsPieChart, Cell } from "recharts";
@@ -20,16 +20,16 @@ import { InsightModal } from "@/components/dashboard/insight-modal";
 
 const barChartConfig = {
   total: { label: "Total" },
-  hortifrutiEOvos: { label: "Hortifrúti", color: "hsl(var(--category-hortifruti))" },
-  acougueEPeixaria: { label: "Carnes", color: "hsl(var(--category-acougue))" },
-  laticiniosEFrios: { label: "Laticínios", color: "hsl(var(--category-laticinios))" },
+  hortifruti: { label: "Hortifrúti", color: "hsl(var(--category-hortifruti))" },
+  acougue: { label: "Carnes", color: "hsl(var(--category-acougue))" },
+  laticinios: { label: "Laticínios", color: "hsl(var(--category-laticinios))" },
   mercearia: { label: "Mercearia", color: "hsl(var(--category-mercearia))" },
   bebidas: { label: "Bebidas", color: "hsl(var(--category-bebidas))" },
   limpeza: { label: "Limpeza", color: "hsl(var(--category-limpeza))" },
 };
 
 const pieChartConfig = {
-  gasto: {
+  value: {
     label: "Gasto",
   },
   "Hortifrúti e Ovos": {
@@ -72,56 +72,65 @@ export default function DashboardPage() {
   const [spendingByCategory, setSpendingByCategory] = useState<any[]>([]);
   const [savingsOpportunities, setSavingsOpportunities] = useState<any[]>([]);
 
+  const totalSpentMonth = useMemo(() => {
+    return monthlySpendingByStore.reduce((acc, store) => acc + store.value, 0);
+  }, [monthlySpendingByStore]);
+
+  const topCategory = useMemo(() => {
+    if (spendingByCategory.length === 0) return { name: "N/A", value: 0 };
+    return spendingByCategory.reduce((prev, current) => (prev.value > current.value) ? prev : current);
+  }, [spendingByCategory]);
+
+  const totalItemsBought = useMemo(() => {
+    return recentItems.length; // This is a simplification, might need adjustment based on real data structure
+  }, [recentItems]);
+
 
   useEffect(() => {
     async function fetchData() {
         if (!profile || !profile.familyId) return;
 
-        // For now, charts will be empty as we don't have enough data aggregation logic yet.
-        setBarChartData([]);
-        setPieChartData([]);
+        // MOCK DATA INJECTION
+        const mockBarData = [
+          { month: "Abril", limpeza: 110, bebidas: 190, mercearia: 450, laticinios: 320, acougue: 380, hortifruti: 210 },
+          { month: "Maio", limpeza: 130, bebidas: 210, mercearia: 550, laticinios: 350, acougue: 410, hortifruti: 240 },
+          { month: "Junho", limpeza: 140, bebidas: 240, mercearia: 600, laticinios: 380, acougue: 440, hortifruti: 260 },
+        ];
+        const mockPieData = [
+            { category: "Mercearia", value: 600, fill: "hsl(var(--category-mercearia))" },
+            { category: "Açougue e Peixaria", value: 440, fill: "hsl(var(--category-acougue))" },
+            { category: "Laticínios e Frios", value: 380, fill: "hsl(var(--category-laticinios))" },
+            { category: "Hortifrúti e Ovos", value: 260, fill: "hsl(var(--category-hortifruti))" },
+            { category: "Bebidas", value: 240, fill: "hsl(var(--category-bebidas))" },
+            { category: "Limpeza", value: 140, fill: "hsl(var(--category-limpeza))" },
+        ];
+        const mockTopExpenses = [
+            { id: '1', barcode: '7891000123456', name: 'Picanha Gold 1kg', category: 'Açougue e Peixaria', subcategory: 'Carne Bovina', volume: '1kg', quantity: 2, unitPrice: 89.90, totalPrice: 179.80 },
+            { id: '2', barcode: '7892000234567', name: 'Azeite Extra Virgem 500ml', category: 'Mercearia', subcategory: 'Óleos', volume: '500ml', quantity: 3, unitPrice: 45.50, totalPrice: 136.50 },
+            { id: '3', barcode: '7893000345678', name: 'Vinho Tinto Chileno 750ml', category: 'Bebidas', subcategory: 'Vinhos', volume: '750ml', quantity: 2, unitPrice: 65.00, totalPrice: 130.00 },
+            { id: '4', barcode: '7894000456789', name: 'Salmão Fresco (Kg)', category: 'Açougue e Peixaria', subcategory: 'Peixes', volume: '0.8kg', quantity: 1, unitPrice: 120.00, totalPrice: 96.00 },
+            { id: '5', barcode: '7895000567890', name: 'Queijo Parmesão Peça', category: 'Laticínios e Frios', subcategory: 'Queijos', volume: '300g', quantity: 1, unitPrice: 55.80, totalPrice: 55.80 },
+        ];
+        const mockRecentItems = mockTopExpenses.map(item => ({...item, purchaseDate: new Date() }));
+        const mockSpendingByStore = [
+          { name: "Supermercado Principal", value: 2450.50 },
+          { name: "Atacarejo Preço Baixo", value: 1237.00 },
+          { name: "Mercadinho do Bairro", value: 600.00 },
+        ];
+        const mockSpendingByCategory = mockPieData.map(d => ({ name: d.category, value: d.value }));
+        const mockSavings = [
+          { name: "Azeite Extra Virgem 500ml", store: "Atacarejo Preço Baixo", saving: 8.50 },
+          { name: "Pão de Forma Integral", store: "Supermercado Principal", saving: 2.10 },
+          { name: "Sabão em Pó 2kg", store: "Atacarejo Preço Baixo", saving: 5.40 },
+        ];
 
-        const now = new Date();
-        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const firstDayOfMonthTimestamp = Timestamp.fromDate(firstDayOfMonth);
-
-        // Fetch purchases for various insights
-        const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
-        const qPurchases = query(purchasesRef, orderBy("date", "desc"));
-        const purchasesSnap = await getDocs(qPurchases);
-        
-        // Top expenses from the most recent purchase
-        if (!purchasesSnap.empty) {
-            const lastPurchase = purchasesSnap.docs[0];
-            const itemsRef = collection(db, Collections.Families, profile.familyId, "purchases", lastPurchase.id, "purchase_items");
-            const qItems = query(itemsRef, orderBy("totalPrice", "desc"), limit(7));
-            const itemsSnap = await getDocs(qItems);
-            const expenses = itemsSnap.docs.map(doc => ({
-              ...doc.data(),
-              id: doc.id
-            }));
-            setTopExpensesData(expenses);
-            
-            // Recent 20 items
-            const allItems = await Promise.all(purchasesSnap.docs.map(async pDoc => {
-                const itemsRef = collection(db, Collections.Families, profile.familyId!, "purchases", pDoc.id, "purchase_items");
-                const itemsSnap = await getDocs(itemsRef);
-                return itemsSnap.docs.map(iDoc => ({...iDoc.data(), purchaseDate: pDoc.data().date.toDate() }));
-            }));
-            setRecentItems(allItems.flat().slice(0, 20));
-        }
-        
-        // Monthly spending by store
-        const monthlyPurchasesQuery = query(purchasesRef, where("date", ">=", firstDayOfMonthTimestamp));
-        const monthlyPurchasesSnap = await getDocs(monthlyPurchasesQuery);
-        const spendingByStore: {[key: string]: number} = {};
-        monthlyPurchasesSnap.forEach(doc => {
-            const purchase = doc.data();
-            spendingByStore[purchase.storeName] = (spendingByStore[purchase.storeName] || 0) + purchase.totalAmount;
-        });
-        const spendingByStoreArray = Object.entries(spendingByStore).map(([name, value]) => ({ name, value }));
-        setMonthlySpendingByStore(spendingByStoreArray);
-
+        setBarChartData(mockBarData);
+        setPieChartData(mockPieData);
+        setTopExpensesData(mockTopExpenses);
+        setRecentItems(mockRecentItems);
+        setMonthlySpendingByStore(mockSpendingByStore);
+        setSpendingByCategory(mockSpendingByCategory);
+        setSavingsOpportunities(mockSavings);
     }
     fetchData();
   }, [profile]);
@@ -183,7 +192,7 @@ export default function DashboardPage() {
               <FontAwesomeIcon icon={faDollarSign} className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">R$ 4,287.50</div>
+              <div className="text-2xl font-bold">R$ {totalSpentMonth.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">{t('dashboard_total_spent_comparison')}</p>
             </CardContent>
           </Card>
@@ -201,7 +210,7 @@ export default function DashboardPage() {
               <FontAwesomeIcon icon={faShoppingBag} className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">152</div>
+              <div className="text-2xl font-bold">{totalItemsBought}</div>
               <p className="text-xs text-muted-foreground">{t('dashboard_items_bought_comparison')}</p>
             </CardContent>
           </Card>
@@ -210,7 +219,7 @@ export default function DashboardPage() {
         <InsightModal 
           title={t('modal_main_category_title')}
           description={t('modal_main_category_desc')}
-          data={[]} // Mock data for now
+          data={spendingByCategory}
           type="topCategories"
         >
           <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
@@ -219,8 +228,8 @@ export default function DashboardPage() {
               <FontAwesomeIcon icon={faChartSimple} className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Alimentação</div>
-              <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage')}</p>
+              <div className="text-2xl font-bold">{topCategory.name}</div>
+              <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage', { percentage: totalSpentMonth > 0 ? ((topCategory.value / totalSpentMonth) * 100).toFixed(0) : 0 })}</p>
             </CardContent>
           </Card>
         </InsightModal>
@@ -228,7 +237,7 @@ export default function DashboardPage() {
         <InsightModal 
           title={t('modal_potential_savings_title')}
           description={t('modal_potential_savings_desc')}
-          data={[]} // Mock data for now
+          data={savingsOpportunities}
           type="savingsOpportunities"
         >
           <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
@@ -237,7 +246,7 @@ export default function DashboardPage() {
               <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">R$ 215.30</div>
+              <div className="text-2xl font-bold">R$ {savingsOpportunities.reduce((acc, s) => acc + s.saving, 0).toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">{t('dashboard_potential_savings_desc')}</p>
             </CardContent>
           </Card>
@@ -274,9 +283,9 @@ export default function DashboardPage() {
                             content={<ChartTooltipContent />}
                         />
                          <ChartLegend content={<ChartLegendContent />} />
-                        <Bar dataKey="hortifrutiEOvos" fill="var(--color-hortifrutiEOvos)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="acougueEPeixaria" fill="var(--color-acougueEPeixaria)" stackId="a" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="laticiniosEFrios" fill="var(--color-laticiniosEFrios)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="hortifruti" fill="var(--color-hortifruti)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="acougue" fill="var(--color-acougue)" stackId="a" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="laticinios" fill="var(--color-laticinios)" stackId="a" radius={[0, 0, 0, 0]} />
                         <Bar dataKey="mercearia" fill="var(--color-mercearia)" stackId="a" radius={[0, 0, 0, 0]} />
                         <Bar dataKey="bebidas" fill="var(--color-bebidas)" stackId="a" radius={[0, 0, 0, 0]} />
                         <Bar dataKey="limpeza" fill="var(--color-limpeza)" stackId="a" radius={[4, 4, 0, 0]} />
@@ -379,3 +388,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
