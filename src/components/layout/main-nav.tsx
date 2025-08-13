@@ -9,7 +9,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   useSidebar,
-  SidebarTrigger,
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
@@ -71,7 +70,6 @@ export function MainNav() {
   return (
     <>
       <SidebarHeader>
-        <SidebarTrigger className="h-8 w-8 shrink-0" />
         <ShopWiseLogo
           className={cn(
             "h-7 w-auto text-foreground transition-all duration-300 ease-in-out",
