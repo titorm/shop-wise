@@ -42,10 +42,18 @@ const barChartConfig = {
   total: { label: "Total" },
   'Hortifrúti e Ovos': { label: "Hortifrúti", color: "hsl(var(--category-hortifruti))" },
   'Açougue e Peixaria': { label: "Carnes", color: "hsl(var(--category-acougue))" },
+  'Padaria e Confeitaria': { label: "Padaria", color: "hsl(var(--category-padaria))" },
   'Laticínios e Frios': { label: "Laticínios", color: "hsl(var(--category-laticinios))" },
   'Mercearia': { label: "Mercearia", color: "hsl(var(--category-mercearia))" },
+  'Matinais e Doces': { label: "Matinais", color: "hsl(var(--category-matinais))" },
+  'Congelados': { label: "Congelados", color: "hsl(var(--category-congelados))" },
   'Bebidas': { label: "Bebidas", color: "hsl(var(--category-bebidas))" },
   'Limpeza': { label: "Limpeza", color: "hsl(var(--category-limpeza))" },
+  'Higiene Pessoal': { label: "Higiene", color: "hsl(var(--category-higiene))" },
+  'Bebês e Crianças': { label: "Bebês", color: "hsl(var(--category-bebes))" },
+  'Pet Shop': { label: "Pet", color: "hsl(var(--category-pet))" },
+  'Utilidades e Bazar': { label: "Utilidades", color: "hsl(var(--category-utilidades))" },
+  'Farmácia': { label: "Farmácia", color: "hsl(var(--category-pharmacy))" },
   'Outros': { label: "Outros", color: "hsl(var(--muted))" },
 };
 
@@ -53,34 +61,21 @@ const pieChartConfig = {
   value: {
     label: "Gasto",
   },
-  "Hortifrúti e Ovos": {
-    label: "Hortifrúti",
-    color: "hsl(var(--category-hortifruti))",
-  },
-  "Açougue e Peixaria": {
-    label: "Carnes",
-    color: "hsl(var(--category-acougue))",
-  },
-  "Laticínios e Frios": {
-    label: "Laticínios",
-    color: "hsl(var(--category-laticinios))",
-  },
-  "Mercearia": {
-    label: "Mercearia",
-    color: "hsl(var(--category-mercearia))",
-  },
-  "Bebidas": {
-    label: "Bebidas",
-    color: "hsl(var(--category-bebidas))",
-  },
-  "Limpeza": {
-    label: "Limpeza",
-    color: "hsl(var(--category-limpeza))",
-  },
-  "Outros": {
-    label: "Outros",
-    color: "hsl(var(--muted))",
-  },
+  "Hortifrúti e Ovos": { label: "Hortifrúti", color: "hsl(var(--category-hortifruti))" },
+  "Açougue e Peixaria": { label: "Carnes", color: "hsl(var(--category-acougue))" },
+  "Padaria e Confeitaria": { label: "Padaria", color: "hsl(var(--category-padaria))" },
+  "Laticínios e Frios": { label: "Laticínios", color: "hsl(var(--category-laticinios))" },
+  "Mercearia": { label: "Mercearia", color: "hsl(var(--category-mercearia))" },
+  "Matinais e Doces": { label: "Matinais", color: "hsl(var(--category-matinais))" },
+  "Congelados": { label: "Congelados", color: "hsl(var(--category-congelados))" },
+  "Bebidas": { label: "Bebidas", color: "hsl(var(--category-bebidas))" },
+  "Limpeza": { label: "Limpeza", color: "hsl(var(--category-limpeza))" },
+  "Higiene Pessoal": { label: "Higiene", color: "hsl(var(--category-higiene))" },
+  "Bebês e Crianças": { label: "Bebês", color: "hsl(var(--category-bebes))" },
+  "Pet Shop": { label: "Pet", color: "hsl(var(--category-pet))" },
+  "Utilidades e Bazar": { label: "Utilidades", color: "hsl(var(--category-utilidades))" },
+  "Farmácia": { label: "Farmácia", color: "hsl(var(--category-pharmacy))" },
+  "Outros": { label: "Outros", color: "hsl(var(--muted))" },
 };
 
 
@@ -208,11 +203,8 @@ export default function DashboardPage() {
             const monthKey = format(item.purchaseDate, 'MMM/yy', { locale: ptBR });
             if (monthlyData[monthKey]) {
                 const category = item.category || 'Outros';
-                if(barChartConfig[category as keyof typeof barChartConfig]){
-                     monthlyData[monthKey][category] = (monthlyData[monthKey][category] || 0) + item.totalPrice;
-                } else {
-                     monthlyData[monthKey]['Outros'] = (monthlyData[monthKey]['Outros'] || 0) + item.totalPrice;
-                }
+                const mainCategory = Object.keys(barChartConfig).find(c => c === category) || 'Outros';
+                monthlyData[monthKey][mainCategory] = (monthlyData[monthKey][mainCategory] || 0) + item.totalPrice;
             }
         });
         setBarChartData(Object.values(monthlyData));
@@ -453,7 +445,7 @@ export default function DashboardPage() {
                             />
                             <ChartLegend content={<ChartLegendContent />} />
                             {Object.keys(barChartConfig).filter(k => k !== 'total').map((key) => (
-                                <Bar key={key} dataKey={key} fill={barChartConfig[key as keyof typeof barChartConfig].color} stackId="a" radius={key === 'Limpeza' ? [4, 4, 0, 0] : [0,0,0,0]} />
+                                <Bar key={key} dataKey={key} fill={barChartConfig[key as keyof typeof barChartConfig].color} stackId="a" radius={key === 'Outros' ? [4, 4, 0, 0] : [0,0,0,0]} />
                             ))}
                         </RechartsBarChart>
                     </ResponsiveContainer>
@@ -524,11 +516,5 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
-
-
-
-    
 
     
