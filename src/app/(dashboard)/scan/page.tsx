@@ -10,21 +10,19 @@ import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc, getDoc
 import { Collections } from '@/lib/enums';
 import { toast } from '@/hooks/use-toast';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
-import { useRouter } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ManualPurchaseForm } from "@/components/scan/manual-purchase-form";
-import type { PurchaseData } from "@/components/scan/manual-purchase-form";
+import type { PurchaseData, ItemData } from "@/components/scan/manual-purchase-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQrcode, faKeyboard, faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { faKeyboard, faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 export default function ScanPage() {
     const { t } = useTranslation();
     const { user, profile } = useAuth();
-    const router = useRouter();
-
 
     const getOrCreateStore = async (purchaseData: ExtractProductDataOutput) => {
+        if (!purchaseData.cnpj) return null;
         const storesRef = collection(db, Collections.Stores);
         const q = query(storesRef, where("cnpj", "==", purchaseData.cnpj));
         const querySnapshot = await getDocs(q);
@@ -48,43 +46,39 @@ export default function ScanPage() {
         }
     };
 
-
-    const handleSavePurchase = async (purchaseData: ExtractProductDataOutput | PurchaseData, products: any[]) => {
+    const handleSavePurchase = async (purchaseData: ExtractProductDataOutput | PurchaseData, products: any[], entryMethod: 'import' | 'manual') => {
         if (!user || !profile || !profile.familyId) {
             toast({
                 variant: 'destructive',
                 title: t('toast_error_title'),
                 description: t('error_not_logged_in'),
             });
-            return;
+            throw new Error(t('error_not_logged_in'));
         }
 
         try {
             const totalAmount = products.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-            
-            // Ensure date is a Firestore Timestamp
             const purchaseDate = purchaseData.date instanceof Date ? Timestamp.fromDate(purchaseData.date) : Timestamp.fromDate(new Date(purchaseData.date));
 
             let storeRef = null;
-            if ('cnpj' in purchaseData && (purchaseData as any).cnpj) { // Check if cnpj exists
+            if (entryMethod === 'import') {
                  storeRef = await getOrCreateStore(purchaseData as ExtractProductDataOutput);
             }
 
-            // Create a new purchase document
             const purchaseRef = await addDoc(collection(db, Collections.Families, profile.familyId, 'purchases'), {
                 storeName: purchaseData.storeName,
                 storeRef: storeRef,
                 date: purchaseDate,
                 totalAmount: totalAmount,
                 purchasedBy: user.uid,
-                entryMethod: 'products' in purchaseData ? 'import' : 'manual',
+                entryMethod: entryMethod,
             });
 
-            // Batch write all the items in the purchase
             const batch = writeBatch(db);
             const itemsColRef = collection(db, Collections.Families, profile.familyId, 'purchases', purchaseRef.id, 'purchase_items');
+            
             products.forEach(product => {
-                const itemRef = doc(itemsColRef); // Create a new doc reference within the subcollection
+                const itemRef = doc(itemsColRef);
                 batch.set(itemRef, {
                     name: product.name,
                     quantity: product.quantity,
@@ -95,7 +89,6 @@ export default function ScanPage() {
                     brand: product.brand || null,
                     category: product.category || null,
                     subcategory: product.subcategory || null,
-                    // Pass along purchase and family info for collectionGroup queries
                     purchaseId: purchaseRef.id,
                     purchaseDate: purchaseDate,
                     familyId: profile.familyId,
@@ -105,6 +98,11 @@ export default function ScanPage() {
 
             await batch.commit();
 
+             toast({
+                title: t('toast_success_title'),
+                description: t('purchase_saved_successfully'),
+            });
+
         } catch (error) {
             console.error("Error saving purchase: ", error);
             toast({
@@ -112,7 +110,7 @@ export default function ScanPage() {
                 title: t('toast_error_saving'),
                 description: t('error_saving_purchase'),
             });
-            throw error; // Re-throw to be caught by the calling component
+            throw error;
         }
     };
 
@@ -133,10 +131,10 @@ export default function ScanPage() {
                             <TabsTrigger value="manual"><FontAwesomeIcon icon={faKeyboard} className="mr-2 h-4 w-4" /> {t('manual_entry_tab')}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="scan" className="mt-6">
-                            <QrScannerComponent onSave={handleSavePurchase}/>
+                            <QrScannerComponent onSave={(data, prods) => handleSavePurchase(data, prods, 'import')} />
                         </TabsContent>
                         <TabsContent value="manual" className="mt-6">
-                            <ManualPurchaseForm onSave={handleSavePurchase} />
+                            <ManualPurchaseForm onSave={(data, prods) => handleSavePurchase(data, prods, 'manual')} />
                         </TabsContent>
                     </Tabs>
                 </div>

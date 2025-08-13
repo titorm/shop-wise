@@ -1,19 +1,19 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { extractDataFromPdf } from '@/app/(dashboard)/scan/actions';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { extractDataFromPdf as extractDataFromPdfFlow } from '@/ai/flows/extract-data-from-pdf';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Input } from '../ui/input';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faPlusCircle, faSave, faBarcode, faWeightHanging, faWandMagicSparkles, faTags, faCopyright, faBug, faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faPlusCircle, faSave, faCopyright, faBug, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../ui/badge';
@@ -27,6 +27,7 @@ interface Product {
     volume: string;
     quantity: number;
     price: number;
+    unitPrice: number;
     category?: string;
     subcategory?: string;
     brand?: string;
@@ -39,7 +40,7 @@ interface QrScannerProps {
 
 export function QrScannerComponent({ onSave }: QrScannerProps) {
   const { t } = useTranslation();
-  const [scanResult, setScanResult] = useState<ExtractProductDataOutput | null>(null);
+  const [extractionResult, setExtractionResult] = useState<ExtractProductDataOutput | null>(null);
   const [debugResult, setDebugResult] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -98,7 +99,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     const file = event.target.files?.[0];
     if (file) {
       setIsLoading(true);
-      setScanResult(null);
+      setExtractionResult(null);
       setProducts([]);
       setDebugResult(null);
 
@@ -106,9 +107,9 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
       reader.onload = async (e) => {
         const dataUri = e.target?.result as string;
         try {
-          const result = await extractDataFromPdf({ pdfDataUri: dataUri });
+          const result = await extractDataFromPdfFlow({ pdfDataUri: dataUri });
           setDebugResult(JSON.stringify(result, null, 2));
-          setScanResult(result);
+          setExtractionResult(result);
           setProducts(result.products.map((p, i) => ({
               ...p,
               id: Date.now() + i,
@@ -158,11 +159,12 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   const handleAddNewItem = () => {
     const newItem: Product = {
         id: Date.now(),
-        barcode: "Novo Código",
+        barcode: "",
         name: "Novo Item",
         volume: "1 un",
         quantity: 1,
         price: 0.00,
+        unitPrice: 0.00,
         category: "Mercearia",
         subcategory: "Outros",
         brand: ""
@@ -172,20 +174,15 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   };
 
   const handleConfirmPurchase = async () => {
-    if (scanResult) {
+    if (extractionResult) {
         setIsSaving(true);
         try {
-            await onSave(scanResult, products);
-            toast({
-                title: t('toast_success_title'),
-                description: t('purchase_saved_successfully'),
-            });
-            // Clear the state after successful save
-            setScanResult(null);
+            await onSave(extractionResult, products);
+            setExtractionResult(null);
             setProducts([]);
             setDebugResult(null);
         } catch (error) {
-            // Error toast is handled in the parent onSave function
+            // Error is handled by the parent component
         } finally {
             setIsSaving(false);
         }
@@ -198,7 +195,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     <>
         <CardContent className="flex flex-col items-center gap-8 p-0">
              <Alert>
-                <FontAwesomeIcon icon={faWandMagicSparkles} />
+                <FontAwesomeIcon icon={faFilePdf} />
                 <AlertTitle>{t('import_from_pdf_title')}</AlertTitle>
                 <AlertDescription>
                     {t('import_from_pdf_desc')}
@@ -219,7 +216,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
             </Button>
 
 
-            {scanResult && products.length > 0 && (
+            {extractionResult && products.length > 0 && (
                 <div className="w-full space-y-6">
                     <Card>
                         <CardHeader>
@@ -229,11 +226,11 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div className="flex items-center gap-2">
                                     <FontAwesomeIcon icon={faStore} className="w-4 h-4 text-muted-foreground"/>
-                                    <strong>{t('store_label')}:</strong> {scanResult.storeName}
+                                    <strong>{t('store_label')}:</strong> {extractionResult.storeName}
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <FontAwesomeIcon icon={faCalendar} className="w-4 h-4 text-muted-foreground"/>
-                                    <strong>{t('date_label')}:</strong> {new Date(scanResult.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                                    <strong>{t('date_label')}:</strong> {new Date(extractionResult.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                                 </div>
                             </div>
                             
@@ -327,15 +324,15 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="brand" className="text-right">{t('table_brand')}</Label>
-                            <Input id="brand" value={editingProduct.brand} onChange={(e) => setEditingProduct({...editingProduct, brand: e.target.value})} className="col-span-3" />
+                            <Input id="brand" value={editingProduct.brand} onChange={(e) => setEditingProduct({...editingProduct, brand: e.target.value ?? ''})} className="col-span-3" />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="category" className="text-right">{t('table_category')}</Label>
-                            <Input id="category" value={editingProduct.category} onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})} className="col-span-3" />
+                            <Input id="category" value={editingProduct.category} onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value ?? ''})} className="col-span-3" />
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="subcategory" className="text-right">{t('table_subcategory')}</Label>
-                            <Input id="subcategory" value={editingProduct.subcategory} onChange={(e) => setEditingProduct({...editingProduct, subcategory: e.target.value})} className="col-span-3" />
+                            <Input id="subcategory" value={editingProduct.subcategory} onChange={(e) => setEditingProduct({...editingProduct, subcategory: e.target.value ?? ''})} className="col-span-3" />
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="quantity" className="text-right">{t('table_quantity')}</Label>

@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlusCircle, faTrash, faSave, faStore, faBox, faHashtag, faDollarSign, faBarcode, faWeightHanging, faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import { faPlusCircle, faTrash, faSave, faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 
 const itemSchema = z.object({
@@ -34,7 +34,7 @@ const purchaseSchema = z.object({
 });
 
 export type PurchaseData = z.infer<typeof purchaseSchema>;
-type ItemData = z.infer<typeof itemSchema>;
+export type ItemData = z.infer<typeof itemSchema>;
 
 interface ManualPurchaseFormProps {
   onSave: (data: PurchaseData, products: ItemData[]) => Promise<void>;
@@ -60,8 +60,14 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
 
   const onSubmit = async (data: PurchaseData) => {
     setIsSaving(true);
-    await onSave(data, data.items);
-    setIsSaving(false);
+    try {
+        await onSave(data, data.items);
+        form.reset();
+    } catch (error) {
+        // Error is handled by parent
+    } finally {
+        setIsSaving(false);
+    }
   };
 
   const totalAmount = form.watch("items").reduce((acc, item) => {
