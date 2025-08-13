@@ -68,81 +68,71 @@ export function MainNav() {
   }
 
   return (
-    <>
-      <SidebarHeader>
-        <ShopWiseLogo
-          className={cn(
-            "h-7 w-auto text-foreground transition-all duration-300 ease-in-out",
-            state === "collapsed" && "opacity-0"
-          )}
-        />
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
-          {menuItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
+    <SidebarContent>
+      <SidebarMenu>
+        {menuItems.map((item) => (
+          <SidebarMenuItem key={item.href}>
+            <Link href={item.href}>
+              <SidebarMenuButton 
+                isActive={isActive(item.href)}
+                tooltip={t(item.label)}
+                asChild={false}
+              >
+                <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
+                <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t(item.label)}</span>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+      <SidebarMenu className="mt-auto">
+          <p className={cn("px-4 py-2 text-xs font-semibold text-muted-foreground transition-opacity duration-300", state === 'collapsed' ? 'opacity-0 h-0' : 'opacity-100 h-auto')}>{t('settings_section_title')}</p>
+          {settingsMenuItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
               <Link href={item.href}>
-                <SidebarMenuButton 
+                  <SidebarMenuButton 
                   isActive={isActive(item.href)}
                   tooltip={t(item.label)}
                   asChild={false}
-                >
+                  >
                   <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
                   <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t(item.label)}</span>
-                </SidebarMenuButton>
+                  </SidebarMenuButton>
               </Link>
-            </SidebarMenuItem>
+              </SidebarMenuItem>
           ))}
-        </SidebarMenu>
-        <SidebarMenu className="mt-auto">
-            <p className={cn("px-4 py-2 text-xs font-semibold text-muted-foreground transition-opacity duration-300", state === 'collapsed' ? 'opacity-0 h-0' : 'opacity-100 h-auto')}>{t('settings_section_title')}</p>
-            {settingsMenuItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton 
-                    isActive={isActive(item.href)}
-                    tooltip={t(item.label)}
-                    asChild={false}
-                    >
-                    <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                    <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t(item.label)}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-             <SidebarMenuItem>
-                <SidebarMenuButton 
-                    onClick={handleSignOut}
-                    tooltip={t('logout')}
-                    asChild={false}
-                >
-                    <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
-                    <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t('logout')}</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            
-            {isAdmin && (
-                <>
-                    <p className={cn("px-4 py-2 text-xs font-semibold text-muted-foreground transition-opacity duration-300", state === 'collapsed' ? 'opacity-0 h-0' : 'opacity-100 h-auto')}>{t('admin_section_title')}</p>
-                    {adminMenuItems.map((item) => (
-                        <SidebarMenuItem key={item.href}>
-                        <Link href={item.href}>
-                            <SidebarMenuButton 
-                            isActive={isActive(item.href)}
-                            tooltip={t(item.label)}
-                            asChild={false}
-                            >
-                            <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                            <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t(item.label)}</span>
-                            </SidebarMenuButton>
-                        </Link>
-                        </SidebarMenuItem>
-                    ))}
-                </>
-            )}
+            <SidebarMenuItem>
+              <SidebarMenuButton 
+                  onClick={handleSignOut}
+                  tooltip={t('logout')}
+                  asChild={false}
+              >
+                  <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
+                  <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t('logout')}</span>
+              </SidebarMenuButton>
+          </SidebarMenuItem>
+          
+          {isAdmin && (
+              <>
+                  <p className={cn("px-4 py-2 text-xs font-semibold text-muted-foreground transition-opacity duration-300", state === 'collapsed' ? 'opacity-0 h-0' : 'opacity-100 h-auto')}>{t('admin_section_title')}</p>
+                  {adminMenuItems.map((item) => (
+                      <SidebarMenuItem key={item.href}>
+                      <Link href={item.href}>
+                          <SidebarMenuButton 
+                          isActive={isActive(item.href)}
+                          tooltip={t(item.label)}
+                          asChild={false}
+                          >
+                          <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
+                          <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t(item.label)}</span>
+                          </SidebarMenuButton>
+                      </Link>
+                      </SidebarMenuItem>
+                  ))}
+              </>
+          )}
 
-        </SidebarMenu>
-      </SidebarContent>
-    </>
+      </SidebarMenu>
+    </SidebarContent>
   );
 }
