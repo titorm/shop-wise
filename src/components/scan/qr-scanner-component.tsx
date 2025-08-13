@@ -177,6 +177,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     }
   }
 
+  const triggerFileSelect = () => fileInputRef.current?.click();
 
   return (
     <>
@@ -196,13 +197,10 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                 onChange={handleFileChange}
                 className="hidden"
                 id="pdf-upload"
-                disabled={isLoading}
             />
-            <Button asChild className='w-full' size="lg" disabled={isLoading}>
-                 <Label htmlFor="pdf-upload" className={cn(isLoading ? 'cursor-not-allowed bg-muted text-muted-foreground' : 'cursor-pointer')}>
-                    <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />
-                    {isLoading ? t('processing') : t('select_pdf_button')}
-                 </Label>
+            <Button onClick={triggerFileSelect} className='w-full' size="lg" disabled={isLoading}>
+                <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />
+                {isLoading ? t('processing') : t('select_pdf_button')}
             </Button>
 
 
@@ -343,5 +341,3 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     </>
   );
 }
-
-    
