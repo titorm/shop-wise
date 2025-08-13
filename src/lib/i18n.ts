@@ -11,13 +11,13 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: "pt-BR",
+    fallbackLng: "en",
     debug: false,
     interpolation: {
       escapeValue: false, // React already safes from xss
     },
     backend: {
-      loadPath: 'public/locales/{{lng}}/{{ns}}.json',
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
     ns: ['common'],
     defaultNS: 'common',

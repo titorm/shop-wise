@@ -19,7 +19,7 @@ const pt_sans = PT_Sans({
 
 export const metadata: Metadata = {
   title: 'ShopWise',
-  description: 'Seu Assistente Inteligente de Compras',
+  description: 'Your Intelligent Shopping Assistant',
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head />
       <body
         className={cn('min-h-screen bg-background font-body antialiased', pt_sans.variable)}
