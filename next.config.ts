@@ -18,9 +18,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  api: {
-    bodyParser: {
-      sizeLimit: '4mb',
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '4mb',
+      maxDuration: 0, // Disable timeout for server actions
     },
   },
 };
