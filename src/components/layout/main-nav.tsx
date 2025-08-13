@@ -13,40 +13,49 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartColumn, faCog, faGears, faHistory, faHome, faList, faMicroscope, faPlusCircle, faQrcode, faShield, faShieldHalved, faShoppingBasket, faUsers, faSignOutAlt, faUser, faUserGroup } from "@fortawesome/free-solid-svg-icons";
+import { faChartColumn, faCog, faHistory, faHome, faList, faMicroscope, faPlusCircle, faShield, faShieldHalved, faShoppingBasket, faUsers, faSignOutAlt, faUser, faUserGroup } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines, faMessage } from "@fortawesome/free-regular-svg-icons";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { useTranslation } from "react-i18next";
 
 const menuItems = [
-    { href: "/dashboard", label: "Insights", icon: faHome },
-    { href: "/list", label: "Lista de Compras", icon: faList },
-    { href: "/scan", label: "Adicionar Compra", icon: faPlusCircle },
-    { href: "/history", label: "Histórico", icon: faHistory },
+    { href: "/dashboard", label: "insights", icon: faHome },
+    { href: "/list", label: "shopping_list", icon: faList },
+    { href: "/scan", label: "add_purchase", icon: faPlusCircle },
+    { href: "/history", label: "history", icon: faHistory },
 ];
 
 const settingsMenuItems = [
-    { href: "/family", label: "Família", icon: faUserGroup },
-    { href: "/settings", label: "Minha Conta", icon: faUser },
+    { href: "/family", label: "family", icon: faUserGroup },
+    { href: "/settings", label: "my_account", icon: faUser },
 ]
 
 const adminMenuItems = [
-    { href: "/admin", label: "Dashboard", icon: faShieldHalved },
-    { href: "/admin/users", label: "Gerenciar Usuários", icon: faUsers },
-    { href: "/admin/reports", label: "Relatórios de Uso", icon: faChartColumn },
-    { href: "/admin/market-insights", label: "Insights de Mercado", icon: faShoppingBasket },
-    { href: "/admin/settings", label: "Configurações Globais", icon: faCog },
-    { href: "/admin/notifications", label: "Gerenciar Notificações", icon: faMessage },
-    { href: "/admin/audit", label: "Auditoria e Testes", icon: faMicroscope },
-    { href: "/admin/security", label: "Segurança", icon: faShield },
-    { href: "/admin/logs", label: "Logs do Sistema", icon: faFileLines },
+    { href: "/admin", label: "dashboard", icon: faShieldHalved },
+    { href: "/admin/users", label: "manage_users", icon: faUsers },
+    { href: "/admin/reports", label: "usage_reports", icon: faChartColumn },
+    { href: "/admin/market-insights", label: "market_insights", icon: faShoppingBasket },
+    { href: "/admin/settings", label: "global_settings", icon: faCog },
+    { href: "/admin/notifications", label: "manage_notifications", icon: faMessage },
+    { href: "/admin/audit", label: "audit_and_tests", icon: faMicroscope },
+    { href: "/admin/security", label: "security", icon: faShield },
+    { href: "/admin/logs", label: "system_logs", icon: faFileLines },
 ];
 
 
 export function MainNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const { profile } = useAuth();
+  const { t } = useTranslation();
   const isAdmin = profile?.isAdmin || false;
   const { state } = useSidebar();
-  const router = useRouter();
+  
+  const handleSignOut = async () => {
+    await signOut(auth);
+    router.push('/');
+  }
 
 
   const isActive = (href: string) => {
@@ -65,46 +74,56 @@ export function MainNav() {
               <Link href={item.href}>
                 <SidebarMenuButton 
                   isActive={isActive(item.href)}
-                  tooltip={item.label}
+                  tooltip={t(item.label)}
                   asChild={false}
                 >
                   <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                  <span className={cn(state === 'collapsed' && 'hidden')}>{item.label}</span>
+                  <span className={cn(state === 'collapsed' && 'hidden')}>{t(item.label)}</span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
         <SidebarMenu className="mt-auto">
-            <p className={cn("px-4 py-2 text-xs font-semibold text-muted-foreground transition-opacity duration-300", state === 'collapsed' ? 'opacity-0 h-0' : 'opacity-100 h-auto')}>CONFIGURAÇÕES</p>
+            <p className={cn("px-4 py-2 text-xs font-semibold text-muted-foreground transition-opacity duration-300", state === 'collapsed' ? 'opacity-0 h-0' : 'opacity-100 h-auto')}>{t('settings_section_title')}</p>
             {settingsMenuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                 <Link href={item.href}>
                     <SidebarMenuButton 
                     isActive={isActive(item.href)}
-                    tooltip={item.label}
+                    tooltip={t(item.label)}
                     asChild={false}
                     >
                     <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                    <span className={cn(state === 'collapsed' && 'hidden')}>{item.label}</span>
+                    <span className={cn(state === 'collapsed' && 'hidden')}>{t(item.label)}</span>
                     </SidebarMenuButton>
                 </Link>
                 </SidebarMenuItem>
             ))}
+             <SidebarMenuItem>
+                <SidebarMenuButton 
+                    onClick={handleSignOut}
+                    tooltip={t('logout')}
+                    asChild={false}
+                >
+                    <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
+                    <span className={cn(state === 'collapsed' && 'hidden')}>{t('logout')}</span>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
             
             {isAdmin && (
                 <>
-                    <p className={cn("px-4 py-2 text-xs font-semibold text-muted-foreground transition-opacity duration-300", state === 'collapsed' ? 'opacity-0 h-0' : 'opacity-100 h-auto')}>ADMIN</p>
+                    <p className={cn("px-4 py-2 text-xs font-semibold text-muted-foreground transition-opacity duration-300", state === 'collapsed' ? 'opacity-0 h-0' : 'opacity-100 h-auto')}>{t('admin_section_title')}</p>
                     {adminMenuItems.map((item) => (
                         <SidebarMenuItem key={item.href}>
                         <Link href={item.href}>
                             <SidebarMenuButton 
                             isActive={isActive(item.href)}
-                            tooltip={item.label}
+                            tooltip={t(item.label)}
                             asChild={false}
                             >
                             <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
-                            <span className={cn(state === 'collapsed' && 'hidden')}>{item.label}</span>
+                            <span className={cn(state === 'collapsed' && 'hidden')}>{t(item.label)}</span>
                             </SidebarMenuButton>
                         </Link>
                         </SidebarMenuItem>
