@@ -19,8 +19,8 @@ export async function extractDataFromPdf(input: ExtractDataFromPdfInput) {
     try {
         const result = await extractDataFromPdfFlow(input);
         return result;
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error in extractDataFromPdf action:", error);
-        throw new Error("Failed to import data from PDF.");
+        throw new Error(error.message || "Failed to import data from PDF.");
     }
 }
