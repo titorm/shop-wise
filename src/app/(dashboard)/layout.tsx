@@ -52,7 +52,7 @@ function DashboardLayoutContent({ children }: { children: ReactNode }) {
           <MainNav />
       </Sidebar>
       <main className={cn(
-          "flex-1 bg-background transition-[margin-left] duration-300 ease-in-out p-4 md:p-6 lg:p-8 rounded-tl-2xl pt-24",
+          "flex-1 bg-background transition-[margin-left] duration-300 ease-in-out p-4 md:p-6 lg:p-8 pt-20",
           state === 'expanded' ? "md:ml-[var(--sidebar-width)]" : "md:ml-[var(--sidebar-width-icon)]" 
       )}>
           <div className="mx-auto w-full max-w-[1200px]">

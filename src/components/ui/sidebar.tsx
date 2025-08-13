@@ -219,7 +219,7 @@ const Sidebar = React.forwardRef<
       <aside
         ref={ref}
         className={cn(
-            "group/sidebar peer hidden md:flex flex-col text-card-foreground h-svh fixed top-0 left-0 bg-card transition-[width] duration-300 ease-in-out border-r",
+            "group/sidebar peer hidden md:flex flex-col text-card-foreground fixed left-0 top-16 h-[calc(100svh-4rem)] bg-card transition-[width] duration-300 ease-in-out border-r",
             state === 'expanded' ? "w-[--sidebar-width]" : "w-[--sidebar-width-icon]",
              className
             )}
@@ -541,7 +541,7 @@ const SidebarMenuButton = React.forwardRef<
         data-active={isActive}
         className={cn(
             sidebarMenuButtonVariants({ variant, size }),
-            state === 'collapsed' && "w-10 justify-center",
+            state === 'collapsed' && "w-9 justify-center",
             className
         )}
         {...props}
