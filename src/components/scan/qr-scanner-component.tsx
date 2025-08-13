@@ -13,13 +13,15 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faLink, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
+import { faQrcode, faCamera, faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faShieldCheck, faPlusCircle, faSave, faXmark, faBarcode, faWeightHanging, faVideoSlash, faLink, faWandMagicSparkles, faTags } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
+import { Badge } from '../ui/badge';
+import { cn } from '@/lib/utils';
 
 interface Product {
     id: number;
@@ -28,6 +30,8 @@ interface Product {
     volume: string;
     quantity: number;
     price: number;
+    category?: string;
+    subcategory?: string;
 }
 
 interface QrScannerProps {
@@ -55,6 +59,48 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
       url: "",
     },
   });
+
+  const getCategoryClass = (category?: string) => {
+    if (!category) return "bg-secondary text-secondary-foreground";
+    const categoryMap: { [key: string]: string } = {
+        "Hortifrúti e Ovos": "bg-category-hortifruti/50 text-category-hortifruti-foreground border-category-hortifruti/20",
+        "Açougue e Peixaria": "bg-category-acougue/50 text-category-acougue-foreground border-category-acougue/20",
+        "Padaria e Confeitaria": "bg-category-padaria/50 text-category-padaria-foreground border-category-padaria/20",
+        "Laticínios e Frios": "bg-category-laticinios/50 text-category-laticinios-foreground border-category-laticinios/20",
+        "Mercearia": "bg-category-mercearia/50 text-category-mercearia-foreground border-category-mercearia/20",
+        "Matinais e Doces": "bg-category-matinais/50 text-category-matinais-foreground border-category-matinais/20",
+        "Congelados": "bg-category-congelados/50 text-category-congelados-foreground border-category-congelados/20",
+        "Bebidas": "bg-category-bebidas/50 text-category-bebidas-foreground border-category-bebidas/20",
+        "Limpeza": "bg-category-limpeza/50 text-category-limpeza-foreground border-category-limpeza/20",
+        "Higiene Pessoal": "bg-category-higiene/50 text-category-higiene-foreground border-category-higiene/20",
+        "Bebês e Crianças": "bg-category-bebes/50 text-category-bebes-foreground border-category-bebes/20",
+        "Pet Shop": "bg-category-pet/50 text-category-pet-foreground border-category-pet/20",
+        "Utilidades e Bazar": "bg-category-utilidades/50 text-category-utilidades-foreground border-category-utilidades/20",
+        "Default": "bg-secondary text-secondary-foreground"
+    };
+    return categoryMap[category] || categoryMap.Default;
+  }
+  
+  const getSubcategoryClass = (category?: string) => {
+    if (!category) return "bg-secondary/50 text-secondary-foreground";
+    const subcategoryMap: { [key: string]: string } = {
+        "Hortifrúti e Ovos": "bg-category-hortifruti/30 text-category-hortifruti-foreground border-category-hortifruti/10",
+        "Açougue e Peixaria": "bg-category-acougue/30 text-category-acougue-foreground border-category-acougue/10",
+        "Padaria e Confeitaria": "bg-category-padaria/30 text-category-padaria-foreground border-category-padaria/10",
+        "Laticínios e Frios": "bg-category-laticinios/30 text-category-laticinios-foreground border-category-laticinios/10",
+        "Mercearia": "bg-category-mercearia/30 text-category-mercearia-foreground border-category-mercearia/10",
+        "Matinais e Doces": "bg-category-matinais/30 text-category-matinais-foreground border-category-matinais/10",
+        "Congelados": "bg-category-congelados/30 text-category-congelados-foreground border-category-congelados/10",
+        "Bebidas": "bg-category-bebidas/30 text-category-bebidas-foreground border-category-bebidas/10",
+        "Limpeza": "bg-category-limpeza/30 text-category-limpeza-foreground border-category-limpeza/10",
+        "Higiene Pessoal": "bg-category-higiene/30 text-category-higiene-foreground border-category-higiene/10",
+        "Bebês e Crianças": "bg-category-bebes/30 text-category-bebes-foreground border-category-bebes/10",
+        "Pet Shop": "bg-category-pet/30 text-category-pet-foreground border-category-pet/10",
+        "Utilidades e Bazar": "bg-category-utilidades/30 text-category-utilidades-foreground border-category-utilidades/10",
+        "Default": "bg-secondary/50 text-secondary-foreground"
+    };
+    return subcategoryMap[category] || subcategoryMap.Default;
+  }
 
 
   const handleImport = async (values: z.infer<typeof formSchema>) => {
@@ -116,6 +162,8 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
         volume: "1 un",
         quantity: 1,
         price: 0.00,
+        category: "Mercearia",
+        subcategory: "Outros"
     };
     setProducts([...products, newItem]);
     handleEditClick(newItem);
@@ -185,9 +233,8 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-[150px]"><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> {t('table_barcode')}</TableHead>
                                         <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> {t('table_product')}</TableHead>
-                                        <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> {t('table_volume')}</TableHead>
+                                        <TableHead className="w-[200px]"><FontAwesomeIcon icon={faTags} className="inline-block mr-1 w-4 h-4" /> {t('table_category')}</TableHead>
                                         <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
                                         <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_price_header')} (R$)</TableHead>
                                         <TableHead className="text-right w-[100px]">{t('table_actions')}</TableHead>
@@ -196,9 +243,19 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                                 <TableBody>
                                     {products.map((product) => (
                                         <TableRow key={product.id}>
-                                            <TableCell className="font-mono text-xs">{product.barcode}</TableCell>
                                             <TableCell className="font-medium">{product.name}</TableCell>
-                                            <TableCell className="text-center">{product.volume}</TableCell>
+                                            <TableCell>
+                                                <div className='flex flex-col gap-1'>
+                                                    <Badge variant="tag" className={cn(getCategoryClass(product.category))}>
+                                                        {product.category}
+                                                    </Badge>
+                                                    {product.subcategory && (
+                                                        <Badge variant="tag" className={cn(getSubcategoryClass(product.category))}>
+                                                            {product.subcategory}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            </TableCell>
                                             <TableCell className="text-center">{product.quantity}</TableCell>
                                             <TableCell className="text-right">{product.price.toFixed(2)}</TableCell>
                                             <TableCell className="text-right">
@@ -241,16 +298,16 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                 {editingProduct && (
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="barcode" className="text-right">{t('table_barcode')}</Label>
-                            <Input id="barcode" value={editingProduct.barcode} onChange={(e) => setEditingProduct({...editingProduct, barcode: e.target.value})} className="col-span-3" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="name" className="text-right">{t('name_label')}</Label>
                             <Input id="name" value={editingProduct.name} onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})} className="col-span-3" />
                         </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="category" className="text-right">{t('table_category')}</Label>
+                            <Input id="category" value={editingProduct.category} onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})} className="col-span-3" />
+                        </div>
                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="volume" className="text-right">{t('table_volume')}</Label>
-                            <Input id="volume" value={editingProduct.volume} onChange={(e) => setEditingProduct({...editingProduct, volume: e.target.value})} className="col-span-3" />
+                            <Label htmlFor="subcategory" className="text-right">{t('table_subcategory')}</Label>
+                            <Input id="subcategory" value={editingProduct.subcategory} onChange={(e) => setEditingProduct({...editingProduct, subcategory: e.target.value})} className="col-span-3" />
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="quantity" className="text-right">{t('table_quantity')}</Label>
@@ -271,5 +328,3 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     </>
   );
 }
-
-    

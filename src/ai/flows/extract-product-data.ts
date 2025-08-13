@@ -31,8 +31,11 @@ const ExtractProductDataOutputSchema = z.object({
       volume: z.string().describe("The unit of measurement for the product (UN). Ex: UN, KG, L"),
       unitPrice: z.number().describe("The unit price of the product (Vl. Unit.)."),
       price: z.number().describe('The total price of the product (Vl. Total).'),
+      brand: z.string().optional().describe('The brand of the product, inferred from its name.'),
+      category: z.string().describe('The category of the product.'),
+      subcategory: z.string().optional().describe('The subcategory of the product.'),
     })
-  ).describe('An array of products extracted from the receipt.'),
+  ).describe('An array of ALL products extracted from the receipt.'),
   storeName: z.string().describe('The name of the store.'),
   date: z.string().describe('The date of the purchase (dd/mm/yyyy).'),
   cnpj: z.string().describe("The store's CNPJ (Cadastro Nacional da Pessoa Jurídica)."),
@@ -52,36 +55,48 @@ const prompt = ai.definePrompt({
   output: {schema: ExtractProductDataOutputSchema},
   prompt: `You are an expert data extractor specializing in extracting data from Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipts.
 
-  You will use the information from the receipt's QR code to extract the store name, purchase date, and a list of all products.
+  You will use the information from the receipt's QR code to extract the store name, purchase date, and a list of all products. Make sure to extract ALL products.
 
-  Here is an example of the data structure you will encounter and how to extract it:
+  **Data Extraction Rules:**
+  - **Store Name**: Look for the emitter's name, usually at the top. (e.g., "ANGELONI CIA LTDA")
+  - **CNPJ**: Look for the emitter's CNPJ. (e.g., "83.646.984/0035-71")
+  - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "AV CENTENARIO, 2605, CENTRO, CRICIUMA, SC")
+  - **Date**: Look for the emission date ("Data de Emissão"). Format it as YYYY-MM-DD. (e.g., "22/01/2024 19:24:26" becomes "2024-01-22")
+  
+  **Product Extraction Rules:**
+  - The products are in a table. For each product, extract all fields.
+  - **Brand**: Infer the product's brand from its name. If no brand is evident, leave it empty.
+  - **Category/Subcategory**: Classify each product into a category and subcategory from the list below. Be as specific as possible. If a product doesn't fit, use your best judgment.
 
-  - **Store Name**: Look for the emitter's name, usually at the top.
-    - Example: "ANGELONI CIA LTDA"
-  - **CNPJ**: Look for the emitter's CNPJ.
-    - Example: "83.646.984/0035-71"
-  - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude.
-    - Example: "AV CENTENARIO, 2605, CENTRO, CRICIUMA, SC"
-  - **Date**: Look for the emission date ("Data de Emissão"). Format it as YYYY-MM-DD.
-    - Example: "22/01/2024 19:24:26" becomes "2024-01-22"
-  - **Products**: The products are in a table. For each product, extract the following fields:
-    - **Código**: This is the 'barcode'.
-    - **Descrição**: This is the 'name'.
-    - **Qtde.**: This is the 'quantity'.
-    - **UN**: This is the 'volume'.
-    - **Vl. Unit.**: This is the 'unitPrice'.
-    - **Vl. Total**: This is the 'price'.
+  **Categories List:**
+  - Hortifrúti e Ovos (Frutas, Verduras, Legumes, Ovos)
+  - Açougue e Peixaria (Carne Bovina, Carne Suína, Aves, Peixes, Frutos do Mar)
+  - Padaria e Confeitaria (Pães, Bolos, Doces)
+  - Laticínios e Frios (Leites, Queijos, Iogurtes, Manteiga, Frios)
+  - Mercearia (Arroz, Feijão, Massas, Óleos, Molhos, Enlatados, Cereais)
+  - Matinais e Doces (Café, Achocolatados, Biscoitos, Doces)
+  - Congelados (Pratos Prontos, Sorvetes, Vegetais Congelados)
+  - Bebidas (Refrigerantes, Sucos, Água, Bebidas Alcoólicas)
+  - Limpeza (Sabão em Pó, Detergente, Desinfetante)
+  - Higiene Pessoal (Shampoo, Sabonete, Creme Dental)
+  - Bebês e Crianças (Fraldas, Lenços Umedecidos)
+  - Pet Shop (Ração, Petiscos)
+  - Utilidades e Bazar (Pilhas, Lâmpadas, Utensílios)
 
-  Example of a product line:
+
+  **Example of a product line:**
   "001 7891000312515 REFRI COCA-COLA S/ACUCAR PET 2L | Qtde.:1 UN | Vl. Unit.:  9,19 | Vl. Total: 9,19"
-  Should be extracted as:
+  **Should be extracted as:**
   {
     barcode: "7891000312515",
     name: "REFRI COCA-COLA S/ACUCAR PET 2L",
     quantity: 1,
     volume: "UN",
     unitPrice: 9.19,
-    price: 9.19
+    price: 9.19,
+    brand: "Coca-Cola",
+    category: "Bebidas",
+    subcategory: "Refrigerantes"
   }
 
   Now, analyze the following receipt data and extract the information into the specified JSON format.
