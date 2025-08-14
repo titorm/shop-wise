@@ -1,3 +1,4 @@
+
 "use server";
 
 import { analyzeConsumptionData as analyzeConsumptionDataFlow, type AnalyzeConsumptionDataInput } from "@/ai/flows/analyze-consumption-data";
