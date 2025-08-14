@@ -11,16 +11,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faArrowTrendUp, faBox, faHashtag, faBarcode, faWeightHanging, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faBox, faHashtag, faBarcode, faWeightHanging, faTrash, faPlusCircle, faSave } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy, Timestamp, getDoc, writeBatch, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, Timestamp, getDoc, writeBatch, doc } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { toast } from '@/hooks/use-toast';
+import { updatePurchaseItems } from './actions';
 
 interface PurchaseItem {
     id: string;
@@ -30,6 +31,7 @@ interface PurchaseItem {
     volume?: string;
     quantity: number;
     price: number;
+    unitPrice?: number;
 }
 interface Purchase {
     id: string;
@@ -77,7 +79,11 @@ export function HistoryTab() {
                                 itemData.volume = productData.volume;
                             }
                         }
-                        return {...itemData, id: itemDoc.id } as PurchaseItem;
+                        return {
+                            ...itemData, 
+                            id: itemDoc.id, 
+                            unitPrice: itemData.price, // Assuming 'price' from DB is unit price
+                        } as PurchaseItem;
                     }));
 
                     return {
@@ -261,7 +267,71 @@ export function HistoryTab() {
 
 function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (id: string) => void }) {
     const { t } = useTranslation();
+    const { profile } = useAuth();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [items, setItems] = useState<PurchaseItem[]>(purchase.items);
+    const [isSaving, setIsSaving] = useState(false);
+    
+    useEffect(() => {
+        setItems(purchase.items);
+    }, [purchase.items]);
+    
+    const handleItemChange = (index: number, field: keyof PurchaseItem, value: any) => {
+        const newItems = [...items];
+        const item = { ...newItems[index], [field]: value };
+        
+        // Recalculate total price if quantity or unitPrice changes
+        if ((field === 'quantity' || field === 'unitPrice') && item.unitPrice !== undefined) {
+             item.price = item.quantity * item.unitPrice;
+        }
+
+        newItems[index] = item;
+        setItems(newItems);
+    };
+
+    const handleAddItem = () => {
+        const newItem: PurchaseItem = {
+            id: `new-${Date.now()}`,
+            productRef: null,
+            name: '',
+            quantity: 1,
+            price: 0,
+            unitPrice: 0,
+            volume: 'un',
+        };
+        setItems([...items, newItem]);
+    };
+
+    const handleRemoveItem = (index: number) => {
+        const newItems = items.filter((_, i) => i !== index);
+        setItems(newItems);
+    };
+
+    const handleSaveChanges = async () => {
+        if (!profile?.familyId) return;
+        setIsSaving(true);
+        try {
+            await updatePurchaseItems(profile.familyId, purchase.id, items);
+            toast({
+                title: t('toast_success_title'),
+                description: t('purchase_updated_successfully'),
+            });
+            setIsDialogOpen(false);
+        } catch (error) {
+            console.error("Error updating purchase:", error);
+            toast({
+                variant: 'destructive',
+                title: t('toast_error_title'),
+                description: t('error_updating_purchase'),
+            });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+    
+    const totalAmount = useMemo(() => {
+        return items.reduce((acc, item) => acc + (item.price || 0), 0);
+    }, [items]);
 
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -283,65 +353,95 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                     </CardContent>
                 </Card>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl">
                 <DialogHeader>
                     <DialogTitle>{t('purchase_details_title', { store: purchase.storeName })}</DialogTitle>
                     <DialogDescription>
                          {purchase.date.toDate().toLocaleString('pt-BR', {dateStyle: 'full', timeStyle: 'short'})}
                     </DialogDescription>
                 </DialogHeader>
-                <div className="max-h-[60vh] overflow-y-auto">
+                <div className="max-h-[60vh] overflow-y-auto pr-4">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[150px]"><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> {t('table_barcode')}</TableHead>
                                 <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> {t('table_product')}</TableHead>
-                                <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> {t('table_volume')}</TableHead>
-                                <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
-                                <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_price_header')}</TableHead>
+                                <TableHead className="w-[120px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> {t('table_volume')}</TableHead>
+                                <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
+                                <TableHead className="text-center w-[120px]">{t('table_unit_price')}</TableHead>
+                                <TableHead className="text-right w-[120px]">{t('table_total_price')}</TableHead>
+                                <TableHead className="w-[50px]"></TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {purchase.items.map((item) => (
+                             {items.map((item, index) => (
                                 <TableRow key={item.id}>
-                                    <TableCell className="font-mono text-xs">{item.barcode}</TableCell>
-                                    <TableCell className="font-medium">{item.name}</TableCell>
-                                    <TableCell className="text-center">{item.volume}</TableCell>
-                                    <TableCell className="text-center">{item.quantity}</TableCell>
-                                    <TableCell className="text-right">{item.price.toFixed(2)}</TableCell>
+                                    <TableCell>
+                                        <Input value={item.name} onChange={e => handleItemChange(index, 'name', e.target.value)} placeholder={t('item_name_placeholder')} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Input value={item.volume} onChange={e => handleItemChange(index, 'volume', e.target.value)} placeholder="ex: 1kg, 500ml" />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Input type="number" value={item.quantity} onChange={e => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)} className="text-center" />
+                                    </TableCell>
+                                     <TableCell>
+                                        <Input type="number" value={item.unitPrice} onChange={e => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)} className="text-center" />
+                                    </TableCell>
+                                    <TableCell className="text-right font-medium">
+                                        R$ {(item.price || 0).toFixed(2)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveItem(index)}>
+                                            <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
+                     <Button variant="outline" className="mt-4" onClick={handleAddItem}>
+                        <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
+                        {t('add_item_button')}
+                    </Button>
                 </div>
-                 <DialogFooter>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive">
-                                <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" />
-                                {t('delete_purchase_button')}
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>{t('delete_purchase_confirm_title')}</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    {t('delete_purchase_confirm_desc')}
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => {
-                                    onDelete(purchase.id);
-                                    setIsDialogOpen(false);
-                                }}>
-                                    {t('confirm_delete')}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                 <DialogFooter className="pt-4 border-t items-center">
+                    <div className="flex-grow">
+                         <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive-outline">
+                                    <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" />
+                                    {t('delete_purchase_button')}
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>{t('delete_purchase_confirm_title')}</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        {t('delete_purchase_confirm_desc')}
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => {
+                                        onDelete(purchase.id);
+                                        setIsDialogOpen(false);
+                                    }}>
+                                        {t('confirm_delete')}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-lg font-bold">Total: R$ {totalAmount.toFixed(2)}</p>
+                    </div>
+                    <Button onClick={handleSaveChanges} disabled={isSaving}>
+                        <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
+                        {isSaving ? t('saving') : t('save_changes_button')}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     );
 }
+
