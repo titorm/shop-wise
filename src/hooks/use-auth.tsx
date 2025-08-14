@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { doc, getDoc, DocumentReference, Timestamp } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import i18n from '@/lib/i18n';
+import posthog from 'posthog-js';
 
 interface Profile {
   uid: string;
@@ -91,12 +92,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await fetchUserProfile(user);
       } else {
         setProfile(null);
+        posthog.reset();
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
+  
+  useEffect(() => {
+    if (profile) {
+        posthog.identify(
+            profile.uid,
+            { 
+                email: profile.email, 
+                name: profile.displayName,
+                plan: profile.plan
+            }
+        );
+    }
+  }, [profile])
 
   const reloadUser = async () => {
     setLoading(true);

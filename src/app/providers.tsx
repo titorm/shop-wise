@@ -7,6 +7,37 @@ import { useEffect, useState, ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
 import { Toaster } from "@/components/ui/toaster";
 import { Skeleton } from "@/components/ui/skeleton";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
+import { usePathname, useSearchParams } from "next/navigation";
+
+if (typeof window !== 'undefined') {
+    posthog.init('phc_Rx5hJgLvJDH6uquKZQBR8O607ghbxitiLNwfTtD3A9P', {
+        api_host: 'https://us.i.posthog.com',
+    })
+}
+
+function PostHogPageview(): React.ReactNode {
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+
+    useEffect(() => {
+        if (pathname) {
+            let url = window.origin + pathname
+            if (searchParams && searchParams.toString()) {
+                url = url + `?${searchParams.toString()}`
+            }
+            posthog.capture(
+                '$pageview',
+                {
+                    '$current_url': url,
+                }
+            )
+        }
+    }, [pathname, searchParams])
+    
+    return null;
+}
 
 function PageSkeleton() {
   return (
@@ -82,10 +113,13 @@ export function Providers({
     return (
         <I18nextProvider i18n={i18n}>
             <AuthProvider>
-                <AppTheme>
-                    {children}
-                </AppTheme>
-                <Toaster />
+                <PostHogProvider client={posthog}>
+                    <PostHogPageview />
+                    <AppTheme>
+                        {children}
+                    </AppTheme>
+                    <Toaster />
+                </PostHogProvider>
             </AuthProvider>
         </I18nextProvider>
     )
