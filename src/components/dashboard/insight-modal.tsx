@@ -15,6 +15,7 @@ import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { Alert, AlertTitle } from "../ui/alert";
+import ReactMarkdown from 'react-markdown';
 
 interface InsightModalProps {
     title: string;
@@ -210,7 +211,9 @@ export function InsightModal({ title, description, children, data, chartData, ch
                 }
                  if (analysis) {
                     return (
-                        <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: analysis }} />
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <ReactMarkdown>{analysis}</ReactMarkdown>
+                        </div>
                     )
                  }
 
