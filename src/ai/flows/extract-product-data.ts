@@ -66,7 +66,7 @@ const prompt = ai.definePrompt({
   **Product Extraction Rules:**
   - The products are in a table. For each product, extract all fields.
   - **Item Unification**: If a product with the same barcode appears multiple times on the receipt, you must unify them into a single item. Sum the quantities ("Qtde.") and the total prices ("Vl. Total"). Use the name and unit price from the first occurrence.
-  - **Price**: Use the "Vl. Total" field for the final price of the item line.
+  - **Price**: Use "Vl. Unit." for the 'unitPrice' field. Use "Vl. Total" for the 'price' field. This is critical for correct financial analysis.
   - **Brand**: Infer the product's brand from its name. If no brand is evident, leave it empty.
   - **Category/Subcategory**: Classify each product into a category and subcategory from the list below. Be as specific as possible. If a product doesn't fit, use your best judgment.
 
