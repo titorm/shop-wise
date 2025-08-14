@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode, faArrowDown, faArrowUp, faSpinner, faCopyright } from "@fortawesome/free-solid-svg-icons";
+import { faChartSimple, faDollarSign, faShoppingBag, faArrowTrendUp, faTag, faWeightHanging, faScaleBalanced, faBox, faHashtag, faBarcode, faArrowDown, faArrowUp, faSpinner, faCopyright, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, limit, orderBy, query, where, Timestamp, doc, collectionGroup, getDoc } from "firebase/firestore";
@@ -21,6 +21,8 @@ import { analyzeConsumptionData } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface PurchaseItem {
     id: string;
@@ -357,185 +359,197 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <InsightModal 
-          title={t('modal_total_spent_title')}
-          description={t('modal_total_spent_desc')}
-          data={monthlySpendingByStore}
-          type="spendingByStore"
-        >
-          <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('dashboard_total_spent_month')}</CardTitle>
-              <FontAwesomeIcon icon={faDollarSign} className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">R$ {totalSpentMonth?.toFixed(2) ?? '0.00'}</div>
-              <ComparisonBadge value={totalSpentChange} />
-            </CardContent>
-          </Card>
-        </InsightModal>
-
-         <InsightModal 
-          title={t('modal_items_bought_title')}
-          description={t('modal_items_bought_desc')}
-          data={recentItems}
-          type="recentItems"
-        >
-          <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('dashboard_items_bought')}</CardTitle>
-              <FontAwesomeIcon icon={faShoppingBag} className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalItemsBought ?? 0}</div>
-              <ComparisonBadge value={totalItemsChange} />
-            </CardContent>
-          </Card>
-        </InsightModal>
-
-        <InsightModal 
-          title={t('modal_main_category_title')}
-          description={t('modal_main_category_desc')}
-          data={spendingByCategory}
-          chartData={pieChartData}
-          type="topCategories"
-        >
-          <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('dashboard_main_category')}</CardTitle>
-              <FontAwesomeIcon icon={faChartSimple} className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{topCategory.name}</div>
-              <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage', { percentage: totalSpentMonth! > 0 ? ((topCategory.value / totalSpentMonth!) * 100).toFixed(1) : 0 })}</p>
-            </CardContent>
-          </Card>
-        </InsightModal>
-
-        <InsightModal 
-          title={t('modal_potential_savings_title')}
-          description={t('modal_potential_savings_desc')}
-          data={[]}
-          type="savingsOpportunities"
-        >
-          <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t('dashboard_potential_savings')}</CardTitle>
-              <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">R$ 0.00</div>
-              <p className="text-xs text-muted-foreground">{t('dashboard_potential_savings_desc')}</p>
-            </CardContent>
-          </Card>
-        </InsightModal>
-      </div>
-
-      <div className="grid gap-6">
-        <InsightModal
-            title={t('dashboard_consumption_overview_title')}
-            description={t('dashboard_consumption_overview_desc')}
-            type="consumptionAnalysis"
-            analysis={consumptionAnalysis}
-            isLoading={isAnalysisLoading}
-            onOpen={handleConsumptionAnalysis}
-            data={barChartData}
-            isPremium={profile?.plan === 'premium'}
-        >
-            <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl col-span-1 lg:col-span-2">
-            <CardHeader>
-                <CardTitle>{t('dashboard_consumption_overview_title')}</CardTitle>
-                <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {barChartData.length > 0 ? (
-                <ChartContainer config={barChartConfig} className="h-[350px] w-full">
-                    <ResponsiveContainer>
-                        <RechartsBarChart data={formattedBarChartData} stackOffset="sign">
-                            <XAxis
-                            dataKey="month"
-                            stroke="#888888"
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={false}
-                            />
-                            <YAxis
-                            stroke="#888888"
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={false}
-                            tickFormatter={(value) => `R$${value}`}
-                            />
-                            <ChartTooltip
-                                cursor={false}
-                                content={<ChartTooltipContent />}
-                            />
-                            <ChartLegend content={<ChartLegendContent />} />
-                            {Object.keys(barChartConfig).filter(k => k !== 'total').map((key) => (
-                                <Bar key={key} dataKey={key} fill={barChartConfig[key as keyof typeof barChartConfig].color} stackId="a" radius={key === 'Outros' ? [4, 4, 0, 0] : [0,0,0,0]} />
-                            ))}
-                        </RechartsBarChart>
-                    </ResponsiveContainer>
-                </ChartContainer>
-                ) : (
-                    <EmptyState
-                        title={t('empty_state_no_chart_title')}
-                        description={t('empty_state_no_chart_desc')}
-                        className="h-[350px]"
-                    />
-                )}
-            </CardContent>
+    <div className="relative">
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <InsightModal 
+            title={t('modal_total_spent_title')}
+            description={t('modal_total_spent_desc')}
+            data={monthlySpendingByStore}
+            type="spendingByStore"
+          >
+            <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t('dashboard_total_spent_month')}</CardTitle>
+                <FontAwesomeIcon icon={faDollarSign} className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">R$ {totalSpentMonth?.toFixed(2) ?? '0.00'}</div>
+                <ComparisonBadge value={totalSpentChange} />
+              </CardContent>
             </Card>
-        </InsightModal>
+          </InsightModal>
+
+          <InsightModal 
+            title={t('modal_items_bought_title')}
+            description={t('modal_items_bought_desc')}
+            data={recentItems}
+            type="recentItems"
+          >
+            <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t('dashboard_items_bought')}</CardTitle>
+                <FontAwesomeIcon icon={faShoppingBag} className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{totalItemsBought ?? 0}</div>
+                <ComparisonBadge value={totalItemsChange} />
+              </CardContent>
+            </Card>
+          </InsightModal>
+
+          <InsightModal 
+            title={t('modal_main_category_title')}
+            description={t('modal_main_category_desc')}
+            data={spendingByCategory}
+            chartData={pieChartData}
+            type="topCategories"
+          >
+            <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t('dashboard_main_category')}</CardTitle>
+                <FontAwesomeIcon icon={faChartSimple} className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{topCategory.name}</div>
+                <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage', { percentage: totalSpentMonth! > 0 ? ((topCategory.value / totalSpentMonth!) * 100).toFixed(1) : "0" })}</p>
+              </CardContent>
+            </Card>
+          </InsightModal>
+
+          <InsightModal 
+            title={t('modal_potential_savings_title')}
+            description={t('modal_potential_savings_desc')}
+            data={[]}
+            type="savingsOpportunities"
+          >
+            <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t('dashboard_potential_savings')}</CardTitle>
+                <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">R$ 0.00</div>
+                <p className="text-xs text-muted-foreground">{t('dashboard_potential_savings_desc')}</p>
+              </CardContent>
+            </Card>
+          </InsightModal>
+        </div>
+
+        <div className="grid gap-6">
+          <InsightModal
+              title={t('dashboard_consumption_overview_title')}
+              description={t('dashboard_consumption_overview_desc')}
+              type="consumptionAnalysis"
+              analysis={consumptionAnalysis}
+              isLoading={isAnalysisLoading}
+              onOpen={handleConsumptionAnalysis}
+              data={barChartData}
+              isPremium={profile?.plan === 'premium'}
+          >
+              <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl col-span-1 lg:col-span-2">
+              <CardHeader>
+                  <CardTitle>{t('dashboard_consumption_overview_title')}</CardTitle>
+                  <CardDescription>{t('dashboard_consumption_overview_desc')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                  {barChartData.length > 0 ? (
+                  <ChartContainer config={barChartConfig} className="h-[350px] w-full">
+                      <ResponsiveContainer>
+                          <RechartsBarChart data={formattedBarChartData} stackOffset="sign">
+                              <XAxis
+                              dataKey="month"
+                              stroke="#888888"
+                              fontSize={12}
+                              tickLine={false}
+                              axisLine={false}
+                              />
+                              <YAxis
+                              stroke="#888888"
+                              fontSize={12}
+                              tickLine={false}
+                              axisLine={false}
+                              tickFormatter={(value) => `R$${value}`}
+                              />
+                              <ChartTooltip
+                                  cursor={false}
+                                  content={<ChartTooltipContent />}
+                              />
+                              <ChartLegend content={<ChartLegendContent />} />
+                              {Object.keys(barChartConfig).filter(k => k !== 'total').map((key) => (
+                                  <Bar key={key} dataKey={key} fill={barChartConfig[key as keyof typeof barChartConfig].color} stackId="a" radius={key === 'Outros' ? [4, 4, 0, 0] : [0,0,0,0]} />
+                              ))}
+                          </RechartsBarChart>
+                      </ResponsiveContainer>
+                  </ChartContainer>
+                  ) : (
+                      <EmptyState
+                          title={t('empty_state_no_chart_title')}
+                          description={t('empty_state_no_chart_desc')}
+                          className="h-[350px]"
+                      />
+                  )}
+              </CardContent>
+              </Card>
+          </InsightModal>
+        </div>
+
+        <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
+            <CardHeader>
+              <CardTitle>{t('dashboard_top_expenses_title')}</CardTitle>
+              <CardDescription>{t('dashboard_top_expenses_desc')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {topExpensesData.length > 0 ? (
+                  <Table>
+                      <TableHeader>
+                          <TableRow>
+                              <TableHead><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> {t('table_barcode')}</TableHead>
+                              <TableHead>{t('table_product')}</TableHead>
+                              <TableHead><FontAwesomeIcon icon={faCopyright} className="inline-block mr-1 w-4 h-4" /> {t('table_brand')}</TableHead>
+                              <TableHead className="w-[200px]"><FontAwesomeIcon icon={faTag} className="inline-block mr-1 w-4 h-4" /> {t('table_category')}</TableHead>
+                              <TableHead className="w-[80px] text-center"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
+                              <TableHead className="text-right"><FontAwesomeIcon icon={faScaleBalanced} className="inline-block mr-1 w-4 h-4" /> {t('table_unit_price')}</TableHead>
+                              <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_total_price')}</TableHead>
+                          </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                          {topExpensesData.map((item) => (
+                              <TableRow key={item.id}>
+                                  <TableCell className="font-mono">{item.barcode}</TableCell>
+                                  <TableCell className="font-medium">{item.name}</TableCell>
+                                  <TableCell>{item.brand}</TableCell>
+                                  <TableCell>
+                                      <Badge variant="tag" className={cn(getCategoryClass(item.category!))}>
+                                          {item.category}
+                                      </Badge>
+                                  </TableCell>
+                                  <TableCell className="text-center">{item.quantity.toFixed(2)}</TableCell>
+                                  <TableCell className="text-right">R$ {item.price?.toFixed(2)}</TableCell>
+                                  <TableCell className="text-right">R$ {item.totalPrice?.toFixed(2)}</TableCell>
+                              </TableRow>
+                          ))}
+                      </TableBody>
+                  </Table>
+              ) : (
+                  <EmptyState 
+                      title={t('empty_state_no_expenses_title')}
+                      description={t('empty_state_no_expenses_desc')}
+                  />
+              )}
+            </CardContent>
+          </Card>
       </div>
 
-      <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">
-          <CardHeader>
-            <CardTitle>{t('dashboard_top_expenses_title')}</CardTitle>
-            <CardDescription>{t('dashboard_top_expenses_desc')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {topExpensesData.length > 0 ? (
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead><FontAwesomeIcon icon={faBarcode} className="inline-block mr-1 w-4 h-4" /> {t('table_barcode')}</TableHead>
-                            <TableHead>{t('table_product')}</TableHead>
-                            <TableHead><FontAwesomeIcon icon={faCopyright} className="inline-block mr-1 w-4 h-4" /> {t('table_brand')}</TableHead>
-                            <TableHead className="w-[200px]"><FontAwesomeIcon icon={faTag} className="inline-block mr-1 w-4 h-4" /> {t('table_category')}</TableHead>
-                            <TableHead className="w-[80px] text-center"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
-                            <TableHead className="text-right"><FontAwesomeIcon icon={faScaleBalanced} className="inline-block mr-1 w-4 h-4" /> {t('table_unit_price')}</TableHead>
-                            <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_total_price')}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {topExpensesData.map((item) => (
-                            <TableRow key={item.id}>
-                                <TableCell className="font-mono">{item.barcode}</TableCell>
-                                <TableCell className="font-medium">{item.name}</TableCell>
-                                <TableCell>{item.brand}</TableCell>
-                                <TableCell>
-                                    <Badge variant="tag" className={cn(getCategoryClass(item.category!))}>
-                                        {item.category}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-center">{item.quantity.toFixed(2)}</TableCell>
-                                <TableCell className="text-right">R$ {item.price?.toFixed(2)}</TableCell>
-                                <TableCell className="text-right">R$ {item.totalPrice?.toFixed(2)}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-             ) : (
-                <EmptyState 
-                    title={t('empty_state_no_expenses_title')}
-                    description={t('empty_state_no_expenses_desc')}
-                />
-             )}
-          </CardContent>
-        </Card>
+       <Link href="/scan" passHref>
+        <Button
+          className="fixed bottom-8 right-8 h-16 w-16 rounded-full shadow-lg z-20"
+          size="icon"
+          aria-label={t('add_purchase')}
+        >
+          <FontAwesomeIcon icon={faPlus} className="h-6 w-6" />
+        </Button>
+      </Link>
     </div>
   );
 }
