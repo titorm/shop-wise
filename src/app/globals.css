@@ -91,34 +91,34 @@
     --sidebar-accent-foreground: 122 46% 78%; /* Lighter green */
     --sidebar-ring: 122 46% 44%;
 
-    --color-category-produce-and-eggs: 122 39% 25%;
-    --color-category-produce-and-eggs-foreground: 120 70% 95%;
-    --color-category-meat-and-seafood: 0 65% 28%;
-    --color-category-meat-and-seafood-foreground: 0 70% 95%;
-    --color-category-bakery-and-deli: 45 100% 25%;
-    --color-category-bakery-and-deli-foreground: 45 70% 95%;
-    --color-category-dairy-and-chilled: 211 85% 27%;
-    --color-category-dairy-and-chilled-foreground: 210 70% 95%;
-    --color-category-pantry-and-dry-goods: 30 100% 25%;
-    --color-category-pantry-and-dry-goods-foreground: 30 70% 95%;
-    --color-category-breakfast-and-snacks: 341 81% 29%;
-    --color-category-breakfast-and-snacks-foreground: 340 70% 95%;
-    --color-category-frozen-foods: 185 70% 20%;
-    --color-category-frozen-foods-foreground: 185 70% 95%;
-    --color-category-beverages: 265 58% 31%;
-    --color-category-beverages-foreground: 265 70% 95%;
-    --color-category-cleaning-and-household: 174 45% 18%;
-    --color-category-cleaning-and-household-foreground: 175 70% 95%;
-    --color-category-personal-care: 291 49% 30%;
-    --color-category-personal-care-foreground: 290 70% 95%;
-    --color-category-baby-and-child-care: 56 94% 32%;
-    --color-category-baby-and-child-care-foreground: 55 70% 95%;
-    --color-category-pet-supplies: 20 20% 23%;
-    --color-category-pet-supplies-foreground: 20 70% 95%;
-    --color-category-home-and-general: 200 17% 25%;
-    --color-category-home-and-general-foreground: 200 70% 95%;
-    --color-category-pharmacy: 174 45% 18%;
-    --color-category-pharmacy-foreground: 175 70% 95%;
+    --color-category-produce-and-eggs: 122 39% 30%;
+    --color-category-produce-and-eggs-foreground: 120 80% 85%;
+    --color-category-meat-and-seafood: 0 65% 33%;
+    --color-category-meat-and-seafood-foreground: 0 80% 85%;
+    --color-category-bakery-and-deli: 45 100% 30%;
+    --color-category-bakery-and-deli-foreground: 45 80% 85%;
+    --color-category-dairy-and-chilled: 211 85% 32%;
+    --color-category-dairy-and-chilled-foreground: 210 80% 85%;
+    --color-category-pantry-and-dry-goods: 30 100% 30%;
+    --color-category-pantry-and-dry-goods-foreground: 30 80% 85%;
+    --color-category-breakfast-and-snacks: 341 81% 34%;
+    --color-category-breakfast-and-snacks-foreground: 340 80% 85%;
+    --color-category-frozen-foods: 185 70% 25%;
+    --color-category-frozen-foods-foreground: 185 80% 85%;
+    --color-category-beverages: 265 58% 36%;
+    --color-category-beverages-foreground: 265 80% 85%;
+    --color-category-cleaning-and-household: 174 45% 23%;
+    --color-category-cleaning-and-household-foreground: 175 80% 85%;
+    --color-category-personal-care: 291 49% 35%;
+    --color-category-personal-care-foreground: 290 80% 85%;
+    --color-category-baby-and-child-care: 56 94% 37%;
+    --color-category-baby-and-child-care-foreground: 55 80% 85%;
+    --color-category-pet-supplies: 20 20% 28%;
+    --color-category-pet-supplies-foreground: 20 80% 85%;
+    --color-category-home-and-general: 200 17% 30%;
+    --color-category-home-and-general-foreground: 200 80% 85%;
+    --color-category-pharmacy: 174 45% 23%;
+    --color-category-pharmacy-foreground: 175 80% 85%;
   }
 }
 
