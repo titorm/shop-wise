@@ -146,7 +146,7 @@ export function InsightModal({ title, description, children, data, chartData, ty
                                 <TableBody>
                                     {data.map((item, index) => (
                                         <TableRow key={index}>
-                                            <TableCell><Badge variant="outline">{(pieChartConfig[item.name as keyof typeof pieChartConfig] as any)?.label || item.name}</Badge></TableCell>
+                                            <TableCell><Badge variant="outline">{item.name}</Badge></TableCell>
                                             <TableCell className="text-right">R$ {item.value.toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
@@ -253,5 +253,3 @@ export function InsightModal({ title, description, children, data, chartData, ty
         </Dialog>
     );
 }
-
-    

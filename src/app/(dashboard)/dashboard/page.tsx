@@ -100,6 +100,7 @@ export default function DashboardPage() {
   const [monthlySpendingByStore, setMonthlySpendingByStore] = useState<any[]>([]);
   const [recentItems, setRecentItems] = useState<PurchaseItem[]>([]);
   const [spendingByCategory, setSpendingByCategory] = useState<any[]>([]);
+  const [translatedSpendingByCategory, setTranslatedSpendingByCategory] = useState<any[]>([]);
   const [totalSpentMonth, setTotalSpentMonth] = useState<number | null>(null);
   const [totalItemsBought, setTotalItemsBought] = useState<number | null>(null);
   
@@ -285,6 +286,14 @@ export default function DashboardPage() {
     fetchData();
   }, [profile, i18n.language, chartConfig]);
   
+  useEffect(() => {
+    const translatedData = spendingByCategory.map(item => ({
+        ...item,
+        name: chartConfig[item.name as keyof typeof chartConfig]?.label || item.name,
+    }));
+    setTranslatedSpendingByCategory(translatedData);
+  }, [spendingByCategory, chartConfig, i18n.language]);
+
   const handleConsumptionAnalysis = async () => {
     if (consumptionAnalysis || profile?.plan !== 'premium' || barChartData.length === 0) return;
     setIsAnalysisLoading(true);
@@ -399,7 +408,7 @@ export default function DashboardPage() {
           <InsightModal 
             title={t('modal_main_category_title')}
             description={t('modal_main_category_desc')}
-            data={spendingByCategory}
+            data={translatedSpendingByCategory}
             chartData={pieChartData}
             type="topCategories"
           >
@@ -551,5 +560,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
