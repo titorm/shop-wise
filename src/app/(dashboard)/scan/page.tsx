@@ -82,8 +82,20 @@ export default function ScanPage() {
         }
 
         try {
-            const totalAmount = products.reduce((acc, item) => acc + item.price, 0);
-            const purchaseDate = purchaseData.date instanceof Date ? Timestamp.fromDate(purchaseData.date) : Timestamp.fromDate(new Date(`${purchaseData.date}T12:00:00`));
+            const totalAmount = products.reduce((acc, item) => acc + (item.price || (item.unitPrice * item.quantity)), 0);
+            
+            let purchaseDate: Timestamp;
+            if (purchaseData.date instanceof Date) {
+                purchaseDate = Timestamp.fromDate(purchaseData.date);
+            } else {
+                // Handles 'YYYY-MM-DD' string format from AI
+                const dateParts = purchaseData.date.split('-');
+                const year = parseInt(dateParts[0], 10);
+                const month = parseInt(dateParts[1], 10) - 1; // Month is 0-indexed
+                const day = parseInt(dateParts[2], 10);
+                purchaseDate = Timestamp.fromDate(new Date(year, month, day));
+            }
+
 
             let storeRef = null;
             if (entryMethod === 'import' && 'cnpj' in purchaseData) {
