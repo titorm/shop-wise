@@ -1,4 +1,6 @@
 
+"use client";
+
 import Link from "next/link";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 import { ShopWiseIcon } from "@/components/icons";

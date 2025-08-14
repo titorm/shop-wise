@@ -6,6 +6,11 @@
     "market_type_acougue": "Butcher Shop",
     "market_type_padaria": "Bakery",
     "market_type_marketplace": "Marketplace",
+    "market_type_outro": "Other",
     "market_type_farmacia": "Pharmacy",
-    "market_type_outro": "Other"
+    "forgot_password_title": "Recover Password",
+    "forgot_password_description": "Enter your email and we will send a link to reset your password.",
+    "forgot_password_send_link": "Send Recovery Link",
+    "remembered_password": "Remembered your password?",
+    "login": "Login"
 }

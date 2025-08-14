@@ -1,4 +1,6 @@
 
+"use client";
+
 import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
 import { ShopWiseIcon } from "@/components/icons";

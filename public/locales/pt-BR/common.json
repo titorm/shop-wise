@@ -6,6 +6,11 @@
     "market_type_acougue": "Açougue",
     "market_type_padaria": "Padaria",
     "market_type_marketplace": "Marketplace",
+    "market_type_outro": "Outro",
     "market_type_farmacia": "Farmácia",
-    "market_type_outro": "Outro"
+    "forgot_password_title": "Recuperar Senha",
+    "forgot_password_description": "Insira seu email e enviaremos um link para redefinir sua senha.",
+    "forgot_password_send_link": "Enviar Link de Recuperação",
+    "remembered_password": "Lembrou sua senha?",
+    "login": "Entrar"
 }
