@@ -4,7 +4,7 @@
 import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { extractDataFromPdf as extractStoreDataFromPdfFlow, extractDataFromPage } from '@/app/(dashboard)/scan/actions';
+import { extractDataFromPdf } from '@/app/(dashboard)/scan/actions';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
@@ -13,15 +13,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faPlusCircle, faSave, faCopyright, faBug, faFilePdf, faTags, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faPlusCircle, faSave, faCopyright, faBug, faFilePdf, faTags, faTimesCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { PDFDocument } from 'pdf-lib';
-import { Progress } from '../ui/progress';
 
 interface Product {
     id: number;
@@ -69,9 +67,6 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -129,70 +124,32 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
     setExtractionResult(null);
     setProducts([]);
     setDebugResult(null);
-    setProgress(0);
-    setCurrentPage(0);
-    setTotalPages(0);
 
     try {
-        const fileAsArrayBuffer = await file.arrayBuffer();
-        const pdfDoc = await PDFDocument.load(fileAsArrayBuffer);
-        const numPages = pdfDoc.getPageCount();
-        setTotalPages(numPages);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async () => {
+            const pdfDataUri = reader.result as string;
 
-        // Process the first page to get store info, date, etc.
-        setCurrentPage(1);
-        setProgress(5); // Initial progress
-        const firstPageDoc = await PDFDocument.create();
-        const [firstPage] = await firstPageDoc.copyPages(pdfDoc, [0]);
-        firstPageDoc.addPage(firstPage);
-        const firstPageBytes = await firstPageDoc.saveAsBase64({ dataUri: true });
-        
-        const storeDataResult = await extractStoreDataFromPdfFlow({ pdfDataUri: firstPageBytes });
-        if (storeDataResult.error) {
-            throw new Error(storeDataResult.error);
-        }
-        setDebugResult(JSON.stringify(storeDataResult, null, 2));
+            const result = await extractDataFromPdf({ pdfDataUri });
 
-        let allProducts: Product[] = [];
-
-        // Now, process all pages to get products
-        for (let i = 0; i < numPages; i++) {
-            setCurrentPage(i + 1);
-            const subDoc = await PDFDocument.create();
-            const [copiedPage] = await subDoc.copyPages(pdfDoc, [i]);
-            subDoc.addPage(copiedPage);
-            const pageBytes = await subDoc.saveAsBase64({ dataUri: true });
-
-            const pageResult = await extractDataFromPage({ pageDataUri: pageBytes });
-            if (pageResult.error) {
-                // We can either stop or continue. Let's continue but log the error.
-                console.warn(`Could not process page ${i+1}: ${pageResult.error}`);
-                continue;
+            if (result.error) {
+                throw new Error(result.error);
             }
+            
+            setDebugResult(JSON.stringify(result, null, 2));
 
-            if (pageResult && pageResult.products) {
-                 allProducts.push(...pageResult.products.map((p, idx) => ({
-                    ...p,
-                    id: Date.now() + i * 1000 + idx,
-                })));
-            }
-            setProgress(10 + ((i + 1) / numPages) * 90); // Progress from 10% to 100%
-        }
+            const finalResult: ExtractProductDataOutput = result;
 
-        // Combine store data with product data
-        const finalResult: ExtractProductDataOutput = {
-            ...storeDataResult,
-            products: allProducts,
+            setExtractionResult(finalResult);
+            setProducts(finalResult.products.map((p, idx) => ({ ...p, id: Date.now() + idx })));
+            
+            toast({
+                title: t('scan_success_title'),
+                description: t('scan_success_desc_pdf'),
+            });
+            setIsLoading(false);
         };
-
-        setExtractionResult(finalResult);
-        setProducts(finalResult.products.map((p, idx) => ({ ...p, id: Date.now() + idx })));
-        
-        toast({
-            title: t('scan_success_title'),
-            description: t('scan_success_desc_pdf'),
-        });
-
     } catch (error: any) {
         console.error("Failed to extract data:", error);
         toast({
@@ -200,9 +157,9 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
             title: t('scan_error_title'),
             description: error.message || t('scan_error_desc_pdf_detailed'),
         });
-        handleCancelImport(); // Clear state on error
-    } finally {
+        handleCancelImport();
         setIsLoading(false);
+    } finally {
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
@@ -213,7 +170,6 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
     setExtractionResult(null);
     setProducts([]);
     setDebugResult(null);
-    setProgress(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -292,19 +248,9 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                 id="pdf-upload"
             />
             <Button onClick={triggerFileSelect} className='w-full' size="lg" disabled={isLoading}>
-                <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />
+                {isLoading ? <FontAwesomeIcon icon={faSpinner} className="mr-2 h-5 w-5 animate-spin" /> : <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />}
                 {isLoading ? t('processing') : t('select_pdf_button')}
             </Button>
-            
-            {isLoading && (
-                <div className='w-full space-y-2 text-center'>
-                    <Progress value={progress} />
-                    <p className='text-sm text-muted-foreground'>
-                        {t('processing_page', { currentPage, totalPages })}
-                    </p>
-                </div>
-            )}
-
 
             {extractionResult && products.length > 0 && (
                 <div className="w-full space-y-6">
