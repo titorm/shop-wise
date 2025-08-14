@@ -36,7 +36,7 @@ interface Product {
     brand?: string;
 }
 
-interface QrScannerProps {
+interface PdfImportProps {
     onSave: (scanResult: ExtractProductDataOutput, products: Product[]) => Promise<void>;
 }
 
@@ -45,7 +45,7 @@ const categoriesMap: Record<string, string[]> = {
   "Açougue e Peixaria": ["Carnes Bovinas", "Aves", "Carnes Suínas", "Peixes e Frutos do Mar"],
   "Padaria e Confeitaria": ["Pães", "Bolos e Tortas", "Salgados", "Frios e Embutidos Fatiados", "Torradas e Croutons"],
   "Laticínios e Frios": ["Leites", "Queijos", "Iogurtes", "Manteiga e Margarina", "Requeijão e Cream Cheese", "Nata e Creme de Leite Fresco"],
-  "Mercearia (Alimentos Secos)": ["Grãos e Cereais", "Massas", "Farináceos", "Açúcar e Adoçantes", "Óleos, Azeites e Vinagres", "Enlatados e Conservas", "Molhos e Temperos", "Sopas e Cremes"],
+  "Mercearia": ["Grãos e Cereais", "Massas", "Farináceos", "Açúcar e Adoçantes", "Óleos, Azeites e Vinagres", "Enlatados e Conservas", "Molhos e Temperos", "Sopas e Cremes"],
   "Matinais e Doces": ["Café, Chás e Achocolatados em Pó", "Cereais Matinais e Granola", "Biscoitos e Bolachas", "Geleias e Cremes", "Doces e Sobremesas"],
   "Congelados": ["Pratos Prontos", "Salgados Congelados", "Legumes Congelados", "Polpas de Frutas", "Sorvetes e Açaí"],
   "Bebidas": ["Água", "Sucos", "Refrigerantes", "Chás Prontos e Isotônicos", "Bebidas Alcoólicas"],
@@ -60,7 +60,7 @@ const categoriesMap: Record<string, string[]> = {
 const mainCategories = Object.keys(categoriesMap);
 
 
-export function QrScannerComponent({ onSave }: QrScannerProps) {
+export function PdfImportComponent({ onSave }: PdfImportProps) {
   const { t } = useTranslation();
   const [extractionResult, setExtractionResult] = useState<ExtractProductDataOutput | null>(null);
   const [debugResult, setDebugResult] = useState<string | null>(null);
@@ -411,7 +411,7 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                             <Select
                                 value={editingProduct.subcategory}
                                 onValueChange={(value) => setEditingProduct({ ...editingProduct, subcategory: value })}
-                                disabled={!editingProduct.category || categoriesMap[editingProduct.category]?.length === 0}
+                                disabled={!editingProduct.category || !categoriesMap[editingProduct.category] || categoriesMap[editingProduct.category].length === 0}
                             >
                                 <SelectTrigger className="col-span-3">
                                     <SelectValue placeholder="Selecione a subcategoria" />

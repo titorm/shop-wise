@@ -1,7 +1,7 @@
 
 "use client";
 
-import { QrScannerComponent } from "@/components/scan/qr-scanner-component";
+import { PdfImportComponent } from "@/components/scan/pdf-import-component";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { useAuth } from '@/hooks/use-auth';
@@ -153,7 +153,7 @@ export default function ScanPage() {
                             <TabsTrigger value="manual"><FontAwesomeIcon icon={faKeyboard} className="mr-2 h-4 w-4" /> {t('manual_entry_tab')}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="scan" className="mt-6">
-                            <QrScannerComponent onSave={(data, prods) => handleSavePurchase(data, prods, 'import')} />
+                            <PdfImportComponent onSave={(data, prods) => handleSavePurchase(data, prods, 'import')} />
                         </TabsContent>
                         <TabsContent value="manual" className="mt-6">
                             <ManualPurchaseForm onSave={(data, prods) => handleSavePurchase(data, prods, 'manual')} />
