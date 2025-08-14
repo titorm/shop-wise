@@ -36,7 +36,7 @@ import { cn } from "@/lib/utils";
 
 const marketSchema = z.object({
   name: z.string().min(2, "market_form_error_name_min"),
-  type: z.enum(["supermercado", "atacado", "feira", "acougue", "padaria", "marketplace", "outro"]),
+  type: z.enum(["supermercado", "atacado", "feira", "acougue", "padaria", "marketplace", "farmacia", "outro"]),
   cnpj: z.string().optional(),
   address: z.string().optional(),
 });
@@ -61,7 +61,7 @@ export function MarketsForm() {
   const [favoriteStores, setFavoriteStores] = useState([allStores[0], allStores[1]]);
   const [ignoredStores, setIgnoredStores] = useState([allStores[3]]);
 
-  const marketTypes = ["supermercado", "atacado", "feira", "acougue", "padaria", "marketplace", "outro"];
+  const marketTypes = ["supermercado", "atacado", "feira", "acougue", "padaria", "marketplace", "farmacia", "outro"];
 
   const form = useForm<MarketData>({
     resolver: zodResolver(marketSchema),
