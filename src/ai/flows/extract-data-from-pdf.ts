@@ -65,7 +65,7 @@ const prompt = ai.definePrompt({
   - **Store Name**: Look for the emitter's name, usually at the top. (e.g., "SDB COMERCIO DE ALIMENTOS LTDA")
   - **CNPJ**: Look for the emitter's CNPJ. (e.g., "09.477.652/0090-61")
   - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "SC401 RF JOSE CARLOS DAUX, 9580, STO ANTONIO DE LISBOA, FLORIANOPOLIS, SC")
-  - **Date**: Look for the authorization date ("Protocolo de Autorização"). Format it as YYYY-MM-DD. (e.g., "Protocolo de Autorização 123456 - 22/01/2024 19:24:30" becomes "2024-01-22")
+  - **Date**: Look for the emission date ("Emissão"). Format it as YYYY-MM-DD. (e.g., "Emissão: 29/06/2025 19:50:29" becomes "2025-06-29")
   - **Discount**: Look for a line item labeled 'Descontos R$' and extract the numeric value.
   - **Access Key (Chave de Acesso)**: Find the long numeric string labeled "Chave de Acesso".
   - **Products**: Return an empty array for the products field.
