@@ -2,6 +2,8 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
+import { getPerformance } from "firebase/performance";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,5 +21,12 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
+
+
+// Initialize Analytics and Performance Monitoring on the client side
+if (typeof window !== 'undefined') {
+    getAnalytics(app);
+    getPerformance(app);
+}
 
 export { app, auth, db, googleProvider };

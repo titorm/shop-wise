@@ -7,37 +7,27 @@ import { useEffect, useState, ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
 import { Toaster } from "@/components/ui/toaster";
 import { Skeleton } from "@/components/ui/skeleton";
-import posthog from "posthog-js";
-import { PostHogProvider } from "posthog-js/react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { trackEvent } from "@/services/analytics-service";
 
-if (typeof window !== 'undefined') {
-    posthog.init('phc_Rx5hJgLvJDH6uquKZQBR8O607ghbxitiLNwfTtD3A9P', {
-        api_host: 'https://us.i.posthog.com',
-    })
-}
-
-function PostHogPageview(): React.ReactNode {
+function PageViewTracker(): React.ReactNode {
     const pathname = usePathname()
     const searchParams = useSearchParams()
 
     useEffect(() => {
         if (pathname) {
-            let url = window.origin + pathname
-            if (searchParams && searchParams.toString()) {
-                url = url + `?${searchParams.toString()}`
-            }
-            posthog.capture(
-                '$pageview',
-                {
-                    '$current_url': url,
-                }
-            )
+            const url = window.origin + pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+            trackEvent('screen_view', {
+                firebase_screen: pathname,
+                firebase_screen_class: 'NextJS', // You can customize this
+                page_location: url,
+            });
         }
-    }, [pathname, searchParams])
+    }, [pathname, searchParams]);
     
     return null;
 }
+
 
 function PageSkeleton() {
   return (
@@ -113,13 +103,11 @@ export function Providers({
     return (
         <I18nextProvider i18n={i18n}>
             <AuthProvider>
-                <PostHogProvider client={posthog}>
-                    <PostHogPageview />
-                    <AppTheme>
-                        {children}
-                    </AppTheme>
-                    <Toaster />
-                </PostHogProvider>
+                <PageViewTracker />
+                <AppTheme>
+                    {children}
+                </AppTheme>
+                <Toaster />
             </AuthProvider>
         </I18nextProvider>
     )

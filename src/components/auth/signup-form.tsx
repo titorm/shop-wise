@@ -89,7 +89,7 @@ export function SignupForm() {
                 notifications: true,
             }
         });
-        trackEvent('user_signed_up', { method: 'email' });
+        trackEvent('sign_up', { method: 'email' });
         router.push('/dashboard');
       }
     } catch (error: any) {
@@ -126,7 +126,7 @@ export function SignupForm() {
                 notifications: true,
             }
         }, { merge: true }); // Merge to avoid overwriting existing data if they sign up differently before
-        trackEvent('user_signed_up', { method: 'google' });
+        trackEvent('sign_up', { method: 'google' });
         router.push('/dashboard');
     } catch (error: any) {
         toast({

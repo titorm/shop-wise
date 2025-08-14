@@ -58,7 +58,7 @@ export function LoginForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
-      trackEvent('user_logged_in', { method: 'email' });
+      trackEvent('login', { method: 'email' });
       router.push('/dashboard');
     } catch (error: any) {
       toast({
@@ -73,7 +73,7 @@ export function LoginForm() {
     const provider = new GoogleAuthProvider();
     try {
         await signInWithPopup(auth, provider);
-        trackEvent('user_logged_in', { method: 'google' });
+        trackEvent('login', { method: 'google' });
         router.push('/dashboard');
     } catch (error: any) {
         toast({
