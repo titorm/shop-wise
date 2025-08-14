@@ -40,7 +40,7 @@ interface Purchase {
 }
 
 
-export default function HistoryPage() {
+export function HistoryTab() {
     const { t } = useTranslation();
     const { profile } = useAuth();
     const [purchases, setPurchases] = useState<Purchase[]>([]);
@@ -171,7 +171,7 @@ export default function HistoryPage() {
     }, [purchases]);
 
     return (
-        <div className="container mx-auto py-8 space-y-8">
+        <div className="space-y-8">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-6 h-6"/> {t('purchase_history_title')}</CardTitle>
@@ -345,16 +345,3 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
         </Dialog>
     );
 }
-
-    
-
-    
-
-
-
-    
-
-    
-
-    
-

@@ -27,7 +27,6 @@ const menuItems = [
     { href: "/dashboard", label: "insights", icon: faHome },
     { href: "/list", label: "shopping_list", icon: faList },
     { href: "/scan", label: "add_purchase", icon: faPlusCircle },
-    { href: "/history", label: "history", icon: faHistory },
 ];
 
 const settingsMenuItems = [

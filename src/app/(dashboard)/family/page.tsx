@@ -3,15 +3,15 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers, faGem, faStore, faHistory } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { PlanForm } from '@/components/family/plan-form';
 import { FamilyCompositionForm } from '@/components/family/family-composition-form';
-import { EmptyState } from '@/components/ui/empty-state';
 import { MarketsForm } from '@/components/family/markets-form';
+import { HistoryTab } from '@/components/family/history-tab';
 
 export default function FamilyPage() {
     const { t } = useTranslation();
@@ -51,15 +51,7 @@ export default function FamilyPage() {
                            <MarketsForm />
                         </TabsContent>
                          <TabsContent value="history" className="mt-6">
-                             <Card>
-                                <CardHeader>
-                                    <CardTitle>{t('tab_history')}</CardTitle>
-                                    <CardDescription>{t('coming_soon_history_desc')}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                     <EmptyState title={t('coming_soon')} description={t('coming_soon_history_desc')} />
-                                </CardContent>
-                            </Card>
+                            <HistoryTab />
                         </TabsContent>
                         <TabsContent value="plan" className="mt-6">
                             <PlanForm />
