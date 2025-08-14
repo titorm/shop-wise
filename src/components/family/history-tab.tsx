@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faBox, faHashtag, faBarcode, faWeightHanging, faTrash, faPlusCircle, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faBox, faHashtag, faBarcode, faWeightHanging, faTrash, faPlusCircle, faSave, faPencil } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
@@ -83,6 +83,7 @@ export function HistoryTab() {
                             ...itemData, 
                             id: itemDoc.id, 
                             unitPrice: itemData.price, // Assuming 'price' from DB is unit price
+                            price: itemData.totalPrice,
                         } as PurchaseItem;
                     }));
 
@@ -271,10 +272,22 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [items, setItems] = useState<PurchaseItem[]>(purchase.items);
     const [isSaving, setIsSaving] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     
+    // Create a stable reference to the original items for comparison
+    const originalItemsJson = useMemo(() => JSON.stringify(purchase.items), [purchase.items]);
+    const isDirty = useMemo(() => JSON.stringify(items) !== originalItemsJson, [items, originalItemsJson]);
+
+
     useEffect(() => {
-        setItems(purchase.items);
-    }, [purchase.items]);
+        // Reset local state if the dialog is closed or the underlying purchase changes
+        if (isDialogOpen) {
+            setItems(purchase.items);
+        } else {
+            // Reset editing state when dialog closes
+            setIsEditing(false);
+        }
+    }, [isDialogOpen, purchase.items]);
     
     const handleItemChange = (index: number, field: keyof PurchaseItem, value: any) => {
         const newItems = [...items];
@@ -376,22 +389,22 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                              {items.map((item, index) => (
                                 <TableRow key={item.id}>
                                     <TableCell>
-                                        <Input value={item.name} onChange={e => handleItemChange(index, 'name', e.target.value)} placeholder={t('item_name_placeholder')} />
+                                        <Input value={item.name} onChange={e => handleItemChange(index, 'name', e.target.value)} placeholder={t('item_name_placeholder')} disabled={!isEditing} />
                                     </TableCell>
                                     <TableCell>
-                                        <Input value={item.volume} onChange={e => handleItemChange(index, 'volume', e.target.value)} placeholder="ex: 1kg, 500ml" />
+                                        <Input value={item.volume} onChange={e => handleItemChange(index, 'volume', e.target.value)} placeholder="ex: 1kg, 500ml" disabled={!isEditing} />
                                     </TableCell>
                                     <TableCell>
-                                        <Input type="number" value={item.quantity} onChange={e => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)} className="text-center" />
+                                        <Input type="number" value={item.quantity} onChange={e => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)} className="text-center" disabled={!isEditing} />
                                     </TableCell>
                                      <TableCell>
-                                        <Input type="number" value={item.unitPrice} onChange={e => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)} className="text-center" />
+                                        <Input type="number" value={item.unitPrice} onChange={e => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)} className="text-center" disabled={!isEditing} />
                                     </TableCell>
                                     <TableCell className="text-right font-medium">
                                         R$ {(item.price || 0).toFixed(2)}
                                     </TableCell>
                                     <TableCell>
-                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveItem(index)}>
+                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveItem(index)} disabled={!isEditing}>
                                             <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
                                         </Button>
                                     </TableCell>
@@ -399,13 +412,13 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                             ))}
                         </TableBody>
                     </Table>
-                     <Button variant="outline" className="mt-4" onClick={handleAddItem}>
+                     <Button variant="outline" className="mt-4" onClick={handleAddItem} disabled={!isEditing}>
                         <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
                         {t('add_item_button')}
                     </Button>
                 </div>
-                 <DialogFooter className="pt-4 border-t items-center">
-                    <div className="flex-grow">
+                 <DialogFooter className="pt-4 border-t flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4">
+                    <div>
                          <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button variant="destructive-outline">
@@ -432,16 +445,26 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                             </AlertDialogContent>
                         </AlertDialog>
                     </div>
-                    <div className="text-right">
-                        <p className="text-lg font-bold">Total: R$ {totalAmount.toFixed(2)}</p>
+                    <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:gap-4">
+                         <div className="text-right">
+                            <p className="text-lg font-bold">Total: R$ {totalAmount.toFixed(2)}</p>
+                        </div>
+                        {!isEditing ? (
+                             <Button onClick={() => setIsEditing(true)}>
+                                <FontAwesomeIcon icon={faPencil} className="mr-2 h-4 w-4" />
+                                {t('edit_purchase_button')}
+                            </Button>
+                        ) : (
+                            <Button onClick={handleSaveChanges} disabled={isSaving || !isDirty}>
+                                <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
+                                {isSaving ? t('saving') : t('save_changes_button')}
+                            </Button>
+                        )}
                     </div>
-                    <Button onClick={handleSaveChanges} disabled={isSaving}>
-                        <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
-                        {isSaving ? t('saving') : t('save_changes_button')}
-                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     );
 }
 
+    
