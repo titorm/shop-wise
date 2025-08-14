@@ -46,6 +46,30 @@ const dateLocales: Record<string, Locale> = {
   'en': enUS,
 };
 
+const categoryMapping: { [key: string]: string } = {
+    "Hortifrúti e Ovos": "produce_and_eggs",
+    "Açougue e Peixaria": "meat_and_seafood",
+    "Padaria e Confeitaria": "bakery_and_deli",
+    "Laticínios e Frios": "dairy_and_chilled",
+    "Mercearia": "pantry_and_dry_goods",
+    "Matinais e Doces": "breakfast_and_snacks",
+    "Congelados": "frozen_foods",
+    "Bebidas": "beverages",
+    "Limpeza": "cleaning_and_household",
+    "Higiene Pessoal": "personal_care",
+    "Bebês e Crianças": "baby_and_child_care",
+    "Pet Shop": "pet_supplies",
+    "Utilidades e Bazar": "home_and_general",
+    "Farmácia": "pharmacy",
+    "Outros": "others",
+};
+
+const getCategoryKey = (categoryName: string | undefined) => {
+    if (!categoryName) return "others";
+    return categoryMapping[categoryName] || "others";
+};
+
+
 const ComparisonBadge = ({ value }: { value: number | null }) => {
     const { t } = useTranslation();
     if (value === null) {
@@ -87,44 +111,24 @@ export default function DashboardPage() {
   const [consumptionAnalysis, setConsumptionAnalysis] = useState<string | null>(null);
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
 
-  const barChartConfig = useMemo(() => ({
+ const chartConfig = useMemo(() => ({
     total: { label: t('chart_label_total') },
-    'Hortifrúti e Ovos': { label: t('category_produce_and_eggs'), color: "hsl(var(--color-category-produce-and-eggs))" },
-    'Açougue e Peixaria': { label: t('category_meat_and_seafood'), color: "hsl(var(--color-category-meat-and-seafood))" },
-    'Padaria e Confeitaria': { label: t('category_bakery_and_deli'), color: "hsl(var(--color-category-bakery-and-deli))" },
-    'Laticínios e Frios': { label: t('category_dairy_and_chilled'), color: "hsl(var(--color-category-dairy-and-chilled))" },
-    'Mercearia': { label: t('category_pantry_and_dry_goods'), color: "hsl(var(--color-category-pantry-and-dry-goods))" },
-    'Matinais e Doces': { label: t('category_breakfast_and_snacks'), color: "hsl(var(--color-category-breakfast-and-snacks))" },
-    'Congelados': { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen-foods))" },
-    'Bebidas': { label: t('category_beverages'), color: "hsl(var(--color-category-beverages))" },
-    'Limpeza': { label: t('category_cleaning_and_household'), color: "hsl(var(--color-category-cleaning-and-household))" },
-    'Higiene Pessoal': { label: t('category_personal_care'), color: "hsl(var(--color-category-personal-care))" },
-    'Bebês e Crianças': { label: t('category_baby_and_child_care'), color: "hsl(var(--color-category-baby-and-child-care))" },
-    'Pet Shop': { label: t('category_pet_supplies'), color: "hsl(var(--color-category-pet-supplies))" },
-    'Utilidades e Bazar': { label: t('category_home_and_general'), color: "hsl(var(--color-category-home-and-general))" },
-    'Farmácia': { label: t('category_pharmacy'), color: "hsl(var(--color-category-pharmacy))" },
-    'Outros': { label: t('category_others'), color: "hsl(var(--muted))" },
-  }), [t]);
-  
-  const pieChartConfig = useMemo(() => ({
-    value: {
-      label: t('chart_label_spending'),
-    },
-    'Hortifrúti e Ovos': { label: t('category_produce_and_eggs'), color: "hsl(var(--color-category-produce-and-eggs))" },
-    'Açougue e Peixaria': { label: t('category_meat_and_seafood'), color: "hsl(var(--color-category-meat-and-seafood))" },
-    'Padaria e Confeitaria': { label: t('category_bakery_and_deli'), color: "hsl(var(--color-category-bakery-and-deli))" },
-    'Laticínios e Frios': { label: t('category_dairy_and_chilled'), color: "hsl(var(--color-category-dairy-and-chilled))" },
-    'Mercearia': { label: t('category_pantry_and_dry_goods'), color: "hsl(var(--color-category-pantry-and-dry-goods))" },
-    'Matinais e Doces': { label: t('category_breakfast_and_snacks'), color: "hsl(var(--color-category-breakfast-and-snacks))" },
-    'Congelados': { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen-foods))" },
-    'Bebidas': { label: t('category_beverages'), color: "hsl(var(--color-category-beverages))" },
-    'Limpeza': { label: t('category_cleaning_and_household'), color: "hsl(var(--color-category-cleaning-and-household))" },
-    'Higiene Pessoal': { label: t('category_personal_care'), color: "hsl(var(--color-category-personal-care))" },
-    'Bebês e Crianças': { label: t('category_baby_and_child_care'), color: "hsl(var(--color-category-baby-and-child-care))" },
-    'Pet Shop': { label: t('category_pet_supplies'), color: "hsl(var(--color-category-pet-supplies))" },
-    'Utilidades e Bazar': { label: t('category_home_and_general'), color: "hsl(var(--color-category-home-and-general))" },
-    'Farmácia': { label: t('category_pharmacy'), color: "hsl(var(--color-category-pharmacy))" },
-    'Outros': { label: t('category_others'), color: "hsl(var(--muted))" },
+    produce_and_eggs: { label: t('category_produce_and_eggs'), color: "hsl(var(--color-category-produce-and-eggs))" },
+    meat_and_seafood: { label: t('category_meat_and_seafood'), color: "hsl(var(--color-category-meat-and-seafood))" },
+    bakery_and_deli: { label: t('category_bakery_and_deli'), color: "hsl(var(--color-category-bakery-and-deli))" },
+    dairy_and_chilled: { label: t('category_dairy_and_chilled'), color: "hsl(var(--color-category-dairy-and-chilled))" },
+    pantry_and_dry_goods: { label: t('category_pantry_and_dry_goods'), color: "hsl(var(--color-category-pantry-and-dry-goods))" },
+    breakfast_and_snacks: { label: t('category_breakfast_and_snacks'), color: "hsl(var(--color-category-breakfast-and-snacks))" },
+    frozen_foods: { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen-foods))" },
+    beverages: { label: t('category_beverages'), color: "hsl(var(--color-category-beverages))" },
+    cleaning_and_household: { label: t('category_cleaning_and_household'), color: "hsl(var(--color-category-cleaning-and-household))" },
+    personal_care: { label: t('category_personal_care'), color: "hsl(var(--color-category-personal-care))" },
+    baby_and_child_care: { label: t('category_baby_and_child_care'), color: "hsl(var(--color-category-baby-and-child-care))" },
+    pet_supplies: { label: t('category_pet_supplies'), color: "hsl(var(--color-category-pet-supplies))" },
+    home_and_general: { label: t('category_home_and_general'), color: "hsl(var(--color-category-home-and-general))" },
+    pharmacy: { label: t('category_pharmacy'), color: "hsl(var(--color-category-pharmacy))" },
+    others: { label: t('category_others'), color: "hsl(var(--muted))" },
+    value: { label: t('chart_label_spending') },
   }), [t]);
   
   useEffect(() => {
@@ -229,7 +233,7 @@ export default function DashboardPage() {
         for(let i=11; i>=0; i--) {
             const date = subMonths(now, i);
             const monthKey = format(date, 'MMM/yy', { locale });
-            monthlyData[monthKey] = { month: monthKey, ...Object.fromEntries(Object.keys(barChartConfig).filter(k => k !== 'total').map(k => [k, 0])) };
+            monthlyData[monthKey] = { month: monthKey, ...Object.fromEntries(Object.keys(chartConfig).filter(k => !['total', 'value'].includes(k)).map(k => [k, 0])) };
         }
 
         const startOf12MonthsAgo = startOfMonth(subMonths(now, 11));
@@ -238,24 +242,23 @@ export default function DashboardPage() {
         last12MonthsItems.forEach(item => {
             const monthKey = format(item.purchaseDate, 'MMM/yy', { locale });
             if (monthlyData[monthKey]) {
-                const category = item.category || 'Outros';
-                const mainCategory = Object.keys(barChartConfig).find(c => c === category) || 'Outros';
-                monthlyData[monthKey][mainCategory] = (monthlyData[monthKey][mainCategory] || 0) + item.totalPrice;
+                const categoryKey = getCategoryKey(item.category);
+                monthlyData[monthKey][categoryKey] = (monthlyData[monthKey][categoryKey] || 0) + item.totalPrice;
             }
         });
         setBarChartData(Object.values(monthlyData));
         
         // -- Process Pie Chart data (this month) --
         const thisMonthCategorySpending = thisMonthItems.reduce((acc, item) => {
-            const category = (item.category && pieChartConfig.hasOwnProperty(item.category)) ? item.category : 'Outros';
-            acc[category] = (acc[category] || 0) + item.totalPrice;
+            const categoryKey = getCategoryKey(item.category);
+            acc[categoryKey] = (acc[categoryKey] || 0) + item.totalPrice;
             return acc;
         }, {} as { [key: string]: number });
         
         const pieData = Object.entries(thisMonthCategorySpending).map(([category, value]) => ({
             category,
             value,
-            fill: (pieChartConfig[category as keyof typeof pieChartConfig] as any)?.color || pieChartConfig['Outros'].color
+            fill: (chartConfig[category as keyof typeof chartConfig] as any)?.color || chartConfig['others'].color
         }));
         setPieChartData(pieData);
         setSpendingByCategory(Object.entries(thisMonthCategorySpending).map(([name, value]) => ({ name, value })));
@@ -280,14 +283,25 @@ export default function DashboardPage() {
         setLoading(false);
     }
     fetchData();
-  }, [profile, i18n.language, barChartConfig, pieChartConfig]);
+  }, [profile, i18n.language, chartConfig]);
   
   const handleConsumptionAnalysis = async () => {
     if (consumptionAnalysis || profile?.plan !== 'premium' || barChartData.length === 0) return;
     setIsAnalysisLoading(true);
     try {
+        const dataForAI = barChartData.map(monthData => {
+            const translatedData: {[key: string]: any} = { month: monthData.month };
+            for (const key in monthData) {
+                if (key !== 'month') {
+                    const translatedKey = chartConfig[key as keyof typeof chartConfig]?.label || key;
+                    translatedData[translatedKey] = monthData[key];
+                }
+            }
+            return translatedData;
+        });
+
         const result = await analyzeConsumptionData({ 
-            consumptionData: JSON.stringify(barChartData),
+            consumptionData: JSON.stringify(dataForAI),
             language: i18n.language 
         });
         setConsumptionAnalysis(result.analysis);
@@ -299,62 +313,37 @@ export default function DashboardPage() {
 };
 
   const topCategory = useMemo(() => {
-    if (spendingByCategory.length === 0) return { name: t('not_available_short'), value: 0 };
-    return spendingByCategory.reduce((prev, current) => (prev.value > current.value) ? prev : current);
-  }, [spendingByCategory, t]);
+    if (spendingByCategory.length === 0) return { name: 'others', value: 0 };
+    const top = spendingByCategory.reduce((prev, current) => (prev.value > current.value) ? prev : current);
+    return {
+        name: chartConfig[top.name as keyof typeof chartConfig]?.label || top.name,
+        value: top.value
+    };
+  }, [spendingByCategory, t, chartConfig]);
 
-  const getCategoryClass = (category: string) => {
+  const getCategoryClass = (category?: string) => {
+    if (!category) return "bg-secondary text-secondary-foreground";
+    const categoryKey = getCategoryKey(category);
     const categoryMap: { [key: string]: string } = {
-        "Hortifrúti e Ovos": "bg-category-produce-and-eggs/50 text-category-produce-and-eggs-foreground border-category-produce-and-eggs/20",
-        "Açougue e Peixaria": "bg-category-meat-and-seafood/50 text-category-meat-and-seafood-foreground border-category-meat-and-seafood/20",
-        "Padaria e Confeitaria": "bg-category-bakery-and-deli/50 text-category-bakery-and-deli-foreground border-category-bakery-and-deli/20",
-        "Laticínios e Frios": "bg-category-dairy-and-chilled/50 text-category-dairy-and-chilled-foreground border-category-dairy-and-chilled/20",
-        "Mercearia": "bg-category-pantry-and-dry-goods/50 text-category-pantry-and-dry-goods-foreground border-category-pantry-and-dry-goods/20",
-        "Matinais e Doces": "bg-category-breakfast-and-snacks/50 text-category-breakfast-and-snacks-foreground border-category-breakfast-and-snacks/20",
-        "Congelados": "bg-category-frozen-foods/50 text-category-frozen-foods-foreground border-category-frozen-foods/20",
-        "Bebidas": "bg-category-beverages/50 text-category-beverages-foreground border-category-beverages/20",
-        "Limpeza": "bg-category-cleaning-and-household/50 text-category-cleaning-and-household-foreground border-category-cleaning-and-household/20",
-        "Higiene Pessoal": "bg-category-personal-care/50 text-category-personal-care-foreground border-category-personal-care/20",
-        "Bebês e Crianças": "bg-category-baby-and-child-care/50 text-category-baby-and-child-care-foreground border-category-baby-and-child-care/20",
-        "Pet Shop": "bg-category-pet-supplies/50 text-category-pet-supplies-foreground border-category-pet-supplies/20",
-        "Utilidades e Bazar": "bg-category-home-and-general/50 text-category-home-and-general-foreground border-category-home-and-general/20",
-        "Farmácia": "bg-category-pharmacy/50 text-category-pharmacy-foreground border-category-pharmacy/20",
+        "produce_and_eggs": "bg-category-produce-and-eggs/50 text-category-produce-and-eggs-foreground border-category-produce-and-eggs/20",
+        "meat_and_seafood": "bg-category-meat-and-seafood/50 text-category-meat-and-seafood-foreground border-category-meat-and-seafood/20",
+        "bakery_and_deli": "bg-category-bakery-and-deli/50 text-category-bakery-and-deli-foreground border-category-bakery-and-deli/20",
+        "dairy_and_chilled": "bg-category-dairy-and-chilled/50 text-category-dairy-and-chilled-foreground border-category-dairy-and-chilled/20",
+        "pantry_and_dry_goods": "bg-category-pantry-and-dry-goods/50 text-category-pantry-and-dry-goods-foreground border-category-pantry-and-dry-goods/20",
+        "breakfast_and_snacks": "bg-category-breakfast-and-snacks/50 text-category-breakfast-and-snacks-foreground border-category-breakfast-and-snacks/20",
+        "frozen_foods": "bg-category-frozen-foods/50 text-category-frozen-foods-foreground border-category-frozen-foods/20",
+        "beverages": "bg-category-beverages/50 text-category-beverages-foreground border-category-beverages/20",
+        "cleaning_and_household": "bg-category-cleaning-and-household/50 text-category-cleaning-and-household-foreground border-category-cleaning-and-household/20",
+        "personal_care": "bg-category-personal-care/50 text-category-personal-care-foreground border-category-personal-care/20",
+        "baby_and_child_care": "bg-category-baby-and-child-care/50 text-category-baby-and-child-care-foreground border-category-baby-and-child-care/20",
+        "pet_supplies": "bg-category-pet-supplies/50 text-category-pet-supplies-foreground border-category-pet-supplies/20",
+        "home_and_general": "bg-category-home-and-general/50 text-category-home-and-general-foreground border-category-home-and-general/20",
+        "pharmacy": "bg-category-pharmacy/50 text-category-pharmacy-foreground border-category-pharmacy/20",
         "Default": "bg-secondary text-secondary-foreground"
     };
-    return categoryMap[category] || categoryMap.Default;
+    return categoryMap[categoryKey] || categoryMap.Default;
   }
   
-  const getSubcategoryClass = (category: string) => {
-    const subcategoryMap: { [key: string]: string } = {
-        "Hortifrúti e Ovos": "bg-category-produce-and-eggs/30 text-category-produce-and-eggs-foreground border-category-produce-and-eggs/10",
-        "Açougue e Peixaria": "bg-category-meat-and-seafood/30 text-category-meat-and-seafood-foreground border-category-meat-and-seafood/10",
-        "Padaria e Confeitaria": "bg-category-bakery-and-deli/30 text-category-bakery-and-deli-foreground border-category-bakery-and-deli/10",
-        "Laticínios e Frios": "bg-category-dairy-and-chilled/30 text-category-dairy-and-chilled-foreground border-category-dairy-and-chilled/10",
-        "Mercearia": "bg-category-pantry-and-dry-goods/30 text-category-pantry-and-dry-goods-foreground border-category-pantry-and-dry-goods/10",
-        "Matinais e Doces": "bg-category-breakfast-and-snacks/30 text-category-breakfast-and-snacks-foreground border-category-breakfast-and-snacks/10",
-        "Congelados": "bg-category-frozen-foods/30 text-category-frozen-foods-foreground border-category-frozen-foods/10",
-        "Bebidas": "bg-category-beverages/30 text-category-beverages-foreground border-category-beverages/10",
-        "Limpeza": "bg-category-cleaning-and-household/30 text-category-cleaning-and-household-foreground border-category-cleaning-and-household/10",
-        "Higiene Pessoal": "bg-category-personal-care/30 text-category-personal-care-foreground border-category-personal-care/10",
-        "Bebês e Crianças": "bg-category-baby-and-child-care/30 text-category-baby-and-child-care-foreground border-category-baby-and-child-care/10",
-        "Pet Shop": "bg-category-pet-supplies/30 text-category-pet-supplies-foreground border-category-pet-supplies/10",
-        "Utilidades e Bazar": "bg-category-home-and-general/30 text-category-home-and-general-foreground border-category-home-and-general/10",
-        "Farmácia": "bg-category-pharmacy/30 text-category-pharmacy-foreground border-category-pharmacy/10",
-        "Default": "bg-secondary/50 text-secondary-foreground"
-    };
-    return subcategoryMap[category] || subcategoryMap.Default;
-  }
-  
-  const formattedBarChartData = useMemo(() => barChartData.map(monthData => {
-    const formatted: any = { month: monthData.month };
-    Object.keys(barChartConfig).forEach(key => {
-        if (key !== 'total') {
-            formatted[key] = monthData[key] || 0;
-        }
-    });
-    return formatted;
-  }), [barChartData, barChartConfig]);
-
   if (loading) {
     return (
         <div className="space-y-6">
@@ -463,9 +452,9 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                   {barChartData.length > 0 ? (
-                  <ChartContainer config={barChartConfig} className="h-[350px] w-full">
+                  <ChartContainer config={chartConfig} className="h-[350px] w-full">
                       <ResponsiveContainer>
-                          <RechartsBarChart data={formattedBarChartData} stackOffset="sign">
+                          <RechartsBarChart data={barChartData} stackOffset="sign">
                               <XAxis
                               dataKey="month"
                               stroke="#888888"
@@ -485,8 +474,8 @@ export default function DashboardPage() {
                                   content={<ChartTooltipContent />}
                               />
                               <ChartLegend content={<ChartLegendContent />} />
-                              {Object.keys(barChartConfig).filter(k => k !== 'total').map((key) => (
-                                  <Bar key={key} dataKey={key} fill={barChartConfig[key as keyof typeof barChartConfig].color} stackId="a" radius={key === 'Outros' ? [4, 4, 0, 0] : [0,0,0,0]} />
+                              {Object.keys(chartConfig).filter(k => !['total', 'value'].includes(k)).map((key) => (
+                                  <Bar key={key} dataKey={key} fill={chartConfig[key as keyof typeof chartConfig].color} stackId="a" radius={key === 'Outros' ? [4, 4, 0, 0] : [0,0,0,0]} />
                               ))}
                           </RechartsBarChart>
                       </ResponsiveContainer>
@@ -529,8 +518,8 @@ export default function DashboardPage() {
                                   <TableCell className="font-medium">{item.name}</TableCell>
                                   <TableCell>{item.brand}</TableCell>
                                   <TableCell>
-                                      <Badge variant="tag" className={cn(getCategoryClass(item.category!))}>
-                                          {t(`category_${item.category?.replace(/\s/g, '_').replace(/ç/g, 'c').replace(/ã/g, 'a').toLowerCase()}`)}
+                                      <Badge variant="tag" className={cn(getCategoryClass(item.category))}>
+                                          {t(`category_${getCategoryKey(item.category)}`)}
                                       </Badge>
                                   </TableCell>
                                   <TableCell className="text-center">{item.quantity.toFixed(2)}</TableCell>

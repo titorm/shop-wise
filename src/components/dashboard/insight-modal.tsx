@@ -38,21 +38,21 @@ export function InsightModal({ title, description, children, data, chartData, ty
         value: {
           label: t('chart_label_spending'),
         },
-        'Hortifrúti e Ovos': { label: t('category_produce_and_eggs'), color: "hsl(var(--color-category-produce-and-eggs))" },
-        'Açougue e Peixaria': { label: t('category_meat_and_seafood'), color: "hsl(var(--color-category-meat-and-seafood))" },
-        'Padaria e Confeitaria': { label: t('category_bakery_and_deli'), color: "hsl(var(--color-category-bakery-and-deli))" },
-        'Laticínios e Frios': { label: t('category_dairy_and_chilled'), color: "hsl(var(--color-category-dairy-and-chilled))" },
-        'Mercearia': { label: t('category_pantry_and_dry_goods'), color: "hsl(var(--color-category-pantry-and-dry-goods))" },
-        'Matinais e Doces': { label: t('category_breakfast_and_snacks'), color: "hsl(var(--color-category-breakfast-and-snacks))" },
-        'Congelados': { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen-foods))" },
-        'Bebidas': { label: t('category_beverages'), color: "hsl(var(--color-category-beverages))" },
-        'Limpeza': { label: t('category_cleaning_and_household'), color: "hsl(var(--color-category-cleaning-and-household))" },
-        'Higiene Pessoal': { label: t('category_personal_care'), color: "hsl(var(--color-category-personal-care))" },
-        'Bebês e Crianças': { label: t('category_baby_and_child_care'), color: "hsl(var(--color-category-baby-and-child-care))" },
-        'Pet Shop': { label: t('category_pet_supplies'), color: "hsl(var(--color-category-pet-supplies))" },
-        'Utilidades e Bazar': { label: t('category_home_and_general'), color: "hsl(var(--color-category-home-and-general))" },
-        'Farmácia': { label: t('category_pharmacy'), color: "hsl(var(--color-category-pharmacy))" },
-        'Outros': { label: t('category_others'), color: "hsl(var(--muted))" },
+        produce_and_eggs: { label: t('category_produce_and_eggs'), color: "hsl(var(--color-category-produce-and-eggs))" },
+        meat_and_seafood: { label: t('category_meat_and_seafood'), color: "hsl(var(--color-category-meat-and-seafood))" },
+        bakery_and_deli: { label: t('category_bakery_and_deli'), color: "hsl(var(--color-category-bakery-and-deli))" },
+        dairy_and_chilled: { label: t('category_dairy_and_chilled'), color: "hsl(var(--color-category-dairy-and-chilled))" },
+        pantry_and_dry_goods: { label: t('category_pantry_and_dry_goods'), color: "hsl(var(--color-category-pantry-and-dry-goods))" },
+        breakfast_and_snacks: { label: t('category_breakfast_and_snacks'), color: "hsl(var(--color-category-breakfast-and-snacks))" },
+        frozen_foods: { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen-foods))" },
+        beverages: { label: t('category_beverages'), color: "hsl(var(--color-category-beverages))" },
+        cleaning_and_household: { label: t('category_cleaning_and_household'), color: "hsl(var(--color-category-cleaning-and-household))" },
+        personal_care: { label: t('category_personal_care'), color: "hsl(var(--color-category-personal-care))" },
+        baby_and_child_care: { label: t('category_baby_and_child_care'), color: "hsl(var(--color-category-baby-and-child-care))" },
+        pet_supplies: { label: t('category_pet_supplies'), color: "hsl(var(--color-category-pet-supplies))" },
+        home_and_general: { label: t('category_home_and_general'), color: "hsl(var(--color-category-home-and-general))" },
+        pharmacy: { label: t('category_pharmacy'), color: "hsl(var(--color-category-pharmacy))" },
+        others: { label: t('category_others'), color: "hsl(var(--muted))" },
       }), [t]);
 
     const renderContent = () => {
@@ -146,7 +146,7 @@ export function InsightModal({ title, description, children, data, chartData, ty
                                 <TableBody>
                                     {data.map((item, index) => (
                                         <TableRow key={index}>
-                                            <TableCell><Badge variant="outline">{item.name}</Badge></TableCell>
+                                            <TableCell><Badge variant="outline">{(pieChartConfig[item.name as keyof typeof pieChartConfig] as any)?.label || item.name}</Badge></TableCell>
                                             <TableCell className="text-right">R$ {item.value.toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
