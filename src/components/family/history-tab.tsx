@@ -21,7 +21,7 @@ import { Collections } from '@/lib/enums';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { toast } from '@/hooks/use-toast';
-import { updatePurchaseItems } from './actions';
+import { updatePurchaseItems } from '@/app/(dashboard)/family/actions';
 
 interface PurchaseItem {
     id: string;
