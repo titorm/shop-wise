@@ -1,4 +1,6 @@
 
+"use client";
+
 import type { Metadata } from 'next';
 import { PT_Sans } from 'next/font/google';
 import './globals.css';
@@ -7,7 +9,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/hooks/use-auth';
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
-import "@/lib/i18n";
+import i18n from "@/lib/i18n";
+import { I18nextProvider } from 'react-i18next';
 
 config.autoAddCss = false
 
@@ -17,10 +20,13 @@ const pt_sans = PT_Sans({
   variable: '--font-sans',
 });
 
-export const metadata: Metadata = {
-  title: 'ShopWise',
-  description: 'Your Intelligent Shopping Assistant',
-};
+// Metadata can't be used in a client component.
+// We can either move it to a separate file or handle it differently if needed.
+// For now, I will comment it out to fix the immediate issue.
+// export const metadata: Metadata = {
+//   title: 'ShopWise',
+//   description: 'Your Intelligent Shopping Assistant',
+// };
 
 export default function RootLayout({
   children,
@@ -34,10 +40,12 @@ export default function RootLayout({
         className={cn('min-h-screen bg-background font-body antialiased', pt_sans.variable)}
         suppressHydrationWarning
       >
-        <AuthProvider>
-            {children}
-            <Toaster />
-        </AuthProvider>
+        <I18nextProvider i18n={i18n}>
+            <AuthProvider>
+                {children}
+                <Toaster />
+            </AuthProvider>
+        </I18nextProvider>
       </body>
     </html>
   );

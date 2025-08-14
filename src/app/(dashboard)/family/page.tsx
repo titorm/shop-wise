@@ -53,8 +53,8 @@ export default function FamilyPage() {
                          <TabsContent value="history" className="mt-6">
                              <Card>
                                 <CardHeader>
-                                    <CardTitle>{t('tab_history_title')}</CardTitle>
-                                    <CardDescription>{t('tab_history_desc')}</CardDescription>
+                                    <CardTitle>{t('tab_history')}</CardTitle>
+                                    <CardDescription>{t('coming_soon_history_desc')}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                      <EmptyState title={t('coming_soon')} description={t('coming_soon_history_desc')} />
