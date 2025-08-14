@@ -63,61 +63,61 @@
   }
 
   .dark {
-    --background: 0 0% 7%; /* #121212 */
-    --foreground: 0 0% 100%; /* #FFFFFF */
-    --card: 0 0% 12%; /* #1E1E1E */
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 100%;
+    --background: 224 71% 4%; /* #020817 */
+    --foreground: 210 40% 98%; /* #F8FAFC */
+    --card: 224 71% 4%; /* #020817 */
+    --card-foreground: 210 40% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 210 40% 98%;
     --primary: 122 46% 44%; /* Lighter green for dark mode */
-    --primary-foreground: 0 0% 100%;
+    --primary-foreground: 210 40% 98%;
     --secondary: 45 100% 51%; /* #FFC107 */
     --secondary-foreground: 240 10% 4%;
-    --muted: 0 0% 20%; /* #333333 */
-    --muted-foreground: 0 0% 74%; /* #BDBDBD */
+    --muted: 215 28% 17%; /* #27272A */
+    --muted-foreground: 215 20% 65%; /* #A1A1AA */
     --accent: 212 92% 61%; /* Lighter blue for dark mode */
-    --accent-foreground: 0 0% 100%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 63% 49%; /* #D32F2F */
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%; /* #333333 */
-    --input: 0 0% 20%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
     --ring: 122 46% 44%;
     --radius: 0.8rem;
 
-    --sidebar: 0 0% 12%; /* #1E1E1E */
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 20%;
+    --sidebar: 224 71% 4%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 215 28% 17%;
     --sidebar-accent: 122 46% 18%; /* Darker green */
     --sidebar-accent-foreground: 122 46% 78%; /* Lighter green */
     --sidebar-ring: 122 46% 44%;
-    
-    --color-category-produce-and-eggs: 122 39% 64%; /* #81C784 */
+
+    --color-category-produce-and-eggs: 122 39% 25%;
     --color-category-produce-and-eggs-foreground: 120 70% 95%;
-    --color-category-meat-and-seafood: 0 65% 68%; /* #E57373 */
+    --color-category-meat-and-seafood: 0 65% 28%;
     --color-category-meat-and-seafood-foreground: 0 70% 95%;
-    --color-category-bakery-and-deli: 45 100% 65%; /* #FFD54F */
+    --color-category-bakery-and-deli: 45 100% 25%;
     --color-category-bakery-and-deli-foreground: 45 70% 95%;
-    --color-category-dairy-and-chilled: 211 85% 67%; /* #64B5F6 */
+    --color-category-dairy-and-chilled: 211 85% 27%;
     --color-category-dairy-and-chilled-foreground: 210 70% 95%;
-    --color-category-pantry-and-dry-goods: 30 100% 65%; /* #FFB74D */
+    --color-category-pantry-and-dry-goods: 30 100% 25%;
     --color-category-pantry-and-dry-goods-foreground: 30 70% 95%;
-    --color-category-breakfast-and-snacks: 341 81% 69%; /* #F06292 */
+    --color-category-breakfast-and-snacks: 341 81% 29%;
     --color-category-breakfast-and-snacks-foreground: 340 70% 95%;
-    --color-category-frozen-foods: 185 70% 60%; /* #4DD0E1 */
+    --color-category-frozen-foods: 185 70% 20%;
     --color-category-frozen-foods-foreground: 185 70% 95%;
-    --color-category-beverages: 265 58% 71%; /* #9575CD */
+    --color-category-beverages: 265 58% 31%;
     --color-category-beverages-foreground: 265 70% 95%;
-    --color-category-cleaning-and-household: 174 45% 58%; /* #4DB6AC */
+    --color-category-cleaning-and-household: 174 45% 18%;
     --color-category-cleaning-and-household-foreground: 175 70% 95%;
-    --color-category-personal-care: 291 49% 70%; /* #BA68C8 */
+    --color-category-personal-care: 291 49% 30%;
     --color-category-personal-care-foreground: 290 70% 95%;
-    --color-category-baby-and-child-care: 56 94% 72%; /* #FFF176 */
+    --color-category-baby-and-child-care: 56 94% 32%;
     --color-category-baby-and-child-care-foreground: 55 70% 95%;
-    --color-category-pet-supplies: 20 20% 63%; /* #A1887F */
+    --color-category-pet-supplies: 20 20% 23%;
     --color-category-pet-supplies-foreground: 20 70% 95%;
-    --color-category-home-and-general: 200 17% 65%; /* #90A4AE */
+    --color-category-home-and-general: 200 17% 25%;
     --color-category-home-and-general-foreground: 200 70% 95%;
-    --color-category-pharmacy: 174 45% 58%; /* #4DB6AC */
+    --color-category-pharmacy: 174 45% 18%;
     --color-category-pharmacy-foreground: 175 70% 95%;
   }
 }
@@ -127,6 +127,6 @@
     @apply border-border;
   }
   body {
-    @apply bg-sidebar text-foreground;
+    @apply bg-background text-foreground;
   }
 }

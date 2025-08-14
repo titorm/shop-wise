@@ -6,11 +6,12 @@ import { PT_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/hooks/use-auth';
+import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import i18n from "@/lib/i18n";
 import { I18nextProvider } from 'react-i18next';
+import { useEffect } from 'react';
 
 config.autoAddCss = false
 
@@ -20,13 +21,33 @@ const pt_sans = PT_Sans({
   variable: '--font-sans',
 });
 
-// Metadata can't be used in a client component.
-// We can either move it to a separate file or handle it differently if needed.
-// For now, I will comment it out to fix the immediate issue.
-// export const metadata: Metadata = {
-//   title: 'ShopWise',
-//   description: 'Your Intelligent Shopping Assistant',
-// };
+
+function AppTheme({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const { profile } = useAuth();
+  
+  useEffect(() => {
+    const theme = profile?.settings?.theme;
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+
+    if (theme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.classList.add(systemTheme);
+      return;
+    }
+
+    if (theme) {
+      root.classList.add(theme);
+    }
+  }, [profile]);
+
+  return <>{children}</>;
+}
+
 
 export default function RootLayout({
   children,
@@ -42,7 +63,9 @@ export default function RootLayout({
       >
         <I18nextProvider i18n={i18n}>
             <AuthProvider>
-                {children}
+                <AppTheme>
+                    {children}
+                </AppTheme>
                 <Toaster />
             </AuthProvider>
         </I18nextProvider>
