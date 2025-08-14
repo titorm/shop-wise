@@ -28,7 +28,7 @@ import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
@@ -44,12 +44,6 @@ export function LoginForm() {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const { t } = useTranslation();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,9 +86,9 @@ export function LoginForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-headline">{isClient ? t('login_title') : '...'}</CardTitle>
+        <CardTitle className="text-2xl font-headline">{t('login_title')}</CardTitle>
         <CardDescription>
-          {isClient ? t('login_description') : '...'}
+          {t('login_description')}
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -106,7 +100,7 @@ export function LoginForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{isClient ? t('email_label') : '...'}</FormLabel>
+                    <FormLabel>{t('email_label')}</FormLabel>
                     <FormControl>
                       <Input placeholder="seu@email.com" {...field} />
                     </FormControl>
@@ -120,10 +114,10 @@ export function LoginForm() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center justify-between">
-                      <FormLabel>{isClient ? t('password_label') : '...'}</FormLabel>
+                      <FormLabel>{t('password_label')}</FormLabel>
                       <Link href="/forgot-password" passHref>
                         <Button variant="link" className="px-0 h-auto text-sm">
-                          {isClient ? t('forgot_password') : '...'}
+                          {t('forgot_password')}
                         </Button>
                       </Link>
                     </div>
@@ -144,7 +138,7 @@ export function LoginForm() {
                           <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                         )}
                         <span className="sr-only">
-                          {showPassword ? (isClient ? t('hide_password') : '...') : (isClient ? t('show_password') : '...')}
+                          {showPassword ? t('hide_password') : t('show_password')}
                         </span>
                       </Button>
                     </div>
@@ -154,28 +148,28 @@ export function LoginForm() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
-              {isClient ? t('login') : '...'}
+              {t('login')}
             </Button>
             <div className="relative">
               <Separator />
-              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">{isClient ? t('or') : '...'}</p>
+              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">{t('or')}</p>
             </div>
             <div className="space-y-2">
                  <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn}>
                     <FontAwesomeIcon icon={faGoogle} className="mr-2 h-4 w-4" />
-                    {isClient ? t('sign_in_with_google') : '...'}
+                    {t('sign_in_with_google')}
                 </Button>
                 <Button variant="outline" className="w-full" type="button">
                     <FontAwesomeIcon icon={faApple} className="mr-2 h-4 w-4" />
-                    {isClient ? t('sign_in_with_apple') : '...'}
+                    {t('sign_in_with_apple')}
                 </Button>
             </div>
           </CardContent>
           <CardFooter className="flex-col gap-2">
             <p className="text-sm text-muted-foreground">
-              {isClient ? t('no_account') : '...'}{" "}
+              {t('no_account')}{" "}
               <Link href="/signup" passHref>
-                <Button variant="link" className="px-0 h-auto">{isClient ? t('create_account') : '...'}</Button>
+                <Button variant="link" className="px-0 h-auto">{t('create_account')}</Button>
               </Link>
             </p>
           </CardFooter>

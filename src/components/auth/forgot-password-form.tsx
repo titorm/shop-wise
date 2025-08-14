@@ -24,16 +24,9 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
 
 export function ForgotPasswordForm() {
   const { t } = useTranslation();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
 
   const formSchema = z.object({
     email: z.string().email({ message: t('error_invalid_email') }),
@@ -57,9 +50,9 @@ export function ForgotPasswordForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-headline">{isClient ? t('forgot_password_title') : '...'}</CardTitle>
+        <CardTitle className="text-2xl font-headline">{t('forgot_password_title')}</CardTitle>
         <CardDescription>
-          {isClient ? t('forgot_password_description') : '...'}
+          {t('forgot_password_description')}
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -70,7 +63,7 @@ export function ForgotPasswordForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{isClient ? t('email_label') : '...'}</FormLabel>
+                  <FormLabel>{t('email_label')}</FormLabel>
                   <FormControl>
                     <Input placeholder="seu@email.com" {...field} />
                   </FormControl>
@@ -79,14 +72,14 @@ export function ForgotPasswordForm() {
               )}
             />
             <Button type="submit" className="w-full" disabled={!isDirty || !isValid || isSubmitting}>
-              {isClient ? t('forgot_password_send_link') : '...'}
+              {t('forgot_password_send_link')}
             </Button>
           </CardContent>
           <CardFooter>
             <p className="text-sm text-muted-foreground w-full text-center">
-              {isClient ? t('remembered_password') : '...'}{" "}
+              {t('remembered_password')}{" "}
               <Link href="/login" passHref>
-                <Button variant="link" className="px-0 h-auto">{isClient ? t('login') : '...'}</Button>
+                <Button variant="link" className="px-0 h-auto">{t('login')}</Button>
               </Link>
             </p>
           </CardFooter>
