@@ -83,8 +83,9 @@ export default function ScanPage() {
 
         // Check for duplicate purchase using keyAccess
         if ('keyAccess' in purchaseData && purchaseData.keyAccess) {
+            const sanitizedKeyAccess = purchaseData.keyAccess.replace(/\s/g, '');
             const purchasesRef = collection(db, Collections.Families, profile.familyId, 'purchases');
-            const q = query(purchasesRef, where("keyAccess", "==", purchaseData.keyAccess), limit(1));
+            const q = query(purchasesRef, where("keyAccess", "==", sanitizedKeyAccess), limit(1));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
                  toast({
@@ -132,7 +133,7 @@ export default function ScanPage() {
                 date: purchaseDate,
                 totalAmount: parseFloat(totalAmount.toFixed(2)),
                 discount: 'discount' in purchaseData ? (purchaseData.discount || 0) : 0,
-                keyAccess: 'keyAccess' in purchaseData ? (purchaseData.keyAccess || null) : null,
+                keyAccess: 'keyAccess' in purchaseData && purchaseData.keyAccess ? purchaseData.keyAccess.replace(/\s/g, '') : null,
                 purchasedBy: user.uid,
                 entryMethod: entryMethod,
             });
