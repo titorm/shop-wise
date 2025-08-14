@@ -24,32 +24,9 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { Skeleton } from "../ui/skeleton";
-
-function ForgotPasswordFormSkeleton() {
-    return (
-        <Card>
-            <CardHeader>
-                <Skeleton className="h-7 w-48" />
-                <Skeleton className="h-4 w-full mt-2" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-                 <div className="space-y-2">
-                    <Skeleton className="h-4 w-16" />
-                    <Skeleton className="h-10 w-full" />
-                </div>
-                <Skeleton className="h-10 w-full" />
-            </CardContent>
-            <CardFooter>
-                 <Skeleton className="h-4 w-40" />
-            </CardFooter>
-        </Card>
-    )
-}
-
 
 export function ForgotPasswordForm() {
-  const { t, ready } = useTranslation();
+  const { t } = useTranslation();
 
   const formSchema = z.object({
     email: z.string().email({ message: t('error_invalid_email') }),
@@ -69,10 +46,6 @@ export function ForgotPasswordForm() {
   }
 
   const { isDirty, isValid, isSubmitting } = form.formState;
-
-  if (!ready) {
-    return <ForgotPasswordFormSkeleton />;
-  }
 
   return (
     <Card>
