@@ -322,8 +322,8 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                             <p className="font-semibold text-lg">{t('total_label')}: R$ {totalAmount.toFixed(2)}</p>
                             {extractionResult.discount && extractionResult.discount > 0 && (
                                 <>
-                                    <p className="font-semibold text-destructive text-md">{t('discounts_label')}: - R$ {extractionResult.discount.toFixed(2)}</p>
-                                    <p className="font-bold text-xl text-primary">{t('total_to_pay_label')}: R$ {(totalAmount - extractionResult.discount).toFixed(2)}</p>
+                                    <p className="font-semibold text-primary text-md">{t('discounts_label')}: - R$ {extractionResult.discount.toFixed(2)}</p>
+                                    <p className="font-bold text-xl text-accent">{t('total_to_pay_label')}: R$ {(totalAmount - extractionResult.discount).toFixed(2)}</p>
                                 </>
                             )}
                         </CardFooter>
