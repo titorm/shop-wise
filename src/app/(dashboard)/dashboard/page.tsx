@@ -100,7 +100,7 @@ const ComparisonBadge = ({ value }: { value: number | null }) => {
 
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { profile } = useAuth();
   const [loading, setLoading] = useState(true);
 
@@ -280,7 +280,10 @@ export default function DashboardPage() {
     if (consumptionAnalysis || profile?.plan !== 'premium' || barChartData.length === 0) return;
     setIsAnalysisLoading(true);
     try {
-        const result = await analyzeConsumptionData({ consumptionData: JSON.stringify(barChartData) });
+        const result = await analyzeConsumptionData({ 
+            consumptionData: JSON.stringify(barChartData),
+            language: i18n.language 
+        });
         setConsumptionAnalysis(result.analysis);
     } catch (error) {
         console.error("Error fetching consumption analysis:", error);

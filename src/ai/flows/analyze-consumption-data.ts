@@ -18,6 +18,7 @@ const AnalyzeConsumptionDataInputSchema = z.object({
     .describe(
       'A JSON string representing an array of monthly consumption data. Each object should have a "month" and keys for each spending category.'
     ),
+    language: z.string().optional().describe("The language for the analysis output, e.g., 'en', 'pt-BR'."),
 });
 export type AnalyzeConsumptionDataInput = z.infer<typeof AnalyzeConsumptionDataInputSchema>;
 
@@ -46,7 +47,7 @@ Use o seguinte formato para sua análise:
 Dados de Consumo:
 {{{consumptionData}}}
 
-Gere a análise em português do Brasil.
+Gere a análise em {{{language}}}. Se o idioma não for fornecido, use Português do Brasil.
 `,
 });
 
