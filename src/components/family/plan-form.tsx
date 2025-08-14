@@ -39,23 +39,6 @@ const planSchema = z.object({
 type PlanFormData = z.infer<typeof planSchema>;
 type BillingCycle = "monthly" | "annually";
 
-
-const planFeatures = {
-    free: [
-        "Registro de compras manual e por QR Code",
-        "Histórico de compras",
-        "Criação de listas de compras",
-        "Dashboard com insights básicos",
-    ],
-    premium: [
-        "Todos os recursos do plano Free",
-        "Sugestões de itens por IA",
-        "Análise de gastos avançada",
-        "Insights de economia personalizados",
-        "Suporte prioritário",
-    ]
-}
-
 export function PlanForm() {
     const { profile, reloadUser } = useAuth();
     const { toast } = useToast();
@@ -63,6 +46,21 @@ export function PlanForm() {
     const [isSaving, setIsSaving] = useState(false);
     const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
 
+    const planFeatures = {
+        free: [
+            t('plan_feature_free_1'),
+            t('plan_feature_free_2'),
+            t('plan_feature_free_3'),
+            t('plan_feature_free_4'),
+        ],
+        premium: [
+            t('plan_feature_premium_1'),
+            t('plan_feature_premium_2'),
+            t('plan_feature_premium_3'),
+            t('plan_feature_premium_4'),
+            t('plan_feature_premium_5'),
+        ]
+    }
 
     const form = useForm<PlanFormData>({
         resolver: zodResolver(planSchema),
@@ -119,7 +117,7 @@ export function PlanForm() {
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center justify-between">
                                                         <span>{t('plan_form_free_title')}</span>
-                                                        <span className="text-lg font-bold">Grátis</span>
+                                                        <span className="text-lg font-bold">{t('plan_free_price')}</span>
                                                     </CardTitle>
                                                     <CardDescription>{t('plan_form_free_desc')}</CardDescription>
                                                 </CardHeader>
@@ -147,7 +145,7 @@ export function PlanForm() {
                                                             {t('plan_form_premium_title')}
                                                          </span>
                                                         <span className="text-lg font-bold">
-                                                            {billingCycle === 'monthly' ? "R$ 19,90/mês" : "R$ 199,00/ano"}
+                                                            {billingCycle === 'monthly' ? t('plan_premium_price_monthly') : t('plan_premium_price_annually')}
                                                         </span>
                                                     </CardTitle>
                                                     <CardDescription>{t('plan_form_premium_desc')}</CardDescription>
@@ -155,11 +153,11 @@ export function PlanForm() {
                                                 <CardContent className="space-y-4 text-sm">
                                                     <Tabs defaultValue="monthly" onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="w-full">
                                                         <TabsList className="grid w-full grid-cols-2">
-                                                            <TabsTrigger value="monthly">Mensal</TabsTrigger>
+                                                            <TabsTrigger value="monthly">{t('plan_billing_monthly')}</TabsTrigger>
                                                             <TabsTrigger value="annually" className="relative group">
-                                                                Anual
+                                                                {t('plan_billing_annually')}
                                                                 <Badge variant="outline" className="ml-2 border-primary text-primary bg-primary/10 group-data-[state=active]:bg-white group-data-[state=active]:text-primary">
-                                                                    Economize 2 meses!
+                                                                    {t('plan_annual_saving')}
                                                                 </Badge>
                                                             </TabsTrigger>
                                                         </TabsList>
