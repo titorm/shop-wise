@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faKeyboard, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+export const dynamic = 'force-dynamic';
 
 export default function ScanPage() {
     const { t } = useTranslation();
@@ -163,5 +164,3 @@ export default function ScanPage() {
         </div>
     );
 }
-
-    
