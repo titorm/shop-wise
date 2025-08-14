@@ -12,6 +12,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css'
 import i18n from "@/lib/i18n";
 import { I18nextProvider } from 'react-i18next';
 import { useEffect } from 'react';
+import Head from 'next/head';
 
 config.autoAddCss = false
 
@@ -56,7 +57,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <Head>
+        <script async src="https://pay.google.com/gp/p/js/pay.js"></script>
+      </Head>
       <body
         className={cn('min-h-screen bg-background font-body antialiased', pt_sans.variable)}
         suppressHydrationWarning

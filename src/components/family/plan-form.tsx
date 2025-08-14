@@ -32,13 +32,14 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { Badge } from "../ui/badge";
 import { differenceInDays } from "date-fns";
+import { PaymentButtons } from "./payment-buttons";
 
 const planSchema = z.object({
     plan: z.enum(["free", "premium"]).default("free"),
 });
 
 type PlanFormData = z.infer<typeof planSchema>;
-type BillingCycle = "monthly" | "annually";
+export type BillingCycle = "monthly" | "annually";
 
 export function PlanForm() {
     const { profile, reloadUser } = useAuth();
@@ -72,9 +73,10 @@ export function PlanForm() {
 
     useEffect(() => {
         if (profile?.plan) {
-            form.reset({ plan: profile.plan as "free" | "premium" });
+            const currentPlan = profile.plan as "free" | "premium";
+            form.reset({ plan: currentPlan });
 
-            if (profile.plan === 'premium' && profile.planExpirationDate) {
+            if (currentPlan === 'premium' && profile.planExpirationDate) {
                 const expirationDate = profile.planExpirationDate.toDate();
                 const daysRemaining = differenceInDays(expirationDate, new Date());
                 if (daysRemaining > 31) {
@@ -88,8 +90,8 @@ export function PlanForm() {
 
     const onSubmit = async (values: PlanFormData) => {
         console.log("Upgrade plan", values, "Cycle:", billingCycle);
-        // Here you would handle the logic for upgrading a plan,
-        // likely involving a payment provider like Stripe.
+        // This is where you would typically handle the upgrade logic
+        // with a payment provider after a successful payment from PaymentButtons.
         setIsSaving(true);
         await new Promise(res => setTimeout(res, 1500));
         setIsSaving(false);
@@ -99,8 +101,15 @@ export function PlanForm() {
         });
     };
 
+    const handlePaymentSuccess = () => {
+        // Here you would call your backend to update the user's plan
+        // and then call onSubmit to reflect the change visually.
+        onSubmit({ plan: 'premium' });
+    }
+
     const selectedPlan = form.watch("plan");
     const currentPlanIsPremium = profile?.plan === 'premium';
+    const showPaymentButtons = selectedPlan === 'premium' && !currentPlanIsPremium;
 
     return (
         <Card>
@@ -109,7 +118,7 @@ export function PlanForm() {
                 <CardDescription>{t('plan_form_description')}</CardDescription>
             </CardHeader>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form className="space-y-8">
                     <CardContent>
                         <FormField
                             control={form.control}
@@ -119,6 +128,7 @@ export function PlanForm() {
                                     onValueChange={field.onChange}
                                     value={field.value}
                                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                                    disabled={currentPlanIsPremium}
                                 >
                                     <FormItem>
                                         <FormControl>
@@ -163,10 +173,10 @@ export function PlanForm() {
                                                     <CardDescription>{t('plan_form_premium_desc')}</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="space-y-4 text-sm">
-                                                    <Tabs value={billingCycle} onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="w-full">
+                                                    <Tabs value={billingCycle} onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="w-full" aria-disabled={currentPlanIsPremium}>
                                                         <TabsList className="grid w-full grid-cols-2">
-                                                            <TabsTrigger value="monthly">{t('plan_billing_monthly')}</TabsTrigger>
-                                                            <TabsTrigger value="annually" className="relative group">
+                                                            <TabsTrigger value="monthly" disabled={currentPlanIsPremium}>{t('plan_billing_monthly')}</TabsTrigger>
+                                                            <TabsTrigger value="annually" className="relative group" disabled={currentPlanIsPremium}>
                                                                 {t('plan_billing_annually')}
                                                                 <Badge variant="outline" className="ml-2 border-primary text-primary bg-primary/10 group-data-[state=active]:bg-white group-data-[state=active]:text-primary">
                                                                     {t('plan_annual_saving')}
@@ -189,10 +199,17 @@ export function PlanForm() {
                         />
                     </CardContent>
                     <CardFooter>
-                         <Button type="submit" size="lg" disabled={selectedPlan === 'free' || isSaving || currentPlanIsPremium}>
-                           <FontAwesomeIcon icon={faRocket} className="mr-2 h-4 w-4" />
-                           {isSaving ? t('processing') : currentPlanIsPremium ? t('plan_form_current_plan_button') : t('plan_form_upgrade_button')}
-                        </Button>
+                         {showPaymentButtons ? (
+                            <PaymentButtons
+                                billingCycle={billingCycle}
+                                onPaymentSuccess={handlePaymentSuccess}
+                            />
+                         ) : (
+                            <Button type="submit" size="lg" disabled={selectedPlan === 'free' || isSaving || currentPlanIsPremium} onClick={form.handleSubmit(onSubmit)}>
+                               <FontAwesomeIcon icon={faRocket} className="mr-2 h-4 w-4" />
+                               {isSaving ? t('processing') : currentPlanIsPremium ? t('plan_form_current_plan_button') : t('plan_form_select_plan_button')}
+                            </Button>
+                         )}
                     </CardFooter>
                 </form>
             </Form>
