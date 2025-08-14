@@ -3,13 +3,37 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ShopWiseLogo, ShopWiseIcon } from "@/components/icons";
+import { ShopWiseLogo } from "@/components/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faQrcode, faShoppingCart, faSliders } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
+
+  if (!ready) {
+    return (
+      <div className="flex flex-col min-h-screen bg-background">
+        <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <Skeleton className="w-32 h-8" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-20 h-10" />
+            <Skeleton className="w-20 h-10" />
+          </div>
+        </header>
+        <main className="flex-grow">
+          <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
+            <Skeleton className="h-24 w-full max-w-3xl mx-auto" />
+            <Skeleton className="h-6 w-full max-w-2xl mx-auto mt-6" />
+            <div className="mt-8 flex justify-center gap-4">
+              <Skeleton className="w-32 h-12" />
+            </div>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
