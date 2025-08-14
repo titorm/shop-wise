@@ -4,7 +4,7 @@
 import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { extractDataFromPdf as extractDataFromPdfFlow, extractDataFromPage } from '@/app/(dashboard)/scan/actions';
+import { extractDataFromPdf as extractStoreDataFromPdfFlow, extractDataFromPage } from '@/app/(dashboard)/scan/actions';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
@@ -139,13 +139,19 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
         const numPages = pdfDoc.getPageCount();
         setTotalPages(numPages);
 
-        // First, process the entire document to get store info, date, etc.
-        const originalDataUri = `data:application/pdf;base64,${btoa(new Uint8Array(fileAsArrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
-        const initialResult = await extractDataFromPdfFlow({ pdfDataUri: originalDataUri });
-        setExtractionResult(initialResult);
+        // Process the first page to get store info, date, etc.
+        setCurrentPage(1);
+        const firstPageDoc = await PDFDocument.create();
+        const [firstPage] = await firstPageDoc.copyPages(pdfDoc, [0]);
+        firstPageDoc.addPage(firstPage);
+        const firstPageBytes = await firstPageDoc.save();
+        const firstPageDataUri = `data:application/pdf;base64,${btoa(new Uint8Array(firstPageBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
 
-        // Now, process page by page to get products
+        const storeDataResult = await extractStoreDataFromPdfFlow({ pdfDataUri: firstPageDataUri });
+        
         let allProducts: Product[] = [];
+
+        // Now, process all pages to get products
         for (let i = 0; i < numPages; i++) {
             setCurrentPage(i + 1);
             const subDoc = await PDFDocument.create();
@@ -165,7 +171,15 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
             setProgress(((i + 1) / numPages) * 100);
         }
 
-        setProducts(allProducts);
+        // Combine store data with product data
+        const finalResult: ExtractProductDataOutput = {
+            ...storeDataResult,
+            products: allProducts,
+        };
+
+        setExtractionResult(finalResult);
+        setProducts(finalResult.products.map((p, idx) => ({ ...p, id: Date.now() + idx })));
+        
         toast({
             title: t('scan_success_title'),
             description: t('scan_success_desc_pdf'),
