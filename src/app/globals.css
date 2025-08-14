@@ -77,7 +77,7 @@
     --muted-foreground: 215 20% 65%; /* #A1A1AA */
     --accent: 212 92% 61%; /* Lighter blue for dark mode */
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 49%; /* #D32F2F */
+    --destructive: 0 70% 45%; /* Softer Red for Dark Mode */
     --destructive-foreground: 210 40% 98%;
     --border: 215 28% 17%;
     --input: 215 28% 17%;
