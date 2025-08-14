@@ -122,7 +122,7 @@ export default function DashboardPage() {
     dairy_and_chilled: { label: t('category_dairy_and_chilled'), color: "hsl(var(--color-category-dairy-and-chilled))" },
     pantry_and_dry_goods: { label: t('category_pantry_and_dry_goods'), color: "hsl(var(--color-category-pantry-and-dry-goods))" },
     breakfast_and_snacks: { label: t('category_breakfast_and_snacks'), color: "hsl(var(--color-category-breakfast-and-snacks))" },
-    frozen_foods: { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen_foods))" },
+    frozen_foods: { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen-foods))" },
     beverages: { label: t('category_beverages'), color: "hsl(var(--color-category-beverages))" },
     cleaning_and_household: { label: t('category_cleaning_and_household'), color: "hsl(var(--color-category-cleaning-and-household))" },
     personal_care: { label: t('category_personal_care'), color: "hsl(var(--color-category-personal-care))" },
