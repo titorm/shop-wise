@@ -82,7 +82,7 @@ export default function ScanPage() {
         }
 
         try {
-            const totalAmount = products.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            const totalAmount = products.reduce((acc, item) => acc + item.price, 0);
             const purchaseDate = purchaseData.date instanceof Date ? Timestamp.fromDate(purchaseData.date) : Timestamp.fromDate(new Date(`${purchaseData.date}T12:00:00`));
 
             let storeRef = null;
@@ -109,8 +109,8 @@ export default function ScanPage() {
                 batch.set(itemRef, {
                     productRef: productRef,
                     quantity: product.quantity,
-                    price: product.price, // Unit price
-                    totalPrice: product.price * product.quantity,
+                    price: product.unitPrice, // Unit price
+                    totalPrice: product.price,
                     purchaseId: purchaseRef.id,
                     purchaseDate: purchaseDate,
                     familyId: profile.familyId,

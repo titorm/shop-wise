@@ -29,8 +29,8 @@ interface Product {
     name: string;
     volume: string;
     quantity: number;
-    price: number;
     unitPrice: number;
+    price: number;
     category?: string;
     subcategory?: string;
     brand?: string;
@@ -165,7 +165,6 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                  allProducts.push(...pageResult.products.map((p, idx) => ({
                     ...p,
                     id: Date.now() + i * 1000 + idx,
-                    price: p.price ?? p.unitPrice * p.quantity,
                 })));
             }
             setProgress(((i + 1) / numPages) * 100);
@@ -226,8 +225,8 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
         name: "Novo Item",
         volume: "1 un",
         quantity: 1,
-        price: 0.00,
         unitPrice: 0.00,
+        price: 0.00,
         category: "Mercearia",
         subcategory: "Outros",
         brand: ""
@@ -335,7 +334,7 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-center">{product.quantity}</TableCell>
-                                            <TableCell className="text-right">{product.price.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right">{product.unitPrice.toFixed(2)}</TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
                                                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditClick(product)}>
@@ -442,8 +441,15 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                             <Input id="quantity" type="number" value={editingProduct.quantity} onChange={(e) => setEditingProduct({...editingProduct, quantity: parseFloat(e.target.value) || 0})} className="col-span-3" />
                         </div>
                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="price" className="text-right">{t('table_price_header')} (R$)</Label>
-                            <Input id="price" type="number" value={editingProduct.price} onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})} className="col-span-3" />
+                            <Label htmlFor="unitPrice" className="text-right">{t('table_unit_price')} (R$)</Label>
+                            <Input id="unitPrice" type="number" value={editingProduct.unitPrice} onChange={(e) => {
+                                const newUnitPrice = parseFloat(e.target.value) || 0;
+                                setEditingProduct({
+                                    ...editingProduct, 
+                                    unitPrice: newUnitPrice,
+                                    price: newUnitPrice * editingProduct.quantity,
+                                })
+                            }} className="col-span-3" />
                         </div>
                     </div>
                 )}

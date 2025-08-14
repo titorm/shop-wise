@@ -22,7 +22,8 @@ import { useTranslation } from "react-i18next";
 const itemSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   quantity: z.coerce.number().min(0.01, "Quantidade deve ser maior que 0"),
-  price: z.coerce.number().min(0, "Preço não pode ser negativo"),
+  unitPrice: z.coerce.number().min(0, "Preço não pode ser negativo"),
+  price: z.coerce.number(),
   barcode: z.string().optional(),
   volume: z.string().optional(),
 });
@@ -49,11 +50,11 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
     defaultValues: {
       storeName: "",
       date: new Date(),
-      items: [{ name: "", quantity: 1, price: 0, barcode: "", volume: "" }],
+      items: [{ name: "", quantity: 1, unitPrice: 0, price: 0, barcode: "", volume: "" }],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "items",
   });
@@ -61,8 +62,16 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
   const onSubmit = async (data: PurchaseData) => {
     setIsSaving(true);
     try {
-        await onSave(data, data.items);
-        form.reset();
+        const productsWithTotalPrice = data.items.map(item => ({
+            ...item,
+            price: item.unitPrice * item.quantity
+        }));
+        await onSave({...data, items: productsWithTotalPrice}, productsWithTotalPrice);
+        form.reset({
+             storeName: "",
+            date: new Date(),
+            items: [{ name: "", quantity: 1, unitPrice: 0, price: 0, barcode: "", volume: "" }],
+        });
     } catch (error) {
         // Error is handled by parent
     } finally {
@@ -71,7 +80,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
   };
 
   const totalAmount = form.watch("items").reduce((acc, item) => {
-    return acc + (item.price || 0) * (item.quantity || 0);
+    return acc + (item.unitPrice || 0) * (item.quantity || 0);
   }, 0);
 
 
@@ -203,7 +212,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
                     <TableCell className="align-top py-1">
                        <FormField
                         control={form.control}
-                        name={`items.${index}.price`}
+                        name={`items.${index}.unitPrice`}
                         render={({ field }) => (
                              <div className="flex flex-col gap-1.5">
                                 <FormControl>
@@ -234,7 +243,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
               type="button"
               variant="outline"
               className="mt-4"
-              onClick={() => append({ name: "", quantity: 1, price: 0, barcode: "", volume: "" })}
+              onClick={() => append({ name: "", quantity: 1, unitPrice: 0, price: 0, barcode: "", volume: "" })}
             >
               <FontAwesomeIcon icon={faPlusCircle} className="mr-2" /> {t('add_item_button')}
             </Button>
