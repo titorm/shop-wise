@@ -64,7 +64,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
     try {
         const productsWithTotalPrice = data.items.map(item => ({
             ...item,
-            price: item.unitPrice * item.quantity
+            price: parseFloat((item.unitPrice * item.quantity).toFixed(2))
         }));
         await onSave({...data, items: productsWithTotalPrice}, productsWithTotalPrice);
         form.reset({

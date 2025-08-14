@@ -469,7 +469,7 @@ export default function DashboardPage() {
                               fontSize={12}
                               tickLine={false}
                               axisLine={false}
-                              tickFormatter={(value) => `R$${value}`}
+                              tickFormatter={(value) => `R$${(value as number).toFixed(2)}`}
                               />
                               <ChartTooltip
                                   cursor={false}

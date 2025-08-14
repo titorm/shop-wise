@@ -82,7 +82,10 @@ export default function ScanPage() {
         }
 
         try {
-            const totalAmount = products.reduce((acc, item) => acc + (item.price || (item.unitPrice * item.quantity)), 0);
+            const totalAmount = products.reduce((acc, item) => {
+                const itemTotal = item.price || (item.unitPrice * item.quantity);
+                return acc + itemTotal;
+            }, 0);
             
             let purchaseDate: Timestamp;
             if (purchaseData.date instanceof Date) {
@@ -106,7 +109,7 @@ export default function ScanPage() {
                 storeName: purchaseData.storeName,
                 storeRef: storeRef,
                 date: purchaseDate,
-                totalAmount: totalAmount,
+                totalAmount: parseFloat(totalAmount.toFixed(2)),
                 purchasedBy: user.uid,
                 entryMethod: entryMethod,
             });
@@ -121,8 +124,8 @@ export default function ScanPage() {
                 batch.set(itemRef, {
                     productRef: productRef,
                     quantity: product.quantity,
-                    price: product.unitPrice, // Unit price
-                    totalPrice: product.price,
+                    price: parseFloat(product.unitPrice.toFixed(2)),
+                    totalPrice: parseFloat(product.price.toFixed(2)),
                     purchaseId: purchaseRef.id,
                     purchaseDate: purchaseDate,
                     familyId: profile.familyId,
