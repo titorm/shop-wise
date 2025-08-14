@@ -33,6 +33,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/services/analytics-service";
 
 export function LoginForm() {
   const router = useRouter();
@@ -57,6 +58,7 @@ export function LoginForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
+      trackEvent('user_logged_in', { method: 'email' });
       router.push('/dashboard');
     } catch (error: any) {
       toast({
@@ -71,6 +73,7 @@ export function LoginForm() {
     const provider = new GoogleAuthProvider();
     try {
         await signInWithPopup(auth, provider);
+        trackEvent('user_logged_in', { method: 'google' });
         router.push('/dashboard');
     } catch (error: any) {
         toast({

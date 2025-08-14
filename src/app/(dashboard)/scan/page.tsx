@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faKeyboard, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/services/analytics-service";
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +44,11 @@ export default function ScanPage() {
              toast({
                 title: t('toast_success_title'),
                 description: t('purchase_saved_successfully'),
+            });
+            trackEvent('purchase_saved', { 
+                method: entryMethod,
+                itemCount: products.length,
+                totalAmount: products.reduce((acc, item) => acc + item.price, 0)
             });
         }
     };

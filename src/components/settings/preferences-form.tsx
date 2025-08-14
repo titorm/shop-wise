@@ -31,6 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Separator } from "../ui/separator";
 import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/services/analytics-service";
 
 const preferencesSchema = z.object({
   theme: z.enum(["system", "light", "dark"]),
@@ -82,6 +83,7 @@ export function PreferencesForm() {
             title: t('toast_success_title'),
             description: t('preferences_form_success_message'),
         });
+        trackEvent('preferences_updated', values);
     } catch (error: any) {
         toast({
             variant: "destructive",
@@ -166,5 +168,3 @@ export function PreferencesForm() {
     </Card>
   );
 }
-
-    

@@ -33,6 +33,7 @@ import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { Badge } from "../ui/badge";
 import { differenceInDays } from "date-fns";
 import { PaymentButtons } from "./payment-buttons";
+import { trackEvent } from "@/services/analytics-service";
 
 const planSchema = z.object({
     plan: z.enum(["free", "premium"]).default("free"),
@@ -98,6 +99,10 @@ export function PlanForm() {
         toast({
             title: t('toast_success_title'),
             description: t('plan_form_upgrade_success'),
+        });
+        trackEvent('plan_changed', {
+            newPlan: values.plan,
+            billingCycle: billingCycle,
         });
     };
 

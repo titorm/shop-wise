@@ -17,6 +17,7 @@ import { db } from "@/lib/firebase";
 import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, getDocs, where, limit } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/services/analytics-service";
 
 interface ListItem {
   id: string;
@@ -91,6 +92,9 @@ export function ShoppingListComponent() {
                 quantity: Number(newItemQty),
                 unit: newItemUnit,
             });
+            trackEvent('shopping_list_item_added', {
+                itemName: newItemName.trim(),
+            });
             setNewItemName("");
             setNewItemQty(1);
             setNewItemUnit("un");
@@ -117,6 +121,7 @@ export function ShoppingListComponent() {
   
   const handleGetSuggestions = async () => {
     setIsLoadingSuggestions(true);
+    trackEvent('shopping_list_ai_suggestion_requested');
     try {
         const result = await suggestMissingItems({
             // In a real app, this would come from user data
@@ -252,5 +257,3 @@ export function ShoppingListComponent() {
     </div>
   );
 }
-
-    

@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { ShopWiseLogo } from "../icons";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
+import { trackEvent } from "@/services/analytics-service";
 
 const menuItems = [
     { href: "/dashboard", label: "insights", icon: faHome },
@@ -57,6 +58,7 @@ export function MainNav() {
   
   const handleSignOut = async () => {
     await signOut(auth);
+    trackEvent('user_logged_out');
     router.push('/');
   }
 

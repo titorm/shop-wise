@@ -24,6 +24,7 @@ import { ptBR, enUS } from 'date-fns/locale';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/services/analytics-service";
 
 interface PurchaseItem {
     id: string;
@@ -299,6 +300,7 @@ export default function DashboardPage() {
   const handleConsumptionAnalysis = async () => {
     if (consumptionAnalysis || profile?.plan !== 'premium' || barChartData.length === 0) return;
     setIsAnalysisLoading(true);
+    trackEvent('consumption_analysis_requested');
     try {
         const dataForAI = barChartData.map(monthData => {
             const translatedData: {[key: string]: any} = { month: monthData.month };

@@ -22,6 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { toast } from '@/hooks/use-toast';
 import { updatePurchaseItems } from '@/app/(dashboard)/family/actions';
+import { trackEvent } from '@/services/analytics-service';
 
 interface PurchaseItem {
     id: string;
@@ -140,6 +141,7 @@ export function HistoryTab() {
                 title: t('toast_success_title'),
                 description: t('purchase_deleted_successfully'),
             });
+            trackEvent('purchase_deleted', { purchaseId });
 
         } catch (error) {
             console.error("Error deleting purchase:", error);
@@ -326,6 +328,10 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
             toast({
                 title: t('toast_success_title'),
                 description: t('purchase_updated_successfully'),
+            });
+            trackEvent('purchase_items_updated', { 
+                purchaseId: purchase.id,
+                itemCount: items.length
             });
             setIsDialogOpen(false);
         } catch (error) {

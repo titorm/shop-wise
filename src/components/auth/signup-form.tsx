@@ -35,6 +35,7 @@ import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { doc, setDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/services/analytics-service";
 
 export function SignupForm() {
   const router = useRouter();
@@ -88,7 +89,7 @@ export function SignupForm() {
                 notifications: true,
             }
         });
-
+        trackEvent('user_signed_up', { method: 'email' });
         router.push('/dashboard');
       }
     } catch (error: any) {
@@ -125,7 +126,7 @@ export function SignupForm() {
                 notifications: true,
             }
         }, { merge: true }); // Merge to avoid overwriting existing data if they sign up differently before
-
+        trackEvent('user_signed_up', { method: 'google' });
         router.push('/dashboard');
     } catch (error: any) {
         toast({

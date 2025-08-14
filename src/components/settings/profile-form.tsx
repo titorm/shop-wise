@@ -34,6 +34,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/services/analytics-service";
 
 const profileSchema = z.object({
   displayName: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -101,6 +102,7 @@ export function ProfileForm() {
             title: t('toast_success_title'),
             description: t('profile_form_success_update'),
         });
+        trackEvent('profile_updated');
     } catch (error: any) {
         toast({
             variant: "destructive",
@@ -302,5 +304,3 @@ export function ProfileForm() {
     </div>
   );
 }
-
-    
