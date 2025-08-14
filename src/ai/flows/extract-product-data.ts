@@ -42,6 +42,7 @@ const ExtractProductDataOutputSchema = z.object({
   address: z.string().describe("The full address of the store."),
   latitude: z.number().optional().describe("The latitude of the store's location."),
   longitude: z.number().optional().describe("The longitude of the store's location."),
+  discount: z.number().optional().describe('The total discount amount for the purchase (Descontos R$).'),
 });
 export type ExtractProductDataOutput = z.infer<typeof ExtractProductDataOutputSchema>;
 
@@ -62,6 +63,7 @@ const prompt = ai.definePrompt({
   - **CNPJ**: Look for the emitter's CNPJ. (e.g., "09.477.652/0090-61")
   - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "SC401 RF JOSE CARLOS DAUX, 9580, STO ANTONIO DE LISBOA, FLORIANOPOLIS, SC")
   - **Date**: Look for the authorization date ("Protocolo de Autorização"). Format it as YYYY-MM-DD. (e.g., "Protocolo de Autorização 123456 - 22/01/2024 19:24:30" becomes "2024-01-22")
+  - **Discount**: Look for a line item labeled 'Descontos R$' and extract the numeric value.
   
   **Product Extraction Rules:**
   - The products are in a table. For each product, extract all fields.

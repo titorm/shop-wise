@@ -252,6 +252,7 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
   }
 
   const triggerFileSelect = () => fileInputRef.current?.click();
+  const totalAmount = products.reduce((sum, item) => sum + item.price, 0);
 
   return (
     <>
@@ -312,7 +313,8 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                                         <TableHead><FontAwesomeIcon icon={faCopyright} className="inline-block mr-1 w-4 h-4" /> {t('table_brand')}</TableHead>
                                         <TableHead className="w-[200px]"><FontAwesomeIcon icon={faTags} className="inline-block mr-1 w-4 h-4" /> {t('table_category')}</TableHead>
                                         <TableHead className="text-center w-[80px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
-                                        <TableHead className="text-right w-[120px]"><FontAwesomeIcon icon={faDollarSign} className="inline-block mr-1 w-4 h-4" /> {t('table_price_header')} (R$)</TableHead>
+                                        <TableHead className="text-right w-[120px]">{t('table_unit_price')} (R$)</TableHead>
+                                        <TableHead className="text-right w-[120px]">{t('table_total_price')} (R$)</TableHead>
                                         <TableHead className="text-right w-[100px]">{t('table_actions')}</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -335,6 +337,7 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                                             </TableCell>
                                             <TableCell className="text-center">{product.quantity}</TableCell>
                                             <TableCell className="text-right">{product.unitPrice.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right">{product.price.toFixed(2)}</TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
                                                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditClick(product)}>
@@ -353,6 +356,15 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                                 <FontAwesomeIcon icon={faPlusCircle} className="mr-2 h-4 w-4" /> {t('add_item_manually_button')}
                             </Button>
                         </CardContent>
+                         <CardFooter className="flex-col items-end space-y-2 pt-6">
+                            <p className="font-semibold text-lg">{t('total_label')}: R$ {totalAmount.toFixed(2)}</p>
+                            {extractionResult.discount && extractionResult.discount > 0 && (
+                                <>
+                                    <p className="font-semibold text-destructive text-md">{t('discounts_label')}: - R$ {extractionResult.discount.toFixed(2)}</p>
+                                    <p className="font-bold text-xl text-primary">{t('total_to_pay_label')}: R$ {(totalAmount - extractionResult.discount).toFixed(2)}</p>
+                                </>
+                            )}
+                        </CardFooter>
                     </Card>
                     <CardFooter className="p-0 flex flex-col items-start gap-4">
                         <Button size="lg" onClick={handleConfirmPurchase} disabled={isSaving}>

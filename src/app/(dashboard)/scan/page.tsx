@@ -90,13 +90,18 @@ export default function ScanPage() {
             let purchaseDate: Timestamp;
             if (purchaseData.date instanceof Date) {
                 purchaseDate = Timestamp.fromDate(purchaseData.date);
-            } else {
-                // Handles 'YYYY-MM-DD' string format from AI
+            } else if (typeof purchaseData.date === 'string') {
                 const dateParts = purchaseData.date.split('-');
-                const year = parseInt(dateParts[0], 10);
-                const month = parseInt(dateParts[1], 10) - 1; // Month is 0-indexed
-                const day = parseInt(dateParts[2], 10);
-                purchaseDate = Timestamp.fromDate(new Date(year, month, day));
+                if (dateParts.length === 3) {
+                    const year = parseInt(dateParts[0], 10);
+                    const month = parseInt(dateParts[1], 10) - 1; // Month is 0-indexed
+                    const day = parseInt(dateParts[2], 10);
+                    purchaseDate = Timestamp.fromDate(new Date(year, month, day));
+                } else {
+                    purchaseDate = Timestamp.now();
+                }
+            } else {
+                 purchaseDate = Timestamp.now();
             }
 
 
@@ -110,6 +115,7 @@ export default function ScanPage() {
                 storeRef: storeRef,
                 date: purchaseDate,
                 totalAmount: parseFloat(totalAmount.toFixed(2)),
+                discount: 'discount' in purchaseData ? (purchaseData.discount || 0) : 0,
                 purchasedBy: user.uid,
                 entryMethod: entryMethod,
             });
