@@ -19,8 +19,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { InsightModal } from "@/components/dashboard/insight-modal";
 import { analyzeConsumptionData } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
-import { subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { subMonths, startOfMonth, endOfMonth, format, Locale } from 'date-fns';
+import { ptBR, enUS } from 'date-fns/locale';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -39,6 +39,12 @@ interface PurchaseItem {
     purchaseDate: Date;
     storeName: string;
 }
+
+const dateLocales: Record<string, Locale> = {
+  'pt-BR': ptBR,
+  'en-US': enUS,
+  'en': enUS,
+};
 
 const barChartConfig = {
   total: { label: "Total" },
@@ -132,6 +138,7 @@ export default function DashboardPage() {
         setLoading(true);
 
         const now = new Date();
+        const locale = dateLocales[i18n.language] || ptBR;
 
         // 1. Fetch all purchases for the family
         const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
@@ -222,7 +229,7 @@ export default function DashboardPage() {
         const monthlyData: {[key: string]: any} = {};
         for(let i=11; i>=0; i--) {
             const date = subMonths(now, i);
-            const monthKey = format(date, 'MMM/yy', { locale: ptBR });
+            const monthKey = format(date, 'MMM/yy', { locale });
             monthlyData[monthKey] = { month: monthKey, ...Object.fromEntries(Object.keys(barChartConfig).filter(k => k !== 'total').map(k => [k, 0])) };
         }
 
@@ -230,7 +237,7 @@ export default function DashboardPage() {
         const last12MonthsItems = allItems.filter(item => item.purchaseDate >= startOf12MonthsAgo);
 
         last12MonthsItems.forEach(item => {
-            const monthKey = format(item.purchaseDate, 'MMM/yy', { locale: ptBR });
+            const monthKey = format(item.purchaseDate, 'MMM/yy', { locale });
             if (monthlyData[monthKey]) {
                 const category = item.category || 'Outros';
                 const mainCategory = Object.keys(barChartConfig).find(c => c === category) || 'Outros';
@@ -274,7 +281,7 @@ export default function DashboardPage() {
         setLoading(false);
     }
     fetchData();
-  }, [profile]);
+  }, [profile, i18n.language]);
   
   const handleConsumptionAnalysis = async () => {
     if (consumptionAnalysis || profile?.plan !== 'premium' || barChartData.length === 0) return;
