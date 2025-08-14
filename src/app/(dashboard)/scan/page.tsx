@@ -108,11 +108,19 @@ export default function ScanPage() {
             if (purchaseData.date instanceof Date) {
                 purchaseDate = Timestamp.fromDate(purchaseData.date);
             } else if (typeof purchaseData.date === 'string') {
-                const dateParts = purchaseData.date.split('-');
+                const dateParts = purchaseData.date.split(/[\/-]/);
                 if (dateParts.length === 3) {
-                    const year = parseInt(dateParts[0], 10);
-                    const month = parseInt(dateParts[1], 10) - 1; // Month is 0-indexed
-                    const day = parseInt(dateParts[2], 10);
+                    let year, month, day;
+                    // Check for YYYY-MM-DD or DD/MM/YYYY
+                    if (dateParts[0].length === 4) { // YYYY-MM-DD
+                         year = parseInt(dateParts[0], 10);
+                         month = parseInt(dateParts[1], 10) - 1; // Month is 0-indexed
+                         day = parseInt(dateParts[2], 10);
+                    } else { // DD/MM/YYYY
+                         day = parseInt(dateParts[0], 10);
+                         month = parseInt(dateParts[1], 10) - 1; // Month is 0-indexed
+                         year = parseInt(dateParts[2], 10);
+                    }
                     purchaseDate = Timestamp.fromDate(new Date(year, month, day));
                 } else {
                     purchaseDate = Timestamp.now();

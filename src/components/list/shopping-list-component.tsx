@@ -123,13 +123,18 @@ export function ShoppingListComponent() {
             purchaseHistory: "Leite, Pão, Café, Manteiga, Queijo, Arroz, Feijão",
             familySize: (profile?.family?.adults ?? 1) + (profile?.family?.children ?? 0),
         });
+
+        if (result.error) {
+            throw new Error(result.error);
+        }
+
         setSuggestedItems(result.suggestedItems);
-    } catch (error) {
+    } catch (error: any) {
         console.error("Failed to get suggestions:", error);
         toast({
             variant: "destructive",
             title: t('error_getting_suggestions'),
-            description: t('error_getting_suggestions_desc'),
+            description: error.message || t('error_getting_suggestions_desc'),
         });
     } finally {
         setIsLoadingSuggestions(false);

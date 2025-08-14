@@ -148,6 +148,9 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
         const firstPageBytes = await firstPageDoc.saveAsBase64({ dataUri: true });
         
         const storeDataResult = await extractStoreDataFromPdfFlow({ pdfDataUri: firstPageBytes });
+        if (storeDataResult.error) {
+            throw new Error(storeDataResult.error);
+        }
         setDebugResult(JSON.stringify(storeDataResult, null, 2));
 
         let allProducts: Product[] = [];
@@ -161,6 +164,12 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
             const pageBytes = await subDoc.saveAsBase64({ dataUri: true });
 
             const pageResult = await extractDataFromPage({ pageDataUri: pageBytes });
+            if (pageResult.error) {
+                // We can either stop or continue. Let's continue but log the error.
+                console.warn(`Could not process page ${i+1}: ${pageResult.error}`);
+                continue;
+            }
+
             if (pageResult && pageResult.products) {
                  allProducts.push(...pageResult.products.map((p, idx) => ({
                     ...p,
@@ -184,13 +193,14 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
             description: t('scan_success_desc_pdf'),
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Failed to extract data:", error);
         toast({
             variant: "destructive",
             title: t('scan_error_title'),
-            description: t('scan_error_desc_pdf_detailed'),
+            description: error.message || t('scan_error_desc_pdf_detailed'),
         });
+        handleCancelImport(); // Clear state on error
     } finally {
         setIsLoading(false);
         if (fileInputRef.current) {

@@ -23,6 +23,7 @@ import { subMonths, startOfMonth, endOfMonth, format, Locale } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface PurchaseItem {
     id: string;
@@ -91,6 +92,7 @@ const ComparisonBadge = ({ value }: { value: number | null }) => {
 export default function DashboardPage() {
   const { t, i18n } = useTranslation();
   const { profile } = useAuth();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
 
   // States for data
@@ -313,9 +315,19 @@ export default function DashboardPage() {
             consumptionData: JSON.stringify(dataForAI),
             language: i18n.language 
         });
+
+        if (result.error) {
+            throw new Error(result.error);
+        }
+        
         setConsumptionAnalysis(result.analysis);
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error fetching consumption analysis:", error);
+         toast({
+            variant: "destructive",
+            title: t('toast_error_title'),
+            description: error.message || t('error_fetching_analysis'),
+        });
     } finally {
         setIsAnalysisLoading(false);
     }
@@ -406,6 +418,7 @@ export default function DashboardPage() {
             description={t('modal_main_category_desc')}
             data={translatedSpendingByCategory}
             chartData={pieChartData}
+            chartConfig={chartConfig}
             type="topCategories"
           >
             <Card className="transition-transform duration-300 ease-in-out hover:scale-102 hover:shadow-xl">

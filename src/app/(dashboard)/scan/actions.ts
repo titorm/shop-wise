@@ -9,9 +9,9 @@ export async function extractProductData(input: ExtractProductDataInput) {
     try {
         const result = await extractProductDataFlow(input);
         return result;
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error in extractProductData action:", error);
-        throw new Error("Failed to extract data from QR code.");
+        return { error: error.message || "Failed to extract data from QR code." };
     }
 }
 
@@ -22,7 +22,7 @@ export async function extractDataFromPdf(input: ExtractDataFromPdfInput) {
         return result;
     } catch (error: any) {
         console.error("Error in extractDataFromPdf action:", error);
-        throw new Error(error.message || "Failed to import data from PDF.");
+        return { error: error.message || "Failed to import data from PDF." };
     }
 }
 
@@ -32,6 +32,6 @@ export async function extractDataFromPage(input: ExtractDataFromPageInput) {
         return result;
     } catch (error: any) {
         console.error("Error in extractDataFromPage action:", error);
-        throw new Error(error.message || "Failed to import data from PDF page.");
+        return { error: error.message || "Failed to import data from PDF page." };
     }
 }
