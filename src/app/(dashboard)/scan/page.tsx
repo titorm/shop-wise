@@ -83,7 +83,7 @@ export default function ScanPage() {
 
         try {
             const totalAmount = products.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-            const purchaseDate = purchaseData.date instanceof Date ? Timestamp.fromDate(purchaseData.date) : Timestamp.fromDate(new Date(purchaseData.date));
+            const purchaseDate = purchaseData.date instanceof Date ? Timestamp.fromDate(purchaseData.date) : Timestamp.fromDate(new Date(`${purchaseData.date}T12:00:00`));
 
             let storeRef = null;
             if (entryMethod === 'import' && 'cnpj' in purchaseData) {
