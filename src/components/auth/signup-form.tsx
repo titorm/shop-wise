@@ -28,7 +28,7 @@ import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
@@ -47,6 +47,11 @@ export function SignupForm() {
   const { toast } = useToast();
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -140,9 +145,9 @@ export function SignupForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-headline">{t('signup_title')}</CardTitle>
+        <CardTitle className="text-2xl font-headline">{isClient ? t('signup_title') : '...'}</CardTitle>
         <CardDescription>
-          {t('signup_description')}
+          {isClient ? t('signup_description') : '...'}
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -154,9 +159,9 @@ export function SignupForm() {
                     name="name"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{t('name_label')}</FormLabel>
+                        <FormLabel>{isClient ? t('name_label') : '...'}</FormLabel>
                         <FormControl>
-                        <Input placeholder={t('name_placeholder')} {...field} />
+                        <Input placeholder={isClient ? t('name_placeholder') : '...'} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -167,7 +172,7 @@ export function SignupForm() {
                     name="email"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{t('email_label')}</FormLabel>
+                        <FormLabel>{isClient ? t('email_label') : '...'}</FormLabel>
                         <FormControl>
                         <Input placeholder="seu@email.com" {...field} />
                         </FormControl>
@@ -180,7 +185,7 @@ export function SignupForm() {
                     name="password"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>{t('password_label')}</FormLabel>
+                        <FormLabel>{isClient ? t('password_label') : '...'}</FormLabel>
                         <div className="relative">
                             <FormControl>
                             <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
@@ -198,7 +203,7 @@ export function SignupForm() {
                                     <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                                 )}
                                 <span className="sr-only">
-                                    {showPassword ? t('hide_password') : t('show_password')}
+                                    {showPassword ? (isClient ? t('hide_password') : '...') : (isClient ? t('show_password') : '...')}
                                 </span>
                             </Button>
                         </div>
@@ -208,28 +213,28 @@ export function SignupForm() {
                 />
             </div>
             <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
-              {t('create_account')}
+              {isClient ? t('create_account') : '...'}
             </Button>
              <div className="relative">
               <Separator />
-              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">{t('or_upper')}</p>
+              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">{isClient ? t('or_upper') : '...'}</p>
             </div>
             <div className="space-y-2">
                  <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn}>
                     <FontAwesomeIcon icon={faGoogle} className="mr-2 h-4 w-4" />
-                    {t('signup_with_google')}
+                    {isClient ? t('signup_with_google') : '...'}
                 </Button>
                 <Button variant="outline" className="w-full" type="button">
                     <FontAwesomeIcon icon={faApple} className="mr-2 h-4 w-4" />
-                    {t('signup_with_apple')}
+                    {isClient ? t('signup_with_apple') : '...'}
                 </Button>
             </div>
           </CardContent>
           <CardFooter>
             <p className="text-sm text-muted-foreground">
-              {t('already_have_account')}{" "}
+              {isClient ? t('already_have_account') : '...'}{" "}
               <Link href="/login" passHref>
-                <Button variant="link" className="px-0 h-auto">{t('login')}</Button>
+                <Button variant="link" className="px-0 h-auto">{isClient ? t('login') : '...'}</Button>
               </Link>
             </p>
           </CardFooter>
@@ -238,5 +243,3 @@ export function SignupForm() {
     </Card>
   );
 }
-
-    
