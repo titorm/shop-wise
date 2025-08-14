@@ -4,7 +4,7 @@
 import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { extractDataFromPdf as extractDataFromPdfFlow } from '@/ai/flows/extract-data-from-pdf';
+import { extractDataFromPdf as extractDataFromPdfFlow, extractDataFromPage } from '@/app/(dashboard)/scan/actions';
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
@@ -20,6 +20,8 @@ import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { PDFDocument } from 'pdf-lib';
+import { Progress } from '../ui/progress';
 
 interface Product {
     id: number;
@@ -39,21 +41,20 @@ interface QrScannerProps {
 }
 
 const categoriesMap: Record<string, string[]> = {
-  "Hortifrúti e Ovos": ["Frutas", "Verduras", "Legumes", "Ovos"],
-  "Açougue e Peixaria": ["Carne Bovina", "Carne Suína", "Aves", "Peixes", "Frutos do Mar"],
-  "Padaria e Confeitaria": ["Pães", "Bolos", "Doces"],
-  "Laticínios e Frios": ["Leites", "Queijos", "Iogurtes", "Manteiga", "Frios"],
-  "Mercearia": ["Arroz", "Feijão", "Massas", "Óleos", "Molhos", "Enlatados", "Cereais"],
-  "Matinais e Doces": ["Café", "Achocolatados", "Biscoitos", "Doces"],
-  "Congelados": ["Pratos Prontos", "Sorvetes", "Vegetais Congelados"],
-  "Bebidas": ["Refrigerantes", "Sucos", "Água", "Bebidas Alcoólicas"],
-  "Limpeza": ["Sabão em Pó", "Detergente", "Desinfetante"],
-  "Higiene Pessoal": ["Shampoo", "Sabonete", "Creme Dental"],
-  "Bebês e Crianças": ["Fraldas", "Lenços Umedecidos"],
-  "Pet Shop": ["Ração", "Petiscos"],
-  "Farmácia": ["Medicamentos e Saúde", "Primeiros Socorros", "Higiene e Beleza Pessoal", "Aparelhos e Acessórios de Saúde"],
-  "Utilidades e Bazar": ["Pilhas", "Lâmpadas", "Utensílios"],
-  "Outros": [],
+  "Hortifrúti e Ovos": ["Frutas", "Legumes", "Verduras e Folhas", "Temperos Frescos", "Ovos"],
+  "Açougue e Peixaria": ["Carnes Bovinas", "Aves", "Carnes Suínas", "Peixes e Frutos do Mar"],
+  "Padaria e Confeitaria": ["Pães", "Bolos e Tortas", "Salgados", "Frios e Embutidos Fatiados", "Torradas e Croutons"],
+  "Laticínios e Frios": ["Leites", "Queijos", "Iogurtes", "Manteiga e Margarina", "Requeijão e Cream Cheese", "Nata e Creme de Leite Fresco"],
+  "Mercearia (Alimentos Secos)": ["Grãos e Cereais", "Massas", "Farináceos", "Açúcar e Adoçantes", "Óleos, Azeites e Vinagres", "Enlatados e Conservas", "Molhos e Temperos", "Sopas e Cremes"],
+  "Matinais e Doces": ["Café, Chás e Achocolatados em Pó", "Cereais Matinais e Granola", "Biscoitos e Bolachas", "Geleias e Cremes", "Doces e Sobremesas"],
+  "Congelados": ["Pratos Prontos", "Salgados Congelados", "Legumes Congelados", "Polpas de Frutas", "Sorvetes e Açaí"],
+  "Bebidas": ["Água", "Sucos", "Refrigerantes", "Chás Prontos e Isotônicos", "Bebidas Alcoólicas"],
+  "Limpeza": ["Roupas", "Cozinha", "Banheiro e Geral", "Acessórios"],
+  "Higiene Pessoal": ["Higiene Bucal", "Cabelo", "Corpo", "Cuidados com o Rosto", "Higiene Íntima e Absorventes", "Papel Higiênico e Lenços de Papel", "Barbearia"],
+  "Bebês e Crianças": ["Fraldas e Lenços Umedecidos", "Alimentação Infantil", "Higiene Infantil"],
+  "Pet Shop": ["Alimentação", "Higiene"],
+  "Utilidades e Bazar": ["Cozinha", "Geral", "Churrasco"],
+  "Farmácia": ["Medicamentos e Saúde", "Primeiros Socorros"],
 };
 
 const mainCategories = Object.keys(categoriesMap);
@@ -68,6 +69,10 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -116,47 +121,70 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
     return subcategoryMap[category] || subcategoryMap.Default;
   }
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+ const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setIsLoading(true);
-      setExtractionResult(null);
-      setProducts([]);
-      setDebugResult(null);
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const dataUri = e.target?.result as string;
-        try {
-          const result = await extractDataFromPdfFlow({ pdfDataUri: dataUri });
-          setDebugResult(JSON.stringify(result, null, 2));
-          setExtractionResult(result);
-          setProducts(result.products.map((p, i) => ({
-              ...p,
-              id: Date.now() + i,
-              price: p.price ?? p.unitPrice * p.quantity,
-          })));
-          toast({
-              title: t('scan_success_title'),
-              description: t('scan_success_desc_pdf'),
-          });
-        } catch (error) {
-          console.error("Failed to extract data:", error);
-          toast({
-              variant: "destructive",
-              title: t('scan_error_title'),
-              description: t('scan_error_desc_pdf_detailed'),
-          });
-        } finally {
-            setIsLoading(false);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
+    setIsLoading(true);
+    setExtractionResult(null);
+    setProducts([]);
+    setDebugResult(null);
+    setProgress(0);
+    setCurrentPage(0);
+    setTotalPages(0);
+
+    try {
+        const fileAsArrayBuffer = await file.arrayBuffer();
+        const pdfDoc = await PDFDocument.load(fileAsArrayBuffer);
+        const numPages = pdfDoc.getPageCount();
+        setTotalPages(numPages);
+
+        // First, process the entire document to get store info, date, etc.
+        const originalDataUri = `data:application/pdf;base64,${btoa(new Uint8Array(fileAsArrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
+        const initialResult = await extractDataFromPdfFlow({ pdfDataUri: originalDataUri });
+        setExtractionResult(initialResult);
+
+        // Now, process page by page to get products
+        let allProducts: Product[] = [];
+        for (let i = 0; i < numPages; i++) {
+            setCurrentPage(i + 1);
+            const subDoc = await PDFDocument.create();
+            const [copiedPage] = await subDoc.copyPages(pdfDoc, [i]);
+            subDoc.addPage(copiedPage);
+            const pageBytes = await subDoc.save();
+            const pageDataUri = `data:application/pdf;base64,${btoa(new Uint8Array(pageBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
+
+            const pageResult = await extractDataFromPage({ pageDataUri });
+            if (pageResult && pageResult.products) {
+                 allProducts.push(...pageResult.products.map((p, idx) => ({
+                    ...p,
+                    id: Date.now() + i * 1000 + idx,
+                    price: p.price ?? p.unitPrice * p.quantity,
+                })));
             }
+            setProgress(((i + 1) / numPages) * 100);
         }
-      };
-      reader.readAsDataURL(file);
+
+        setProducts(allProducts);
+        toast({
+            title: t('scan_success_title'),
+            description: t('scan_success_desc_pdf'),
+        });
+
+    } catch (error) {
+        console.error("Failed to extract data:", error);
+        toast({
+            variant: "destructive",
+            title: t('scan_error_title'),
+            description: t('scan_error_desc_pdf_detailed'),
+        });
+    } finally {
+        setIsLoading(false);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     }
-  };
+};
 
 
   const handleEditClick = (product: Product) => {
@@ -235,6 +263,15 @@ export function QrScannerComponent({ onSave }: QrScannerProps) {
                 <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />
                 {isLoading ? t('processing') : t('select_pdf_button')}
             </Button>
+            
+            {isLoading && (
+                <div className='w-full space-y-2 text-center'>
+                    <Progress value={progress} />
+                    <p className='text-sm text-muted-foreground'>
+                        {t('processing_page', { currentPage, totalPages })}
+                    </p>
+                </div>
+            )}
 
 
             {extractionResult && products.length > 0 && (

@@ -5,3 +5,4 @@ import '@/ai/flows/suggest-missing-items.ts';
 import '@/ai/flows/extract-product-data.ts';
 import '@/ai/flows/analyze-consumption-data.ts';
 import '@/ai/flows/extract-data-from-pdf.ts';
+import '@/ai/flows/extract-data-from-page.ts';
