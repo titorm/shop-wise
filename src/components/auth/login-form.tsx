@@ -33,17 +33,51 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { useTranslation } from "react-i18next";
+import { Skeleton } from "../ui/skeleton";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Por favor, insira um email válido." }),
   password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
 });
 
+function LoginFormSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-7 w-48" />
+                <Skeleton className="h-4 w-full mt-2" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                <Skeleton className="h-10 w-full" />
+                 <div className="relative my-4">
+                    <Separator />
+                    <Skeleton className="h-4 w-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background" />
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Skeleton className="h-4 w-48" />
+            </CardFooter>
+        </Card>
+    )
+}
+
 export function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,6 +116,10 @@ export function LoginForm() {
   }
   
   const { isValid, isSubmitting } = form.formState;
+
+  if (!ready) {
+    return <LoginFormSkeleton />;
+  }
 
   return (
     <Card>

@@ -35,6 +35,7 @@ import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { doc, setDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
 import { useTranslation } from "react-i18next";
+import { Skeleton } from "../ui/skeleton";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -42,10 +43,47 @@ const formSchema = z.object({
   password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
 });
 
+function SignupFormSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-7 w-48" />
+                <Skeleton className="h-4 w-full mt-2" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                <Skeleton className="h-10 w-full" />
+                 <div className="relative my-4">
+                    <Separator />
+                    <Skeleton className="h-4 w-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background" />
+                </div>
+                 <div className="space-y-2">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Skeleton className="h-4 w-48" />
+            </CardFooter>
+        </Card>
+    )
+}
+
 export function SignupForm() {
   const router = useRouter();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -136,6 +174,10 @@ export function SignupForm() {
   }
 
   const { isValid, isSubmitting } = form.formState;
+
+  if (!ready) {
+    return <SignupFormSkeleton />;
+  }
 
   return (
     <Card>
