@@ -65,9 +65,9 @@ const prompt = ai.definePrompt({
   - **Store Name**: Look for the emitter's name, usually at the top. (e.g., "SDB COMERCIO DE ALIMENTOS LTDA")
   - **CNPJ**: Look for the emitter's CNPJ. (e.g., "09.477.652/0090-61")
   - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "SC401 RF JOSE CARLOS DAUX, 9580, STO ANTONIO DE LISBOA, FLORIANOPOLIS, SC")
-  - **Date**: Look for the emission date ("Emissão"). Format it as YYYY-MM-DD. (e.g., "Emissão: 29/06/2025 19:50:29" becomes "2025-06-29")
+  - **Date**: Find the emission date. It is often labeled "Emissão" and might be on a line with other information. For example, in a line like "Número: 9911 Série: 114 Emissão: 29/06/2025 19:50:29", extract "29/06/2025". Format it as YYYY-MM-DD.
   - **Discount**: Look for a line item labeled 'Descontos R$' and extract the numeric value.
-  - **Access Key (Chave de Acesso)**: Find the long numeric string labeled "Chave de Acesso".
+  - **Access Key (Chave de Acesso)**: Find the long numeric string labeled "Chave de Acesso" or "Chave de acesso". It may have spaces between the numbers.
   - **Products**: Return an empty array for the products field.
 
   Now, analyze the following receipt PDF page and extract the information into the specified JSON format.
