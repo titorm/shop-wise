@@ -20,6 +20,8 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useTranslation } from "react-i18next";
 import { ShopWiseLogo } from "../icons";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import { Button } from "../ui/button";
 
 const menuItems = [
     { href: "/dashboard", label: "insights", icon: faHome },
@@ -101,16 +103,33 @@ export function MainNav() {
               </Link>
               </SidebarMenuItem>
           ))}
-            <SidebarMenuItem>
-              <SidebarMenuButton 
-                  onClick={handleSignOut}
-                  tooltip={t('logout')}
-                  asChild={false}
-              >
-                  <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
-                  <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t('logout')}</span>
-              </SidebarMenuButton>
-          </SidebarMenuItem>
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton 
+                            tooltip={t('logout')}
+                            asChild={false}
+                        >
+                            <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
+                            <span className={cn("transition-all duration-300 ease-in-out", state === 'collapsed' ? 'opacity-0 w-0' : 'opacity-100')}>{t('logout')}</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>{t('logout_confirm_title')}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        {t('logout_confirm_desc')}
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                         <Button onClick={handleSignOut}>{t('logout_confirm_button')}</Button>
+                    </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
           
           {isAdmin && (
               <>
