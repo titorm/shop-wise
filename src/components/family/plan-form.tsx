@@ -31,6 +31,7 @@ import { faCheckCircle, faGem, faRocket } from "@fortawesome/free-solid-svg-icon
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { Badge } from "../ui/badge";
+import { differenceInDays } from "date-fns";
 
 const planSchema = z.object({
     plan: z.enum(["free", "premium"]).default("free"),
@@ -72,6 +73,16 @@ export function PlanForm() {
     useEffect(() => {
         if (profile?.plan) {
             form.reset({ plan: profile.plan as "free" | "premium" });
+
+            if (profile.plan === 'premium' && profile.planExpirationDate) {
+                const expirationDate = profile.planExpirationDate.toDate();
+                const daysRemaining = differenceInDays(expirationDate, new Date());
+                if (daysRemaining > 31) {
+                    setBillingCycle('annually');
+                } else {
+                    setBillingCycle('monthly');
+                }
+            }
         }
     }, [profile, form]);
 
@@ -89,6 +100,7 @@ export function PlanForm() {
     };
 
     const selectedPlan = form.watch("plan");
+    const currentPlanIsPremium = profile?.plan === 'premium';
 
     return (
         <Card>
@@ -105,7 +117,7 @@ export function PlanForm() {
                             render={({ field }) => (
                                 <RadioGroup
                                     onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    value={field.value}
                                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                                 >
                                     <FormItem>
@@ -151,7 +163,7 @@ export function PlanForm() {
                                                     <CardDescription>{t('plan_form_premium_desc')}</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="space-y-4 text-sm">
-                                                    <Tabs defaultValue="monthly" onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="w-full">
+                                                    <Tabs value={billingCycle} onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="w-full">
                                                         <TabsList className="grid w-full grid-cols-2">
                                                             <TabsTrigger value="monthly">{t('plan_billing_monthly')}</TabsTrigger>
                                                             <TabsTrigger value="annually" className="relative group">
@@ -177,9 +189,9 @@ export function PlanForm() {
                         />
                     </CardContent>
                     <CardFooter>
-                         <Button type="submit" size="lg" disabled={selectedPlan === 'free' || isSaving}>
+                         <Button type="submit" size="lg" disabled={selectedPlan === 'free' || isSaving || currentPlanIsPremium}>
                            <FontAwesomeIcon icon={faRocket} className="mr-2 h-4 w-4" />
-                           {isSaving ? t('processing') : t('plan_form_upgrade_button')}
+                           {isSaving ? t('processing') : currentPlanIsPremium ? t('plan_form_current_plan_button') : t('plan_form_upgrade_button')}
                         </Button>
                     </CardFooter>
                 </form>

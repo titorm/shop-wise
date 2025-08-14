@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc, DocumentReference } from 'firebase/firestore';
+import { doc, getDoc, DocumentReference, Timestamp } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import i18n from '@/lib/i18n';
 
@@ -25,6 +25,7 @@ interface Profile {
   };
   isAdmin?: boolean;
   plan?: string;
+  planExpirationDate?: Timestamp;
 }
 
 interface AuthContextType {
@@ -62,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 settings: userData.settings,
                 isAdmin: userData.isAdmin,
                 plan: userData.plan || 'free',
+                planExpirationDate: userData.planExpirationDate,
             };
 
             // Fetch family data if familyId exists
