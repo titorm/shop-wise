@@ -409,7 +409,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{topCategory.name}</div>
-              <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage', { percentage: totalSpentMonth! > 0 ? ((topCategory.value / totalSpentMonth!) * 100).toFixed(0) : 0 })}</p>
+              <p className="text-xs text-muted-foreground">{t('dashboard_main_category_percentage', { percentage: totalSpentMonth! > 0 ? ((topCategory.value / totalSpentMonth!) * 100).toFixed(1) : 0 })}</p>
             </CardContent>
           </Card>
         </InsightModal>
@@ -539,5 +539,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
