@@ -46,47 +46,6 @@ const dateLocales: Record<string, Locale> = {
   'en': enUS,
 };
 
-const barChartConfig = {
-  total: { label: "Total" },
-  'Hortifrúti e Ovos': { label: "Hortifrúti", color: "hsl(var(--color-category-produce-and-eggs))" },
-  'Açougue e Peixaria': { label: "Carnes", color: "hsl(var(--color-category-meat-and-seafood))" },
-  'Padaria e Confeitaria': { label: "Padaria", color: "hsl(var(--color-category-bakery-and-deli))" },
-  'Laticínios e Frios': { label: "Laticínios", color: "hsl(var(--color-category-dairy-and-chilled))" },
-  'Mercearia': { label: "Mercearia", color: "hsl(var(--color-category-pantry-and-dry-goods))" },
-  'Matinais e Doces': { label: "Matinais", color: "hsl(var(--color-category-breakfast-and-snacks))" },
-  'Congelados': { label: "Congelados", color: "hsl(var(--color-category-frozen-foods))" },
-  'Bebidas': { label: "Bebidas", color: "hsl(var(--color-category-beverages))" },
-  'Limpeza': { label: "Limpeza", color: "hsl(var(--color-category-cleaning-and-household))" },
-  'Higiene Pessoal': { label: "Higiene", color: "hsl(var(--color-category-personal-care))" },
-  'Bebês e Crianças': { label: "Bebês", color: "hsl(var(--color-category-baby-and-child-care))" },
-  'Pet Shop': { label: "Pet", color: "hsl(var(--color-category-pet-supplies))" },
-  'Utilidades e Bazar': { label: "Utilidades", color: "hsl(var(--color-category-home-and-general))" },
-  'Farmácia': { label: "Farmácia", color: "hsl(var(--color-category-pharmacy))" },
-  'Outros': { label: "Outros", color: "hsl(var(--muted))" },
-};
-
-const pieChartConfig = {
-  value: {
-    label: "Gasto",
-  },
-  'Hortifrúti e Ovos': { label: "Hortifrúti", color: "hsl(var(--color-category-produce-and-eggs))" },
-  'Açougue e Peixaria': { label: "Carnes", color: "hsl(var(--color-category-meat-and-seafood))" },
-  'Padaria e Confeitaria': { label: "Padaria", color: "hsl(var(--color-category-bakery-and-deli))" },
-  'Laticínios e Frios': { label: "Laticínios", color: "hsl(var(--color-category-dairy-and-chilled))" },
-  'Mercearia': { label: "Mercearia", color: "hsl(var(--color-category-pantry-and-dry-goods))" },
-  'Matinais e Doces': { label: "Matinais", color: "hsl(var(--color-category-breakfast-and-snacks))" },
-  'Congelados': { label: "Congelados", color: "hsl(var(--color-category-frozen-foods))" },
-  'Bebidas': { label: "Bebidas", color: "hsl(var(--color-category-beverages))" },
-  'Limpeza': { label: "Limpeza", color: "hsl(var(--color-category-cleaning-and-household))" },
-  'Higiene Pessoal': { label: "Higiene", color: "hsl(var(--color-category-personal-care))" },
-  'Bebês e Crianças': { label: "Bebês", color: "hsl(var(--color-category-baby-and-child-care))" },
-  'Pet Shop': { label: "Pet", color: "hsl(var(--color-category-pet-supplies))" },
-  'Utilidades e Bazar': { label: "Utilidades", color: "hsl(var(--color-category-home-and-general))" },
-  'Farmácia': { label: "Farmácia", color: "hsl(var(--color-category-pharmacy))" },
-  'Outros': { label: "Outros", color: "hsl(var(--muted))" },
-};
-
-
 const ComparisonBadge = ({ value }: { value: number | null }) => {
     const { t } = useTranslation();
     if (value === null) {
@@ -127,6 +86,46 @@ export default function DashboardPage() {
   // AI analysis states
   const [consumptionAnalysis, setConsumptionAnalysis] = useState<string | null>(null);
   const [isAnalysisLoading, setIsAnalysisLoading] = useState(false);
+
+  const barChartConfig = useMemo(() => ({
+    total: { label: t('chart_label_total') },
+    'Hortifrúti e Ovos': { label: t('category_produce_and_eggs'), color: "hsl(var(--color-category-produce-and-eggs))" },
+    'Açougue e Peixaria': { label: t('category_meat_and_seafood'), color: "hsl(var(--color-category-meat-and-seafood))" },
+    'Padaria e Confeitaria': { label: t('category_bakery_and_deli'), color: "hsl(var(--color-category-bakery-and-deli))" },
+    'Laticínios e Frios': { label: t('category_dairy_and_chilled'), color: "hsl(var(--color-category-dairy-and-chilled))" },
+    'Mercearia': { label: t('category_pantry_and_dry_goods'), color: "hsl(var(--color-category-pantry-and-dry-goods))" },
+    'Matinais e Doces': { label: t('category_breakfast_and_snacks'), color: "hsl(var(--color-category-breakfast-and-snacks))" },
+    'Congelados': { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen-foods))" },
+    'Bebidas': { label: t('category_beverages'), color: "hsl(var(--color-category-beverages))" },
+    'Limpeza': { label: t('category_cleaning_and_household'), color: "hsl(var(--color-category-cleaning-and-household))" },
+    'Higiene Pessoal': { label: t('category_personal_care'), color: "hsl(var(--color-category-personal-care))" },
+    'Bebês e Crianças': { label: t('category_baby_and_child_care'), color: "hsl(var(--color-category-baby-and-child-care))" },
+    'Pet Shop': { label: t('category_pet_supplies'), color: "hsl(var(--color-category-pet-supplies))" },
+    'Utilidades e Bazar': { label: t('category_home_and_general'), color: "hsl(var(--color-category-home-and-general))" },
+    'Farmácia': { label: t('category_pharmacy'), color: "hsl(var(--color-category-pharmacy))" },
+    'Outros': { label: t('category_others'), color: "hsl(var(--muted))" },
+  }), [t]);
+  
+  const pieChartConfig = useMemo(() => ({
+    value: {
+      label: t('chart_label_spending'),
+    },
+    'Hortifrúti e Ovos': { label: t('category_produce_and_eggs'), color: "hsl(var(--color-category-produce-and-eggs))" },
+    'Açougue e Peixaria': { label: t('category_meat_and_seafood'), color: "hsl(var(--color-category-meat-and-seafood))" },
+    'Padaria e Confeitaria': { label: t('category_bakery_and_deli'), color: "hsl(var(--color-category-bakery-and-deli))" },
+    'Laticínios e Frios': { label: t('category_dairy_and_chilled'), color: "hsl(var(--color-category-dairy-and-chilled))" },
+    'Mercearia': { label: t('category_pantry_and_dry_goods'), color: "hsl(var(--color-category-pantry-and-dry-goods))" },
+    'Matinais e Doces': { label: t('category_breakfast_and_snacks'), color: "hsl(var(--color-category-breakfast-and-snacks))" },
+    'Congelados': { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen-foods))" },
+    'Bebidas': { label: t('category_beverages'), color: "hsl(var(--color-category-beverages))" },
+    'Limpeza': { label: t('category_cleaning_and_household'), color: "hsl(var(--color-category-cleaning-and-household))" },
+    'Higiene Pessoal': { label: t('category_personal_care'), color: "hsl(var(--color-category-personal-care))" },
+    'Bebês e Crianças': { label: t('category_baby_and_child_care'), color: "hsl(var(--color-category-baby-and-child-care))" },
+    'Pet Shop': { label: t('category_pet_supplies'), color: "hsl(var(--color-category-pet-supplies))" },
+    'Utilidades e Bazar': { label: t('category_home_and_general'), color: "hsl(var(--color-category-home-and-general))" },
+    'Farmácia': { label: t('category_pharmacy'), color: "hsl(var(--color-category-pharmacy))" },
+    'Outros': { label: t('category_others'), color: "hsl(var(--muted))" },
+  }), [t]);
   
   useEffect(() => {
     async function fetchData() {
@@ -281,7 +280,7 @@ export default function DashboardPage() {
         setLoading(false);
     }
     fetchData();
-  }, [profile, i18n.language]);
+  }, [profile, i18n.language, barChartConfig, pieChartConfig]);
   
   const handleConsumptionAnalysis = async () => {
     if (consumptionAnalysis || profile?.plan !== 'premium' || barChartData.length === 0) return;
@@ -354,7 +353,7 @@ export default function DashboardPage() {
         }
     });
     return formatted;
-  }), [barChartData]);
+  }), [barChartData, barChartConfig]);
 
   if (loading) {
     return (
@@ -531,7 +530,7 @@ export default function DashboardPage() {
                                   <TableCell>{item.brand}</TableCell>
                                   <TableCell>
                                       <Badge variant="tag" className={cn(getCategoryClass(item.category!))}>
-                                          {item.category}
+                                          {t(`category_${item.category?.replace(/\s/g, '_').replace(/ç/g, 'c').replace(/ã/g, 'a').toLowerCase()}`)}
                                       </Badge>
                                   </TableCell>
                                   <TableCell className="text-center">{item.quantity.toFixed(2)}</TableCell>
@@ -563,3 +562,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Pie, PieChart as RechartsPieChart, Cell, ResponsiveContainer } from "recharts";
 import { useTranslation } from "react-i18next";
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { EmptyState } from "../ui/empty-state";
 import { faStore, faBox, faCalendar, faTags, faDollarSign, faWandMagicSparkles, faGem, faRocket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,18 +30,30 @@ interface InsightModalProps {
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF", "#FF19AF", "#19AFFF", "#AFFF19"];
-const PIE_CHART_COLORS = [
-    "hsl(var(--category-mercearia))",
-    "hsl(var(--category-acougue))",
-    "hsl(var(--category-laticinios))",
-    "hsl(var(--category-hortifruti))",
-    "hsl(var(--category-bebidas))",
-    "hsl(var(--category-limpeza))"
-];
-
 
 export function InsightModal({ title, description, children, data, chartData, type, analysis, isLoading, onOpen, isPremium }: InsightModalProps) {
     const { t } = useTranslation();
+
+    const pieChartConfig = useMemo(() => ({
+        value: {
+          label: t('chart_label_spending'),
+        },
+        'Hortifrúti e Ovos': { label: t('category_produce_and_eggs'), color: "hsl(var(--color-category-produce-and-eggs))" },
+        'Açougue e Peixaria': { label: t('category_meat_and_seafood'), color: "hsl(var(--color-category-meat-and-seafood))" },
+        'Padaria e Confeitaria': { label: t('category_bakery_and_deli'), color: "hsl(var(--color-category-bakery-and-deli))" },
+        'Laticínios e Frios': { label: t('category_dairy_and_chilled'), color: "hsl(var(--color-category-dairy-and-chilled))" },
+        'Mercearia': { label: t('category_pantry_and_dry_goods'), color: "hsl(var(--color-category-pantry-and-dry-goods))" },
+        'Matinais e Doces': { label: t('category_breakfast_and_snacks'), color: "hsl(var(--color-category-breakfast-and-snacks))" },
+        'Congelados': { label: t('category_frozen_foods'), color: "hsl(var(--color-category-frozen-foods))" },
+        'Bebidas': { label: t('category_beverages'), color: "hsl(var(--color-category-beverages))" },
+        'Limpeza': { label: t('category_cleaning_and_household'), color: "hsl(var(--color-category-cleaning-and-household))" },
+        'Higiene Pessoal': { label: t('category_personal_care'), color: "hsl(var(--color-category-personal-care))" },
+        'Bebês e Crianças': { label: t('category_baby_and_child_care'), color: "hsl(var(--color-category-baby-and-child-care))" },
+        'Pet Shop': { label: t('category_pet_supplies'), color: "hsl(var(--color-category-pet-supplies))" },
+        'Utilidades e Bazar': { label: t('category_home_and_general'), color: "hsl(var(--color-category-home-and-general))" },
+        'Farmácia': { label: t('category_pharmacy'), color: "hsl(var(--color-category-pharmacy))" },
+        'Outros': { label: t('category_others'), color: "hsl(var(--muted))" },
+      }), [t]);
 
     const renderContent = () => {
         if (type !== 'consumptionAnalysis' && (!data || data.length === 0)) {
@@ -143,7 +155,7 @@ export function InsightModal({ title, description, children, data, chartData, ty
                         </div>
                         {chartData && chartData.length > 0 && (
                             <div className="flex items-center justify-center h-64">
-                                <ChartContainer config={{}} className="h-full w-full">
+                                <ChartContainer config={pieChartConfig} className="h-full w-full">
                                     <ResponsiveContainer>
                                         <RechartsPieChart>
                                             <ChartTooltip
@@ -151,8 +163,8 @@ export function InsightModal({ title, description, children, data, chartData, ty
                                                 content={<ChartTooltipContent hideLabel nameKey="category" />}
                                             />
                                             <Pie data={chartData} dataKey="value" nameKey="category" innerRadius={50}>
-                                                {chartData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={PIE_CHART_COLORS[index % PIE_CHART_COLORS.length]} />
+                                                {chartData.map((entry) => (
+                                                    <Cell key={`cell-${entry.category}`} fill={entry.fill} />
                                                 ))}
                                             </Pie>
                                             <ChartLegend content={<ChartLegendContent nameKey="category" />} />
@@ -241,3 +253,5 @@ export function InsightModal({ title, description, children, data, chartData, ty
         </Dialog>
     );
 }
+
+    
