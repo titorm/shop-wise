@@ -41,7 +41,7 @@ const ExtractDataFromPdfOutputSchema = z.object({
   date: z.string().describe('The date of the purchase (dd/mm/yyyy).'),
   cnpj: z.string().describe("The store's CNPJ (Cadastro Nacional da Pessoa Jurídica)."),
   address: z.string().describe("The full address of the store."),
-  keyAccess: z.string().describe("The receipt's access key (Chave de Acesso)."),
+  accessKey: z.string().describe("The receipt's access key (Chave de Acesso)."),
   latitude: z.number().optional().describe("The latitude of the store's location."),
   longitude: z.number().optional().describe("The longitude of the store's location."),
   discount: z.number().optional().describe('The total discount amount for the purchase (Descontos R$).'),
@@ -65,9 +65,9 @@ const prompt = ai.definePrompt({
   - **Store Name**: Look for the emitter's name, usually at the top of the first page. (e.g., "SDB COMERCIO DE ALIMENTOS LTDA")
   - **CNPJ**: Look for the emitter's CNPJ. (e.g., "09.477.652/0090-61")
   - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "SC401 RF JOSE CARLOS DAUX, 9580, STO ANTONIO DE LISBOA, FLORIANOPOLIS, SC")
-  - **Date**: Find the emission date. It is often labeled "Emissão" and might be on a line with other information. For example, in a line like "Número: 9911 Série: 114 Emissão: 29/06/2025 19:50:29", extract "29/06/2025". Format it as YYYY-MM-DD.
+  - **Date**: Find the emission date. It is often labeled "Emissão" and might be on a line with other information. For example, in a line like "Número: 9911 Série: 114 Emissão: 29/06/2025 19:50:29" or "Emissão: 03/08/2025 13:01:23", extract "29/06/2025" or "03/08/2025". Format it as YYYY-MM-DD.
   - **Discount**: Look for a line item labeled 'Descontos R$', often near the end of the receipt, and extract the numeric value.
-  - **Access Key (Chave de Acesso)**: Find the long numeric string labeled "Chave de Acesso" or "Chave de acesso", which is often at the end of the document. It may have spaces between the numbers.
+  - **Access Key (Chave de Acesso)**: Find the long numeric string labeled "Chave de Acesso" or "Chave de acesso", which is often at the end of the document. It may have spaces between the numbers (e.g., "4225 0882 9561 6000 4241 6516 9000 0636 3717 0701 9462").
   
   **Product Extraction Rules:**
   - The products are in a table that may span multiple pages. For each product, extract all fields.

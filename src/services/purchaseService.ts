@@ -66,11 +66,11 @@ export async function savePurchase(
         throw new Error("Family ID and User ID are required.");
     }
     
-    // Check for duplicate purchase using keyAccess
-    if ('keyAccess' in purchaseData && purchaseData.keyAccess) {
-        const sanitizedKeyAccess = purchaseData.keyAccess.replace(/\s/g, '');
+    // Check for duplicate purchase using accessKey
+    if ('accessKey' in purchaseData && purchaseData.accessKey) {
+        const sanitizedKeyAccess = purchaseData.accessKey.replace(/\s/g, '');
         const purchasesRef = collection(db, Collections.Families, familyId, 'purchases');
-        const q = query(purchasesRef, where("keyAccess", "==", sanitizedKeyAccess), limit(1));
+        const q = query(purchasesRef, where("accessKey", "==", sanitizedKeyAccess), limit(1));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
             throw new Error('Este cupom fiscal já foi importado.');
@@ -117,7 +117,7 @@ export async function savePurchase(
         date: purchaseDate,
         totalAmount: parseFloat(totalAmount.toFixed(2)),
         discount: 'discount' in purchaseData ? (purchaseData.discount || 0) : 0,
-        keyAccess: 'keyAccess' in purchaseData && purchaseData.keyAccess ? purchaseData.keyAccess.replace(/\s/g, '') : null,
+        accessKey: 'accessKey' in purchaseData && purchaseData.accessKey ? purchaseData.accessKey.replace(/\s/g, '') : null,
         purchasedBy: userId,
         entryMethod: entryMethod,
         createdAt: serverTimestamp(),
