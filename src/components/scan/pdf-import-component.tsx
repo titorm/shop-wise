@@ -141,13 +141,13 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
 
         // Process the first page to get store info, date, etc.
         setCurrentPage(1);
+        setProgress(5); // Initial progress
         const firstPageDoc = await PDFDocument.create();
         const [firstPage] = await firstPageDoc.copyPages(pdfDoc, [0]);
         firstPageDoc.addPage(firstPage);
-        const firstPageBytes = await firstPageDoc.save();
-        const firstPageDataUri = `data:application/pdf;base64,${btoa(new Uint8Array(firstPageBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
-
-        const storeDataResult = await extractStoreDataFromPdfFlow({ pdfDataUri: firstPageDataUri });
+        const firstPageBytes = await firstPageDoc.saveAsBase64({ dataUri: true });
+        
+        const storeDataResult = await extractStoreDataFromPdfFlow({ pdfDataUri: firstPageBytes });
         setDebugResult(JSON.stringify(storeDataResult, null, 2));
 
         let allProducts: Product[] = [];
@@ -158,17 +158,16 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
             const subDoc = await PDFDocument.create();
             const [copiedPage] = await subDoc.copyPages(pdfDoc, [i]);
             subDoc.addPage(copiedPage);
-            const pageBytes = await subDoc.save();
-            const pageDataUri = `data:application/pdf;base64,${btoa(new Uint8Array(pageBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
+            const pageBytes = await subDoc.saveAsBase64({ dataUri: true });
 
-            const pageResult = await extractDataFromPage({ pageDataUri });
+            const pageResult = await extractDataFromPage({ pageDataUri: pageBytes });
             if (pageResult && pageResult.products) {
                  allProducts.push(...pageResult.products.map((p, idx) => ({
                     ...p,
                     id: Date.now() + i * 1000 + idx,
                 })));
             }
-            setProgress(((i + 1) / numPages) * 100);
+            setProgress(10 + ((i + 1) / numPages) * 90); // Progress from 10% to 100%
         }
 
         // Combine store data with product data
@@ -225,7 +224,7 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
         setProducts(products.map(p => p.id === editingProduct.id ? editingProduct : p));
         setIsEditDialogOpen(false);
         setEditingProduct(null);
-        toast({ title: "Item atualizado com sucesso!" });
+        toast({ title: t('edit_item_success_toast') });
     }
   };
   
@@ -379,7 +378,7 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                         <Accordion type="single" collapsible className="w-full">
                             <AccordionItem value="item-1">
                                 <AccordionTrigger>
-                                    <span className='flex items-center gap-2'><FontAwesomeIcon icon={faBug} /> Dados brutos da IA (para depuração)</span>
+                                    <span className='flex items-center gap-2'><FontAwesomeIcon icon={faBug} /> {t('debug_raw_data_title')}</span>
                                 </AccordionTrigger>
                                 <AccordionContent>
                                     <pre className="mt-4 p-4 bg-muted rounded-md text-xs overflow-auto max-h-96">
@@ -389,13 +388,13 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                             </AccordionItem>
                         </Accordion>
                         <div className="flex w-full justify-between items-center">
-                            <Button size="lg" onClick={handleConfirmPurchase} disabled={isSaving}>
-                                <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
-                                {isSaving ? t('saving') : t('confirm_and_save_button')}
-                            </Button>
                              <Button variant="destructive" onClick={handleCancelImport} disabled={isSaving}>
                                 <FontAwesomeIcon icon={faTimesCircle} className="mr-2 h-4 w-4" />
                                 {t('cancel_and_new_import_button')}
+                            </Button>
+                            <Button size="lg" onClick={handleConfirmPurchase} disabled={isSaving}>
+                                <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
+                                {isSaving ? t('saving') : t('confirm_and_save_button')}
                             </Button>
                         </div>
                     </CardFooter>
