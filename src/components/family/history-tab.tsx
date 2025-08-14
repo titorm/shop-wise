@@ -366,10 +366,17 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
             </DialogTrigger>
             <DialogContent className="max-w-4xl">
                 <DialogHeader>
-                    <DialogTitle>{t('purchase_details_title', { store: purchase.storeName })}</DialogTitle>
-                    <DialogDescription>
-                         {purchase.date.toDate().toLocaleString('pt-BR', {dateStyle: 'full', timeStyle: 'short'})}
-                    </DialogDescription>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <DialogTitle>{t('purchase_details_title', { store: purchase.storeName })}</DialogTitle>
+                            <DialogDescription>
+                                {purchase.date.toDate().toLocaleString('pt-BR', {dateStyle: 'full', timeStyle: 'short'})}
+                            </DialogDescription>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-lg font-bold">Total: R$ {totalAmount.toFixed(2)}</p>
+                        </div>
+                    </div>
                 </DialogHeader>
                 <div className="max-h-[60vh] overflow-y-auto pr-4">
                     <Table>
@@ -455,9 +462,6 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                         </AlertDialog>
                     </div>
                     <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:gap-4">
-                         <div className="text-right">
-                            <p className="text-lg font-bold">Total: R$ {totalAmount.toFixed(2)}</p>
-                        </div>
                         <Button onClick={handleSaveChanges} disabled={isSaving || !isDirty || !!editingItemId}>
                             <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
                             {isSaving ? t('saving') : t('save_changes_button')}
