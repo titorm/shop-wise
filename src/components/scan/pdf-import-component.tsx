@@ -217,8 +217,6 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
         try {
             await onSave(extractionResult, products);
             handleCancelImport();
-        } catch (error) {
-            // Error is handled by the parent component
         } finally {
             setIsSaving(false);
         }
@@ -349,7 +347,7 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                                 {t('cancel_and_new_import_button')}
                             </Button>
                             <Button size="lg" onClick={handleConfirmPurchase} disabled={isSaving}>
-                                <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
+                                {isSaving ? <FontAwesomeIcon icon={faSpinner} className="mr-2 h-4 w-4 animate-spin" /> : <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />}
                                 {isSaving ? t('saving') : t('confirm_and_save_button')}
                             </Button>
                         </div>

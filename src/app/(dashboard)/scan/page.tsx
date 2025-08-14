@@ -5,71 +5,21 @@ import { PdfImportComponent } from "@/components/scan/pdf-import-component";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { useAuth } from '@/hooks/use-auth';
-import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc, getDocs, query, where, setDoc, limit } from 'firebase/firestore';
-import { Collections } from '@/lib/enums';
-import { toast } from '@/hooks/use-toast';
+import { savePurchase } from "./actions";
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
 import { ManualPurchaseForm } from "@/components/scan/manual-purchase-form";
 import type { PurchaseData, ItemData } from "@/components/scan/manual-purchase-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faKeyboard, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 
 export const dynamic = 'force-dynamic';
 
 export default function ScanPage() {
     const { t } = useTranslation();
     const { user, profile } = useAuth();
-
-    const getOrCreateStore = async (purchaseData: ExtractProductDataOutput) => {
-        if (!purchaseData.cnpj) return null;
-        
-        const formattedCnpj = purchaseData.cnpj.replace(/\D/g, ''); // Remove non-numeric characters
-        if (!formattedCnpj) return null;
-
-        const storeRef = doc(db, Collections.Stores, formattedCnpj);
-        const storeSnap = await getDocs(query(collection(db, Collections.Stores), where("cnpj", "==", purchaseData.cnpj)));
-
-        if (storeSnap.empty) {
-            await setDoc(storeRef, {
-                name: purchaseData.storeName,
-                cnpj: purchaseData.cnpj, // Keep original format here
-                address: purchaseData.address,
-                location: {
-                    latitude: purchaseData.latitude || null,
-                    longitude: purchaseData.longitude || null,
-                },
-                createdAt: serverTimestamp(),
-            });
-        }
-        return storeRef;
-    };
-    
-    const getOrCreateProduct = async (productData: any) => {
-        if (!productData.barcode) return null;
-
-        const formattedBarcode = productData.barcode.replace(/\D/g, '');
-        if(!formattedBarcode) return null;
-        
-        const productRef = doc(db, Collections.Products, formattedBarcode);
-        const productSnap = await getDocs(query(collection(db, Collections.Products), where("barcode", "==", productData.barcode), limit(1)));
-
-
-        if (productSnap.empty) {
-            await setDoc(productRef, {
-                name: productData.name,
-                barcode: productData.barcode,
-                brand: productData.brand || null,
-                category: productData.category || null,
-                subcategory: productData.subcategory || null,
-                volume: productData.volume || null,
-                createdAt: serverTimestamp(),
-            });
-        }
-        return productRef;
-    }
-
+    const { toast } = useToast();
 
     const handleSavePurchase = async (purchaseData: ExtractProductDataOutput | PurchaseData, products: any[], entryMethod: 'import' | 'manual') => {
         if (!user || !profile || !profile.familyId) {
@@ -78,111 +28,22 @@ export default function ScanPage() {
                 title: t('toast_error_title'),
                 description: t('error_not_logged_in'),
             });
-            throw new Error(t('error_not_logged_in'));
+            return;
         }
 
-        // Check for duplicate purchase using keyAccess
-        if ('keyAccess' in purchaseData && purchaseData.keyAccess) {
-            const sanitizedKeyAccess = purchaseData.keyAccess.replace(/\s/g, '');
-            const purchasesRef = collection(db, Collections.Families, profile.familyId, 'purchases');
-            const q = query(purchasesRef, where("keyAccess", "==", sanitizedKeyAccess), limit(1));
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) {
-                 toast({
-                    variant: 'destructive',
-                    title: t('toast_error_title'),
-                    description: t('error_duplicate_receipt'),
-                });
-                throw new Error(t('error_duplicate_receipt'));
-            }
-        }
+        const result = await savePurchase(purchaseData, products, profile.familyId, user.uid, entryMethod);
 
-
-        try {
-            const totalAmount = products.reduce((acc, item) => {
-                const itemTotal = item.price || 0;
-                return acc + itemTotal;
-            }, 0);
-            
-            let purchaseDate: Timestamp;
-            if (purchaseData.date instanceof Date) {
-                purchaseDate = Timestamp.fromDate(purchaseData.date);
-            } else if (typeof purchaseData.date === 'string') {
-                const dateParts = purchaseData.date.split(/[\/-]/);
-                if (dateParts.length === 3) {
-                    let year, month, day;
-                    // Check for YYYY-MM-DD or DD/MM/YYYY
-                    if (dateParts[0].length === 4) { // YYYY-MM-DD
-                         year = parseInt(dateParts[0], 10);
-                         month = parseInt(dateParts[1], 10) - 1; // Month is 0-indexed
-                         day = parseInt(dateParts[2], 10);
-                    } else { // DD/MM/YYYY
-                         day = parseInt(dateParts[0], 10);
-                         month = parseInt(dateParts[1], 10) - 1; // Month is 0-indexed
-                         year = parseInt(dateParts[2], 10);
-                    }
-                    purchaseDate = Timestamp.fromDate(new Date(year, month, day));
-                } else {
-                    purchaseDate = Timestamp.now();
-                }
-            } else {
-                 purchaseDate = Timestamp.now();
-            }
-
-
-            let storeRef = null;
-            if (entryMethod === 'import' && 'cnpj' in purchaseData) {
-                 storeRef = await getOrCreateStore(purchaseData as ExtractProductDataOutput);
-            }
-
-            const purchaseRef = await addDoc(collection(db, Collections.Families, profile.familyId, 'purchases'), {
-                storeName: purchaseData.storeName,
-                storeRef: storeRef,
-                date: purchaseDate,
-                totalAmount: parseFloat(totalAmount.toFixed(2)),
-                discount: 'discount' in purchaseData ? (purchaseData.discount || 0) : 0,
-                keyAccess: 'keyAccess' in purchaseData && purchaseData.keyAccess ? purchaseData.keyAccess.replace(/\s/g, '') : null,
-                purchasedBy: user.uid,
-                entryMethod: entryMethod,
+        if (result.error) {
+             toast({
+                variant: 'destructive',
+                title: t('toast_error_saving'),
+                description: result.error,
             });
-
-            const batch = writeBatch(db);
-            const itemsColRef = collection(db, Collections.Families, profile.familyId, 'purchases', purchaseRef.id, 'purchase_items');
-            
-            for (const product of products) {
-                const productRef = await getOrCreateProduct(product);
-
-                const itemRef = doc(itemsColRef);
-                batch.set(itemRef, {
-                    productRef: productRef,
-                    quantity: product.quantity,
-                    price: parseFloat(product.unitPrice.toFixed(2)),
-                    totalPrice: parseFloat(product.price.toFixed(2)),
-                    purchaseId: purchaseRef.id,
-                    purchaseDate: purchaseDate,
-                    familyId: profile.familyId,
-                    storeName: purchaseData.storeName,
-                });
-            }
-
-            await batch.commit();
-
+        } else {
              toast({
                 title: t('toast_success_title'),
                 description: t('purchase_saved_successfully'),
             });
-
-        } catch (error) {
-            console.error("Error saving purchase: ", error);
-            // Don't re-throw if it's a duplicate receipt error, as it's already handled
-            if ((error as Error).message !== t('error_duplicate_receipt')) {
-                 toast({
-                    variant: 'destructive',
-                    title: t('toast_error_saving'),
-                    description: t('error_saving_purchase'),
-                });
-                throw error;
-            }
         }
     };
 

@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlusCircle, faTrash, faSave, faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import { faPlusCircle, faTrash, faSave, faCalendarAlt, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 
 const itemSchema = z.object({
@@ -54,7 +54,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
     },
   });
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "items",
   });
@@ -72,8 +72,6 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
             date: new Date(),
             items: [{ name: "", quantity: 1, unitPrice: 0, price: 0, barcode: "", volume: "" }],
         });
-    } catch (error) {
-        // Error is handled by parent
     } finally {
         setIsSaving(false);
     }
@@ -255,7 +253,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
         
         <div className="flex justify-end">
             <Button type="submit" size="lg" disabled={isSaving}>
-                <FontAwesomeIcon icon={faSave} className="mr-2" /> 
+                {isSaving ? <FontAwesomeIcon icon={faSpinner} className="mr-2 animate-spin" /> : <FontAwesomeIcon icon={faSave} className="mr-2" />} 
                 {isSaving ? t('saving') : t('save_purchase_button')}
             </Button>
         </div>
