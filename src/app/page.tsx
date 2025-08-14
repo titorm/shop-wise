@@ -7,9 +7,16 @@ import { ShopWiseLogo, ShopWiseIcon } from "@/components/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faQrcode, faShoppingCart, faSliders } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const { t } = useTranslation();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -19,10 +26,10 @@ export default function Home() {
         </div>
         <nav className="flex items-center gap-2">
           <Link href="/login" passHref>
-            <Button variant="ghost">{t('login')}</Button>
+            <Button variant="ghost">{isClient ? t('login') : '...'}</Button>
           </Link>
           <Link href="/signup" passHref>
-            <Button>{t('create_account')}</Button>
+            <Button>{isClient ? t('create_account') : '...'}</Button>
           </Link>
         </nav>
       </header>
@@ -35,16 +42,16 @@ export default function Home() {
           />
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-bold font-headline text-foreground tracking-tight">
-              {t('home_title')}
+              {isClient ? t('home_title') : '...'}
               <br />
-              <span className="text-primary">{t('home_subtitle')}</span>
+              <span className="text-primary">{isClient ? t('home_subtitle') : '...'}</span>
             </h2>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              {t('home_description')}
+              {isClient ? t('home_description') : '...'}
             </p>
             <div className="mt-8 flex justify-center gap-4">
                <Link href="/signup" passHref>
-                <Button size="lg">{t('start_now_free')}</Button>
+                <Button size="lg">{isClient ? t('start_now_free') : '...'}</Button>
               </Link>
             </div>
           </div>
@@ -53,29 +60,29 @@ export default function Home() {
         <section id="features" className="bg-card/50 py-20 md:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h3 className="text-3xl md:text-4xl font-bold font-headline text-foreground">{t('powerful_features')}</h3>
-              <p className="mt-4 text-lg text-muted-foreground">{t('powerful_features_description')}</p>
+              <h3 className="text-3xl md:text-4xl font-bold font-headline text-foreground">{isClient ? t('powerful_features') : '...'}</h3>
+              <p className="mt-4 text-lg text-muted-foreground">{isClient ? t('powerful_features_description') : '...'}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <FeatureCard
                 icon={<FontAwesomeIcon icon={faChartSimple} className="w-10 h-10 text-primary" />}
-                title={t('feature_visual_insights_title')}
-                description={t('feature_visual_insights_description')}
+                title={isClient ? t('feature_visual_insights_title') : '...'}
+                description={isClient ? t('feature_visual_insights_description') : '...'}
               />
               <FeatureCard
                 icon={<FontAwesomeIcon icon={faQrcode} className="w-10 h-10 text-primary" />}
-                title={t('feature_camera_register_title')}
-                description={t('feature_camera_register_description')}
+                title={isClient ? t('feature_camera_register_title') : '...'}
+                description={isClient ? t('feature_camera_register_description') : '...'}
               />
               <FeatureCard
                 icon={<FontAwesomeIcon icon={faShoppingCart} className="w-10 h-10 text-primary" />}
-                title={t('feature_smart_lists_title')}
-                description={t('feature_smart_lists_description')}
+                title={isClient ? t('feature_smart_lists_title') : '...'}
+                description={isClient ? t('feature_smart_lists_description') : '...'}
               />
               <FeatureCard
                 icon={<FontAwesomeIcon icon={faSliders} className="w-10 h-10 text-primary" />}
-                title={t('feature_full_control_title')}
-                description={t('feature_full_control_description')}
+                title={isClient ? t('feature_full_control_title') : '...'}
+                description={isClient ? t('feature_full_control_description') : '...'}
               />
             </div>
           </div>
@@ -84,7 +91,7 @@ export default function Home() {
 
       <footer className="bg-secondary/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-muted-foreground">
-          <p>{t('copyright', { year: new Date().getFullYear() })}</p>
+          <p>{isClient ? t('copyright', { year: new Date().getFullYear() }) : '...'}</p>
         </div>
       </footer>
     </div>
