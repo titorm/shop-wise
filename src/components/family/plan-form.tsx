@@ -128,7 +128,6 @@ export function PlanForm() {
                                     onValueChange={field.onChange}
                                     value={field.value}
                                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                                    disabled={currentPlanIsPremium}
                                 >
                                     <FormItem>
                                         <FormControl>
@@ -173,10 +172,10 @@ export function PlanForm() {
                                                     <CardDescription>{t('plan_form_premium_desc')}</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="space-y-4 text-sm">
-                                                    <Tabs value={billingCycle} onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="w-full" aria-disabled={currentPlanIsPremium}>
+                                                    <Tabs value={billingCycle} onValueChange={(value) => setBillingCycle(value as BillingCycle)} className="w-full">
                                                         <TabsList className="grid w-full grid-cols-2">
-                                                            <TabsTrigger value="monthly" disabled={currentPlanIsPremium}>{t('plan_billing_monthly')}</TabsTrigger>
-                                                            <TabsTrigger value="annually" className="relative group" disabled={currentPlanIsPremium}>
+                                                            <TabsTrigger value="monthly">{t('plan_billing_monthly')}</TabsTrigger>
+                                                            <TabsTrigger value="annually" className="relative group">
                                                                 {t('plan_billing_annually')}
                                                                 <Badge variant="outline" className="ml-2 border-primary text-primary bg-primary/10 group-data-[state=active]:bg-white group-data-[state=active]:text-primary">
                                                                     {t('plan_annual_saving')}
