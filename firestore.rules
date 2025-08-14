@@ -1,17 +1,61 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Indexes
-    // Required for dashboard queries to get all items across all purchases for a family.
-    // Fetches all purchase_items for a given familyId, ordered by purchaseDate.
-    // CollectionGroup: purchase_items
-    // Fields: familyId (ASC), purchaseDate (ASC)
-    // Query in `src/app/(dashboard)/dashboard/page.tsx`
+
+    function isUserAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
     
-    // Fallback rule
-    match /{document=**} {
-      allow read, write: if false;
+    function userFamilyId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.familyId;
+    }
+
+    function belongsToFamily(familyId) {
+      return isUserAuthenticated() && userFamilyId() == familyId;
+    }
+
+    match /users/{userId} {
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isUserAuthenticated();
+    }
+    
+    match /families/{familyId} {
+      allow read, update, delete: if belongsToFamily(familyId);
+      allow create: if isUserAuthenticated();
+
+      match /purchases/{purchaseId} {
+        allow read, create, update, delete: if belongsToFamily(familyId);
+        
+        match /purchase_items/{itemId} {
+           allow read, create, update, delete: if belongsToFamily(familyId);
+        }
+      }
+      
+      match /shopping_lists/{listId} {
+        allow read, create, update, delete: if belongsToFamily(familyId);
+
+        match /items/{itemId} {
+           allow read, create, update, delete: if belongsToFamily(familyId);
+        }
+      }
+
+      match /notifications/{notificationId} {
+        allow read, create, update, delete: if belongsToFamily(familyId);
+      }
+    }
+    
+    match /products/{productId} {
+      allow read, create: if isUserAuthenticated();
+    }
+    
+    match /stores/{storeId} {
+       allow read, create: if isUserAuthenticated();
     }
   }
 }
