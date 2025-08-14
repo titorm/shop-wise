@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '../ui/label';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faPlusCircle, faSave, faCopyright, faBug, faFilePdf, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faStore, faBox, faHashtag, faDollarSign, faPencil, faTrash, faPlusCircle, faSave, faCopyright, faBug, faFilePdf, faTags, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../ui/badge';
@@ -148,7 +148,8 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
         const firstPageDataUri = `data:application/pdf;base64,${btoa(new Uint8Array(firstPageBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))}`;
 
         const storeDataResult = await extractStoreDataFromPdfFlow({ pdfDataUri: firstPageDataUri });
-        
+        setDebugResult(JSON.stringify(storeDataResult, null, 2));
+
         let allProducts: Product[] = [];
 
         // Now, process all pages to get products
@@ -199,6 +200,16 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
     }
 };
 
+  const handleCancelImport = () => {
+    setExtractionResult(null);
+    setProducts([]);
+    setDebugResult(null);
+    setProgress(0);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
 
   const handleEditClick = (product: Product) => {
     setEditingProduct({ ...product });
@@ -240,9 +251,7 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
         setIsSaving(true);
         try {
             await onSave(extractionResult, products);
-            setExtractionResult(null);
-            setProducts([]);
-            setDebugResult(null);
+            handleCancelImport();
         } catch (error) {
             // Error is handled by the parent component
         } finally {
@@ -367,27 +376,30 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                         </CardFooter>
                     </Card>
                     <CardFooter className="p-0 flex flex-col items-start gap-4">
-                        <Button size="lg" onClick={handleConfirmPurchase} disabled={isSaving}>
-                            <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
-                            {isSaving ? t('saving') : t('confirm_and_save_button')}
-                        </Button>
+                        <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="item-1">
+                                <AccordionTrigger>
+                                    <span className='flex items-center gap-2'><FontAwesomeIcon icon={faBug} /> Dados brutos da IA (para depuração)</span>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <pre className="mt-4 p-4 bg-muted rounded-md text-xs overflow-auto max-h-96">
+                                        {debugResult}
+                                    </pre>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                        <div className="flex w-full justify-between items-center">
+                            <Button size="lg" onClick={handleConfirmPurchase} disabled={isSaving}>
+                                <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
+                                {isSaving ? t('saving') : t('confirm_and_save_button')}
+                            </Button>
+                             <Button variant="destructive" onClick={handleCancelImport} disabled={isSaving}>
+                                <FontAwesomeIcon icon={faTimesCircle} className="mr-2 h-4 w-4" />
+                                {t('cancel_and_new_import_button')}
+                            </Button>
+                        </div>
                     </CardFooter>
                 </div>
-            )}
-
-             {debugResult && (
-                <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger>
-                            <span className='flex items-center gap-2'><FontAwesomeIcon icon={faBug} /> Dados brutos da IA (para depuração)</span>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <pre className="mt-4 p-4 bg-muted rounded-md text-xs overflow-auto max-h-96">
-                                {debugResult}
-                            </pre>
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
             )}
         </CardContent>
 
