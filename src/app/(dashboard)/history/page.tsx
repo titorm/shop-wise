@@ -6,19 +6,21 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faArrowTrendUp, faBox, faHashtag, faBarcode, faWeightHanging } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faArrowTrendUp, faBox, faHashtag, faBarcode, faWeightHanging, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy, Timestamp, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, Timestamp, getDoc, writeBatch, doc, deleteDoc } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
+import { toast } from '@/hooks/use-toast';
 
 interface PurchaseItem {
     id: string;
@@ -97,6 +99,51 @@ export default function HistoryPage() {
 
         fetchPurchases();
     }, [profile]);
+    
+    const handleDeletePurchase = async (purchaseId: string) => {
+        if (!profile?.familyId) {
+             toast({
+                variant: 'destructive',
+                title: t('toast_error_title'),
+                description: t('error_not_logged_in'),
+            });
+            return;
+        }
+
+        try {
+            const purchaseRef = doc(db, Collections.Families, profile.familyId, 'purchases', purchaseId);
+            const itemsRef = collection(db, purchaseRef.path, "purchase_items");
+
+            const batch = writeBatch(db);
+
+            // Delete all items in the subcollection
+            const itemsSnapshot = await getDocs(itemsRef);
+            itemsSnapshot.forEach((itemDoc) => {
+                batch.delete(doc(itemsRef, itemDoc.id));
+            });
+
+            // Delete the purchase document itself
+            batch.delete(purchaseRef);
+
+            await batch.commit();
+
+            setPurchases((prev) => prev.filter(p => p.id !== purchaseId));
+            
+            toast({
+                title: t('toast_success_title'),
+                description: t('purchase_deleted_successfully'),
+            });
+
+        } catch (error) {
+            console.error("Error deleting purchase:", error);
+            toast({
+                variant: 'destructive',
+                title: t('toast_error_title'),
+                description: t('error_deleting_purchase'),
+            });
+        }
+    };
+
 
     const filteredPurchases = useMemo(() => purchases.filter(purchase => {
         const lowerSearchTerm = searchTerm.toLowerCase();
@@ -180,7 +227,7 @@ export default function HistoryPage() {
                             {filteredPurchases.length > 0 ? (
                                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                     {filteredPurchases.map(purchase => (
-                                        <PurchaseCard key={purchase.id} purchase={purchase} />
+                                        <PurchaseCard key={purchase.id} purchase={purchase} onDelete={handleDeletePurchase} />
                                     ))}
                                 </div>
                             ) : (
@@ -212,10 +259,12 @@ export default function HistoryPage() {
 }
 
 
-function PurchaseCard({ purchase }: { purchase: Purchase }) {
+function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (id: string) => void }) {
     const { t } = useTranslation();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
     return (
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
                  <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                     <CardHeader>
@@ -265,6 +314,33 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
                         </TableBody>
                     </Table>
                 </div>
+                 <DialogFooter>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive">
+                                <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" />
+                                {t('delete_purchase_button')}
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>{t('delete_purchase_confirm_title')}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {t('delete_purchase_confirm_desc')}
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => {
+                                    onDelete(purchase.id);
+                                    setIsDialogOpen(false);
+                                }}>
+                                    {t('confirm_delete')}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
@@ -281,3 +357,4 @@ function PurchaseCard({ purchase }: { purchase: Purchase }) {
     
 
     
+
