@@ -41,6 +41,7 @@ const ExtractDataFromPdfOutputSchema = z.object({
   date: z.string().describe('The date of the purchase (dd/mm/yyyy).'),
   cnpj: z.string().describe("The store's CNPJ (Cadastro Nacional da Pessoa Jurídica)."),
   address: z.string().describe("The full address of the store."),
+  keyAccess: z.string().describe("The receipt's access key (Chave de Acesso)."),
   latitude: z.number().optional().describe("The latitude of the store's location."),
   longitude: z.number().optional().describe("The longitude of the store's location."),
   discount: z.number().optional().describe('The total discount amount for the purchase (Descontos R$).'),
@@ -58,7 +59,7 @@ const prompt = ai.definePrompt({
   output: {schema: ExtractDataFromPdfOutputSchema},
   prompt: `You are an expert data extractor specializing in extracting store and date data from the first page of a Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipt from a given PDF file.
 
-  Access the provided PDF (which is only the first page) and extract ONLY the store name, purchase date, CNPJ and address. DO NOT extract any product information.
+  Access the provided PDF (which is only the first page) and extract ONLY the store name, purchase date, CNPJ, address, and access key. DO NOT extract any product information.
 
   **Data Extraction Rules:**
   - **Store Name**: Look for the emitter's name, usually at the top. (e.g., "SDB COMERCIO DE ALIMENTOS LTDA")
@@ -66,6 +67,7 @@ const prompt = ai.definePrompt({
   - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "SC401 RF JOSE CARLOS DAUX, 9580, STO ANTONIO DE LISBOA, FLORIANOPOLIS, SC")
   - **Date**: Look for the authorization date ("Protocolo de Autorização"). Format it as YYYY-MM-DD. (e.g., "Protocolo de Autorização 123456 - 22/01/2024 19:24:30" becomes "2024-01-22")
   - **Discount**: Look for a line item labeled 'Descontos R$' and extract the numeric value.
+  - **Access Key (Chave de Acesso)**: Find the long numeric string labeled "Chave de Acesso".
   - **Products**: Return an empty array for the products field.
 
   Now, analyze the following receipt PDF page and extract the information into the specified JSON format.

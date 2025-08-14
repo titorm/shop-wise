@@ -40,6 +40,7 @@ const ExtractProductDataOutputSchema = z.object({
   date: z.string().describe('The date of the purchase (dd/mm/yyyy).'),
   cnpj: z.string().describe("The store's CNPJ (Cadastro Nacional da Pessoa Jurídica)."),
   address: z.string().describe("The full address of the store."),
+  keyAccess: z.string().describe("The receipt's access key (Chave de Acesso)."),
   latitude: z.number().optional().describe("The latitude of the store's location."),
   longitude: z.number().optional().describe("The longitude of the store's location."),
   discount: z.number().optional().describe('The total discount amount for the purchase (Descontos R$).'),
@@ -64,6 +65,7 @@ const prompt = ai.definePrompt({
   - **Address**: Look for the emitter's full address. If possible, infer the latitude and longitude. (e.g., "SC401 RF JOSE CARLOS DAUX, 9580, STO ANTONIO DE LISBOA, FLORIANOPOLIS, SC")
   - **Date**: Look for the authorization date ("Protocolo de Autorização"). Format it as YYYY-MM-DD. (e.g., "Protocolo de Autorização 123456 - 22/01/2024 19:24:30" becomes "2024-01-22")
   - **Discount**: Look for a line item labeled 'Descontos R$' and extract the numeric value.
+  - **Access Key (Chave de Acesso)**: Find the long numeric string labeled "Chave de Acesso". The QR Code URL itself usually contains this key.
   
   **Product Extraction Rules:**
   - The products are in a table. For each product, extract all fields.

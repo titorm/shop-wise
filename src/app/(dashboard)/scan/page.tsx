@@ -81,9 +81,25 @@ export default function ScanPage() {
             throw new Error(t('error_not_logged_in'));
         }
 
+        // Check for duplicate purchase using keyAccess
+        if ('keyAccess' in purchaseData && purchaseData.keyAccess) {
+            const purchasesRef = collection(db, Collections.Families, profile.familyId, 'purchases');
+            const q = query(purchasesRef, where("keyAccess", "==", purchaseData.keyAccess), limit(1));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                 toast({
+                    variant: 'destructive',
+                    title: t('toast_error_title'),
+                    description: t('error_duplicate_receipt'),
+                });
+                throw new Error(t('error_duplicate_receipt'));
+            }
+        }
+
+
         try {
             const totalAmount = products.reduce((acc, item) => {
-                const itemTotal = item.price || (item.unitPrice * item.quantity);
+                const itemTotal = item.price || 0;
                 return acc + itemTotal;
             }, 0);
             
@@ -116,6 +132,7 @@ export default function ScanPage() {
                 date: purchaseDate,
                 totalAmount: parseFloat(totalAmount.toFixed(2)),
                 discount: 'discount' in purchaseData ? (purchaseData.discount || 0) : 0,
+                keyAccess: 'keyAccess' in purchaseData ? (purchaseData.keyAccess || null) : null,
                 purchasedBy: user.uid,
                 entryMethod: entryMethod,
             });
@@ -148,12 +165,15 @@ export default function ScanPage() {
 
         } catch (error) {
             console.error("Error saving purchase: ", error);
-            toast({
-                variant: 'destructive',
-                title: t('toast_error_saving'),
-                description: t('error_saving_purchase'),
-            });
-            throw error;
+            // Don't re-throw if it's a duplicate receipt error, as it's already handled
+            if ((error as Error).message !== t('error_duplicate_receipt')) {
+                 toast({
+                    variant: 'destructive',
+                    title: t('toast_error_saving'),
+                    description: t('error_saving_purchase'),
+                });
+                throw error;
+            }
         }
     };
 
