@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faBox, faHashtag, faBarcode, faWeightHanging, faTrash, faPlusCircle, faSave, faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faBox, faHashtag, faBarcode, faWeightHanging, faTrash, faPlusCircle, faSave, faPencil, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
@@ -272,20 +272,17 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [items, setItems] = useState<PurchaseItem[]>(purchase.items);
     const [isSaving, setIsSaving] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
+    const [editingItemId, setEditingItemId] = useState<string | null>(null);
     
-    // Create a stable reference to the original items for comparison
     const originalItemsJson = useMemo(() => JSON.stringify(purchase.items), [purchase.items]);
     const isDirty = useMemo(() => JSON.stringify(items) !== originalItemsJson, [items, originalItemsJson]);
 
 
     useEffect(() => {
-        // Reset local state if the dialog is closed or the underlying purchase changes
         if (isDialogOpen) {
             setItems(purchase.items);
         } else {
-            // Reset editing state when dialog closes
-            setIsEditing(false);
+            setEditingItemId(null);
         }
     }, [isDialogOpen, purchase.items]);
     
@@ -293,7 +290,6 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
         const newItems = [...items];
         const item = { ...newItems[index], [field]: value };
         
-        // Recalculate total price if quantity or unitPrice changes
         if ((field === 'quantity' || field === 'unitPrice') && item.unitPrice !== undefined) {
              item.price = item.quantity * item.unitPrice;
         }
@@ -303,8 +299,9 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
     };
 
     const handleAddItem = () => {
+        const newItemId = `new-${Date.now()}`;
         const newItem: PurchaseItem = {
-            id: `new-${Date.now()}`,
+            id: newItemId,
             productRef: null,
             name: '',
             quantity: 1,
@@ -313,6 +310,7 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
             volume: 'un',
         };
         setItems([...items, newItem]);
+        setEditingItemId(newItemId); // Immediately enter edit mode for the new item
     };
 
     const handleRemoveItem = (index: number) => {
@@ -382,37 +380,48 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                                 <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
                                 <TableHead className="text-center w-[120px]">{t('table_unit_price')}</TableHead>
                                 <TableHead className="text-right w-[120px]">{t('table_total_price')}</TableHead>
-                                <TableHead className="w-[50px]"></TableHead>
+                                <TableHead className="w-[100px] text-right">{t('table_actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                              {items.map((item, index) => (
                                 <TableRow key={item.id}>
                                     <TableCell>
-                                        <Input value={item.name} onChange={e => handleItemChange(index, 'name', e.target.value)} placeholder={t('item_name_placeholder')} disabled={!isEditing} />
+                                        <Input value={item.name} onChange={e => handleItemChange(index, 'name', e.target.value)} placeholder={t('item_name_placeholder')} disabled={editingItemId !== item.id} />
                                     </TableCell>
                                     <TableCell>
-                                        <Input value={item.volume} onChange={e => handleItemChange(index, 'volume', e.target.value)} placeholder="ex: 1kg, 500ml" disabled={!isEditing} />
+                                        <Input value={item.volume} onChange={e => handleItemChange(index, 'volume', e.target.value)} placeholder="ex: 1kg, 500ml" disabled={editingItemId !== item.id} />
                                     </TableCell>
                                     <TableCell>
-                                        <Input type="number" value={item.quantity} onChange={e => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)} className="text-center" disabled={!isEditing} />
+                                        <Input type="number" value={item.quantity} onChange={e => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)} className="text-center" disabled={editingItemId !== item.id} />
                                     </TableCell>
                                      <TableCell>
-                                        <Input type="number" value={item.unitPrice} onChange={e => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)} className="text-center" disabled={!isEditing} />
+                                        <Input type="number" value={item.unitPrice} onChange={e => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)} className="text-center" disabled={editingItemId !== item.id} />
                                     </TableCell>
                                     <TableCell className="text-right font-medium">
                                         R$ {(item.price || 0).toFixed(2)}
                                     </TableCell>
                                     <TableCell>
-                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveItem(index)} disabled={!isEditing}>
-                                            <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
-                                        </Button>
+                                        <div className="flex justify-end gap-1">
+                                            {editingItemId === item.id ? (
+                                                <Button variant="ghost" size="icon" onClick={() => setEditingItemId(null)}>
+                                                    <FontAwesomeIcon icon={faCheck} className="h-4 w-4 text-primary" />
+                                                </Button>
+                                            ) : (
+                                                <Button variant="ghost" size="icon" onClick={() => setEditingItemId(item.id)}>
+                                                    <FontAwesomeIcon icon={faPencil} className="h-4 w-4" />
+                                                </Button>
+                                            )}
+                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveItem(index)} disabled={editingItemId === item.id}>
+                                                <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                     <Button variant="outline" className="mt-4" onClick={handleAddItem} disabled={!isEditing}>
+                     <Button variant="outline" className="mt-4" onClick={handleAddItem} disabled={!!editingItemId}>
                         <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
                         {t('add_item_button')}
                     </Button>
@@ -449,22 +458,13 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                          <div className="text-right">
                             <p className="text-lg font-bold">Total: R$ {totalAmount.toFixed(2)}</p>
                         </div>
-                        {!isEditing ? (
-                             <Button onClick={() => setIsEditing(true)}>
-                                <FontAwesomeIcon icon={faPencil} className="mr-2 h-4 w-4" />
-                                {t('edit_purchase_button')}
-                            </Button>
-                        ) : (
-                            <Button onClick={handleSaveChanges} disabled={isSaving || !isDirty}>
-                                <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
-                                {isSaving ? t('saving') : t('save_changes_button')}
-                            </Button>
-                        )}
+                        <Button onClick={handleSaveChanges} disabled={isSaving || !isDirty || !!editingItemId}>
+                            <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
+                            {isSaving ? t('saving') : t('save_changes_button')}
+                        </Button>
                     </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     );
 }
-
-    
