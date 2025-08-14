@@ -366,17 +366,11 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
             </DialogTrigger>
             <DialogContent className="max-w-4xl">
                 <DialogHeader>
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <DialogTitle>{t('purchase_details_title', { store: purchase.storeName })}</DialogTitle>
-                            <DialogDescription>
-                                {purchase.date.toDate().toLocaleString('pt-BR', {dateStyle: 'full', timeStyle: 'short'})}
-                            </DialogDescription>
-                        </div>
-                        <div className="text-right">
-                            <p className="text-lg font-bold">Total: R$ {totalAmount.toFixed(2)}</p>
-                        </div>
-                    </div>
+                    <DialogTitle>{t('purchase_details_title', { store: purchase.storeName })}</DialogTitle>
+                    <DialogDescription>
+                        {purchase.date.toDate().toLocaleString('pt-BR', {dateStyle: 'full', timeStyle: 'short'})}
+                        <span className="font-bold ml-4">Total: R$ {totalAmount.toFixed(2)}</span>
+                    </DialogDescription>
                 </DialogHeader>
                 <div className="max-h-[60vh] overflow-y-auto pr-4">
                     <Table>
