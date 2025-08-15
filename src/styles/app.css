@@ -1,16 +1,16 @@
-@import "tailwindcss";
+/* @import "tailwindcss"; */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import "@fontsource-variable/dm-sans";
+/* @import "@fontsource-variable/dm-sans";
 @import "@fontsource-variable/dm-mono";
 
 @theme inline {
     --font-sans: "DM Sans Variable", sans-serif;
     --font-mono: "DM Mono Variable", monospace;
-}
+} */
 
 @layer base {
     :root {
@@ -132,11 +132,11 @@
     }
 }
 
-@layer base {
+/* @layer base {
     * {
         @apply border-border;
     }
     body {
         @apply bg-background text-foreground;
     }
-}
+} */
