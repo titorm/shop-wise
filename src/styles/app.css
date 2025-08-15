@@ -3,3 +3,140 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import "@fontsource-variable/dm-sans";
+@import "@fontsource-variable/dm-mono";
+
+@theme inline {
+    --font-sans: "DM Sans Variable", sans-serif;
+    --font-mono: "DM Mono Variable", monospace;
+}
+
+@layer base {
+    :root {
+        --background: 0 0% 100%; /* #FFFFFF */
+        --foreground: 240 10% 4%; /* #212121 */
+        --card: 0 0% 100%; /* #FFFFFF */
+        --card-foreground: 240 10% 4%; /* #212121 */
+        --popover: 0 0% 100%;
+        --popover-foreground: 240 10% 4%;
+        --primary: 122 46% 34%; /* #2E7D32 */
+        --primary-foreground: 0 0% 100%;
+        --secondary: 45 100% 51%; /* #FFC107 */
+        --secondary-foreground: 240 10% 4%;
+        --muted: 220 14% 90%; /* #E0E0E0 */
+        --muted-foreground: 0 0% 38%; /* #616161 */
+        --accent: 212 92% 51%; /* #1976D2 - Azul Confiável */
+        --accent-foreground: 0 0% 100%;
+        --destructive: 0 63% 49%; /* #D32F2F */
+        --destructive-foreground: 0 0% 100%;
+        --border: 0 0% 88%; /* #E0E0E0 */
+        --input: 0 0% 88%;
+        --ring: 122 46% 34%;
+        --radius: 0.8rem;
+
+        --sidebar: 220 14% 96%; /* #F5F5F5 */
+        --sidebar-foreground: 240 10% 4%;
+        --sidebar-border: 0 0% 88%;
+        --sidebar-accent: 122 46% 95%; /* Lighter green */
+        --sidebar-accent-foreground: 122 46% 24%; /* Darker green */
+        --sidebar-ring: 122 46% 34%;
+
+        --color-category-produce-and-eggs: 122 33% 84%; /* #A5D6A7 */
+        --color-category-produce-and-eggs-foreground: 120 25% 25%;
+        --color-category-meat-and-seafood: 0 71% 80%; /* #EF9A9A */
+        --color-category-meat-and-seafood-foreground: 0 50% 30%;
+        --color-category-bakery-and-deli: 45 100% 75%; /* #FFE082 */
+        --color-category-bakery-and-deli-foreground: 35 50% 30%;
+        --color-category-dairy-and-chilled: 211 89% 78%; /* #90CAF9 */
+        --color-category-dairy-and-chilled-foreground: 210 50% 30%;
+        --color-category-pantry-and-dry-goods: 30 100% 75%; /* #FFCC80 */
+        --color-category-pantry-and-dry-goods-foreground: 25 50% 30%;
+        --color-category-breakfast-and-snacks: 341 81% 77%; /* #F48FB1 */
+        --color-category-breakfast-and-snacks-foreground: 340 50% 30%;
+        --color-category-frozen-foods: 185 60% 88%; /* #D9F7F5 */
+        --color-category-frozen-foods-foreground: 185 30% 35%;
+        --color-category-beverages: 265 56% 79%; /* #B39DDB */
+        --color-category-beverages-foreground: 265 30% 30%;
+        --color-category-cleaning-and-household: 174 44% 71%; /* #80CBC4 */
+        --color-category-cleaning-and-household-foreground: 175 30% 30%;
+        --color-category-personal-care: 291 59% 81%; /* #CE93D8 */
+        --color-category-personal-care-foreground: 290 30% 30%;
+        --color-category-baby-and-child-care: 57 100% 80%; /* #FFF59D */
+        --color-category-baby-and-child-care-foreground: 55 50% 30%;
+        --color-category-pet-supplies: 20 25% 76%; /* #BCAAA4 */
+        --color-category-pet-supplies-foreground: 20 20% 30%;
+        --color-category-home-and-general: 200 25% 80%; /* #B0BEC5 */
+        --color-category-home-and-general-foreground: 200 20% 30%;
+        --color-category-pharmacy: 174 44% 78%; /* #B2DFDB */
+        --color-category-pharmacy-foreground: 175 30% 30%;
+    }
+
+    .dark {
+        --background: 224 71% 4%; /* #020817 */
+        --foreground: 210 40% 98%; /* #F8FAFC */
+        --card: 224 71% 4%; /* #020817 */
+        --card-foreground: 210 40% 98%;
+        --popover: 224 71% 4%;
+        --popover-foreground: 210 40% 98%;
+        --primary: 122 46% 44%; /* Lighter green for dark mode */
+        --primary-foreground: 210 40% 98%;
+        --secondary: 45 100% 51%; /* #FFC107 */
+        --secondary-foreground: 240 10% 4%;
+        --muted: 215 28% 17%; /* #27272A */
+        --muted-foreground: 215 20% 65%; /* #A1A1AA */
+        --accent: 212 92% 61%; /* Lighter blue for dark mode */
+        --accent-foreground: 210 40% 98%;
+        --destructive: 0 70% 45%; /* Softer Red for Dark Mode */
+        --destructive-foreground: 210 40% 98%;
+        --border: 215 28% 17%;
+        --input: 215 28% 17%;
+        --ring: 122 46% 44%;
+        --radius: 0.8rem;
+
+        --sidebar: 224 71% 4%;
+        --sidebar-foreground: 210 40% 98%;
+        --sidebar-border: 215 28% 17%;
+        --sidebar-accent: 122 46% 18%; /* Darker green */
+        --sidebar-accent-foreground: 122 46% 78%; /* Lighter green */
+        --sidebar-ring: 122 46% 44%;
+
+        --color-category-produce-and-eggs: 122 39% 30%;
+        --color-category-produce-and-eggs-foreground: 120 25% 15%;
+        --color-category-meat-and-seafood: 0 65% 33%;
+        --color-category-meat-and-seafood-foreground: 0 50% 18%;
+        --color-category-bakery-and-deli: 45 100% 30%;
+        --color-category-bakery-and-deli-foreground: 35 50% 15%;
+        --color-category-dairy-and-chilled: 211 85% 32%;
+        --color-category-dairy-and-chilled-foreground: 210 50% 18%;
+        --color-category-pantry-and-dry-goods: 30 100% 30%;
+        --color-category-pantry-and-dry-goods-foreground: 25 50% 15%;
+        --color-category-breakfast-and-snacks: 341 81% 34%;
+        --color-category-breakfast-and-snacks-foreground: 340 50% 18%;
+        --color-category-frozen-foods: 185 78% 71%;
+        --color-category-frozen-foods-foreground: 185 40% 25%;
+        --color-category-beverages: 265 58% 36%;
+        --color-category-beverages-foreground: 265 30% 18%;
+        --color-category-cleaning-and-household: 174 45% 23%;
+        --color-category-cleaning-and-household-foreground: 175 30% 15%;
+        --color-category-personal-care: 291 49% 35%;
+        --color-category-personal-care-foreground: 290 30% 18%;
+        --color-category-baby-and-child-care: 56 94% 37%;
+        --color-category-baby-and-child-care-foreground: 55 50% 18%;
+        --color-category-pet-supplies: 20 20% 28%;
+        --color-category-pet-supplies-foreground: 20 20% 15%;
+        --color-category-home-and-general: 200 17% 30%;
+        --color-category-home-and-general-foreground: 200 20% 15%;
+        --color-category-pharmacy: 174 45% 23%;
+        --color-category-pharmacy-foreground: 175 30% 15%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
