@@ -274,7 +274,7 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                     <p className="text-sm text-center text-muted-foreground">{t('processing')}...</p>
                 </div>
             ) : (
-                 <Button onClick={triggerFileSelect} className='w-full' size="lg" disabled={isLoading}>
+                 <Button onClick={triggerFileSelect} className='w-full' size="lg" disabled={isLoading} data-analytics-id="select-pdf-button">
                     <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />
                     {t('select_pdf_button')}
                 </Button>

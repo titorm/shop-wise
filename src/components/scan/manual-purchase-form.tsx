@@ -252,7 +252,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
         </Card>
         
         <div className="flex justify-end">
-            <Button type="submit" size="lg" disabled={isSaving}>
+            <Button type="submit" size="lg" disabled={isSaving} data-analytics-id="save-manual-purchase-button">
                 {isSaving ? <FontAwesomeIcon icon={faSpinner} className="mr-2 animate-spin" /> : <FontAwesomeIcon icon={faSave} className="mr-2" />} 
                 {isSaving ? t('saving') : t('save_purchase_button')}
             </Button>
