@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { extractDataFromPdf } from '@/app/(dashboard)/scan/actions';
@@ -20,6 +20,7 @@ import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Progress } from '../ui/progress';
 
 interface Product {
     id: number;
@@ -67,9 +68,29 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isLoading) {
+      setProgress(0);
+      timer = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(timer);
+            return 95;
+          }
+          return prev + 5;
+        });
+      }, 200);
+    }
+    return () => {
+      clearInterval(timer);
+    };
+  }, [isLoading]);
 
 
   const getCategoryClass = (category?: string) => {
@@ -148,6 +169,7 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                 title: t('scan_success_title'),
                 description: t('scan_success_desc_pdf'),
             });
+            setProgress(100);
             setIsLoading(false);
         };
     } catch (error: any) {
@@ -245,10 +267,19 @@ export function PdfImportComponent({ onSave }: PdfImportProps) {
                 className="hidden"
                 id="pdf-upload"
             />
-            <Button onClick={triggerFileSelect} className='w-full' size="lg" disabled={isLoading}>
-                {isLoading ? <FontAwesomeIcon icon={faSpinner} className="mr-2 h-5 w-5 animate-spin" /> : <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />}
-                {isLoading ? t('processing') : t('select_pdf_button')}
-            </Button>
+
+            {isLoading ? (
+                <div className="w-full space-y-2">
+                    <Progress value={progress} />
+                    <p className="text-sm text-center text-muted-foreground">{t('processing')}...</p>
+                </div>
+            ) : (
+                 <Button onClick={triggerFileSelect} className='w-full' size="lg" disabled={isLoading}>
+                    <FontAwesomeIcon icon={faFilePdf} className="mr-2 h-5 w-5" />
+                    {t('select_pdf_button')}
+                </Button>
+            )}
+           
 
             {extractionResult && products.length > 0 && (
                 <div className="w-full space-y-6">
