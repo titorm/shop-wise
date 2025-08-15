@@ -1,6 +1,3 @@
-
-'use server';
-
 import { db } from '@/lib/firebase';
 import { addDoc, collection, serverTimestamp, writeBatch, Timestamp, doc, getDocs, query, where, setDoc, limit } from 'firebase/firestore';
 import { Collections } from '@/lib/enums';

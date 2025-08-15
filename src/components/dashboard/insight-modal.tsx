@@ -1,21 +1,40 @@
-
-"use client";
-
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
+import {
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+    ChartLegend,
+    ChartLegendContent,
+} from "@/components/ui/chart";
 import { Pie, PieChart as RechartsPieChart, Cell, ResponsiveContainer } from "recharts";
 import { useTranslation } from "react-i18next";
 import { ReactNode, useMemo } from "react";
 import { EmptyState } from "../ui/empty-state";
-import { faStore, faBox, faCalendar, faTags, faDollarSign, faWandMagicSparkles, faGem, faRocket } from "@fortawesome/free-solid-svg-icons";
+import {
+    faStore,
+    faBox,
+    faCalendar,
+    faTags,
+    faDollarSign,
+    faWandMagicSparkles,
+    faGem,
+    faRocket,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Badge } from "../ui/badge";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
-import Link from "next/link";
 import { Alert, AlertTitle } from "../ui/alert";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
+import { Link } from "@tanstack/react-router";
 
 interface InsightModalProps {
     title: string;
@@ -24,7 +43,7 @@ interface InsightModalProps {
     data: any[];
     chartData?: any[];
     chartConfig?: any;
-    type: 'spendingByStore' | 'recentItems' | 'topCategories' | 'savingsOpportunities' | 'consumptionAnalysis';
+    type: "spendingByStore" | "recentItems" | "topCategories" | "savingsOpportunities" | "consumptionAnalysis";
     analysis?: string | null;
     isLoading?: boolean;
     onOpen?: () => void;
@@ -33,27 +52,50 @@ interface InsightModalProps {
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF", "#FF19AF", "#19AFFF", "#AFFF19"];
 
-export function InsightModal({ title, description, children, data, chartData, chartConfig, type, analysis, isLoading, onOpen, isPremium }: InsightModalProps) {
+export function InsightModal({
+    title,
+    description,
+    children,
+    data,
+    chartData,
+    chartConfig,
+    type,
+    analysis,
+    isLoading,
+    onOpen,
+    isPremium,
+}: InsightModalProps) {
     const { t } = useTranslation();
 
     const renderContent = () => {
-        if (type !== 'consumptionAnalysis' && (!data || data.length === 0)) {
-            return <EmptyState title={t('empty_state_no_modal_data_title')} description={t('empty_state_no_modal_data_desc')} />;
+        if (type !== "consumptionAnalysis" && (!data || data.length === 0)) {
+            return (
+                <EmptyState
+                    title={t("empty_state_no_modal_data_title")}
+                    description={t("empty_state_no_modal_data_desc")}
+                />
+            );
         }
-        
+
         switch (type) {
-            case 'spendingByStore':
+            case "spendingByStore":
                 const total = data.reduce((acc, item) => acc + item.value, 0);
-                const pieData = data.map(item => ({ ...item, percentage: ((item.value / total) * 100).toFixed(0) }));
+                const pieData = data.map((item) => ({ ...item, percentage: ((item.value / total) * 100).toFixed(0) }));
 
                 return (
                     <div className="grid md:grid-cols-2 gap-6">
                         <div>
-                             <Table>
+                            <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead><FontAwesomeIcon icon={faStore} className="mr-2 h-4 w-4" />{t('table_store')}</TableHead>
-                                        <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />{t('table_amount_spent')}</TableHead>
+                                        <TableHead>
+                                            <FontAwesomeIcon icon={faStore} className="mr-2 h-4 w-4" />
+                                            {t("table_store")}
+                                        </TableHead>
+                                        <TableHead className="text-right">
+                                            <FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />
+                                            {t("table_amount_spent")}
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -71,17 +113,33 @@ export function InsightModal({ title, description, children, data, chartData, ch
                                 <ResponsiveContainer>
                                     <RechartsPieChart>
                                         <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
-                                        <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} labelLine={false} label={({ cx, cy, midAngle, innerRadius, outerRadius, value, index }) => {
-                                            const RADIAN = Math.PI / 180;
-                                            const radius = innerRadius + (outerRadius - innerRadius) * 1.2;
-                                            const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                                            const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                                            return (
-                                                <text x={x} y={y} fill="currentColor" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs">
-                                                    {`${pieData[index].name} (${pieData[index].percentage}%)`}
-                                                </text>
-                                            );
-                                        }}>
+                                        <Pie
+                                            data={pieData}
+                                            dataKey="value"
+                                            nameKey="name"
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={80}
+                                            labelLine={false}
+                                            label={({ cx, cy, midAngle, innerRadius, outerRadius, value, index }) => {
+                                                const RADIAN = Math.PI / 180;
+                                                const radius = innerRadius + (outerRadius - innerRadius) * 1.2;
+                                                const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                                const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                                                return (
+                                                    <text
+                                                        x={x}
+                                                        y={y}
+                                                        fill="currentColor"
+                                                        textAnchor={x > cx ? "start" : "end"}
+                                                        dominantBaseline="central"
+                                                        className="text-xs"
+                                                    >
+                                                        {`${pieData[index].name} (${pieData[index].percentage}%)`}
+                                                    </text>
+                                                );
+                                            }}
+                                        >
                                             {pieData.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                             ))}
@@ -91,43 +149,60 @@ export function InsightModal({ title, description, children, data, chartData, ch
                             </ChartContainer>
                         </div>
                     </div>
-                )
-            case 'recentItems':
-                 return (
+                );
+            case "recentItems":
+                return (
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead><FontAwesomeIcon icon={faBox} className="mr-2 h-4 w-4" />{t('table_product')}</TableHead>
-                                <TableHead><FontAwesomeIcon icon={faCalendar} className="mr-2 h-4 w-4" />{t('table_purchase_date')}</TableHead>
-                                <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />{t('table_price')}</TableHead>
+                                <TableHead>
+                                    <FontAwesomeIcon icon={faBox} className="mr-2 h-4 w-4" />
+                                    {t("table_product")}
+                                </TableHead>
+                                <TableHead>
+                                    <FontAwesomeIcon icon={faCalendar} className="mr-2 h-4 w-4" />
+                                    {t("table_purchase_date")}
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    <FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />
+                                    {t("table_price")}
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {data.map((item, index) => (
                                 <TableRow key={index}>
                                     <TableCell className="font-medium">{item.name}</TableCell>
-                                    <TableCell>{item.purchaseDate?.toLocaleDateString('pt-BR')}</TableCell>
+                                    <TableCell>{item.purchaseDate?.toLocaleDateString("pt-BR")}</TableCell>
                                     <TableCell className="text-right">R$ {item.price?.toFixed(2)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                 );
-            case 'topCategories':
-                 return (
+                );
+            case "topCategories":
+                return (
                     <div className="grid md:grid-cols-2 gap-6 items-center">
                         <div>
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead><FontAwesomeIcon icon={faTags} className="mr-2 h-4 w-4" />{t('table_category')}</TableHead>
-                                        <TableHead className="text-right"><FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />{t('table_amount_spent')}</TableHead>
+                                        <TableHead>
+                                            <FontAwesomeIcon icon={faTags} className="mr-2 h-4 w-4" />
+                                            {t("table_category")}
+                                        </TableHead>
+                                        <TableHead className="text-right">
+                                            <FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />
+                                            {t("table_amount_spent")}
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {data.map((item, index) => (
                                         <TableRow key={index}>
-                                            <TableCell><Badge variant="outline">{item.name}</Badge></TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline">{item.name}</Badge>
+                                            </TableCell>
                                             <TableCell className="text-right">R$ {item.value.toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
@@ -155,52 +230,57 @@ export function InsightModal({ title, description, children, data, chartData, ch
                             </div>
                         )}
                     </div>
-                 );
-            case 'savingsOpportunities':
+                );
+            case "savingsOpportunities":
                 return (
-                     <Table>
+                    <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead><FontAwesomeIcon icon={faBox} className="mr-2 h-4 w-4" />{t('table_product')}</TableHead>
-                                <TableHead>{t('table_cheaper_at')}</TableHead>
-                                <TableHead className="text-right">{t('table_potential_saving')}</TableHead>
+                                <TableHead>
+                                    <FontAwesomeIcon icon={faBox} className="mr-2 h-4 w-4" />
+                                    {t("table_product")}
+                                </TableHead>
+                                <TableHead>{t("table_cheaper_at")}</TableHead>
+                                <TableHead className="text-right">{t("table_potential_saving")}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                             {data.map((item, index) => (
+                            {data.map((item, index) => (
                                 <TableRow key={index}>
                                     <TableCell className="font-medium">{item.name}</TableCell>
                                     <TableCell>{item.store}</TableCell>
-                                    <TableCell className="text-right text-primary font-bold">R$ {item.saving.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right text-primary font-bold">
+                                        R$ {item.saving.toFixed(2)}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 );
-            case 'consumptionAnalysis':
+            case "consumptionAnalysis":
                 if (!isPremium) {
                     return (
                         <Alert className="border-primary/50 text-center">
-                             <FontAwesomeIcon icon={faGem} className="h-5 w-5 text-primary" />
-                            <AlertTitle className="text-lg font-bold text-primary">{t('premium_feature_title')}</AlertTitle>
-                            <DialogDescription>
-                                {t('premium_feature_desc_consumption')}
-                            </DialogDescription>
+                            <FontAwesomeIcon icon={faGem} className="h-5 w-5 text-primary" />
+                            <AlertTitle className="text-lg font-bold text-primary">
+                                {t("premium_feature_title")}
+                            </AlertTitle>
+                            <DialogDescription>{t("premium_feature_desc_consumption")}</DialogDescription>
                             <Button asChild className="mt-4">
-                                <Link href="/family?tab=plan">
+                                <Link to="/dashboard/family" search={{ tab: 'plan' }}>
                                     <FontAwesomeIcon icon={faRocket} className="mr-2" />
-                                    {t('upgrade_plan_button')}
+                                    {t("upgrade_plan_button")}
                                 </Link>
                             </Button>
                         </Alert>
-                    )
+                    );
                 }
-                 if (isLoading) {
+                if (isLoading) {
                     return (
                         <div className="space-y-4">
-                             <div className="flex items-center gap-2 text-muted-foreground">
+                            <div className="flex items-center gap-2 text-muted-foreground">
                                 <FontAwesomeIcon icon={faWandMagicSparkles} className="h-5 w-5 animate-pulse" />
-                                <p>{t('modal_analysis_loading')}</p>
+                                <p>{t("modal_analysis_loading")}</p>
                             </div>
                             <Skeleton className="h-6 w-3/4" />
                             <Skeleton className="h-4 w-full" />
@@ -209,19 +289,24 @@ export function InsightModal({ title, description, children, data, chartData, ch
                         </div>
                     );
                 }
-                 if (analysis) {
+                if (analysis) {
                     return (
                         <div className="prose prose-sm dark:prose-invert max-w-none">
                             <ReactMarkdown>{analysis}</ReactMarkdown>
                         </div>
-                    )
-                 }
+                    );
+                }
 
-                 return <EmptyState title={t('empty_state_no_analysis_title')} description={t('empty_state_no_analysis_desc')} />;
+                return (
+                    <EmptyState
+                        title={t("empty_state_no_analysis_title")}
+                        description={t("empty_state_no_analysis_desc")}
+                    />
+                );
             default:
                 return null;
         }
-    }
+    };
 
     return (
         <Dialog onOpenChange={(open) => open && onOpen?.()}>
@@ -231,9 +316,7 @@ export function InsightModal({ title, description, children, data, chartData, ch
                     <DialogTitle className="text-xl">{title}</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
-                <div className="py-4 max-h-[70vh] overflow-y-auto">
-                    {renderContent()}
-                </div>
+                <div className="py-4 max-h-[70vh] overflow-y-auto">{renderContent()}</div>
             </DialogContent>
         </Dialog>
     );

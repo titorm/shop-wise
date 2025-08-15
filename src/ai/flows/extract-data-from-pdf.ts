@@ -1,6 +1,3 @@
-
-'use server';
-
 /**
  * @fileOverview This file defines a Genkit flow to extract ALL data (store and products) from a multi-page PDF receipt.
  *
@@ -10,54 +7,54 @@
  * - `ExtractDataFromPdfOutput`: The output type for the `extractDataFromPdf` function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from "@/ai/genkit";
+import { z } from "genkit";
 
 const ExtractDataFromPdfInputSchema = z.object({
-  pdfDataUri: z
-    .string()
-    .describe(
-      "A PDF of a receipt, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:application/pdf;base64,<encoded_data>'."
-    ),
+    pdfDataUri: z
+        .string()
+        .describe(
+            "A PDF of a receipt, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:application/pdf;base64,<encoded_data>'."
+        ),
 });
 export type ExtractDataFromPdfInput = z.infer<typeof ExtractDataFromPdfInputSchema>;
 
-
 const ExtractDataFromPdfOutputSchema = z.object({
-  products: z.array(
-    z.object({
-      barcode: z.string().describe("The product's barcode (Código)."),
-      name: z.string().describe('The name of the product (Descrição).'),
-      quantity: z.number().describe('The quantity of the product (Qtde.).'),
-      volume: z.string().describe("The unit of measurement for the product (UN). Ex: UN, KG, L"),
-      unitPrice: z.number().describe("The unit price of the product (Vl. Unit.)."),
-      price: z.number().describe('The total price of the product (Vl. Total).'),
-      brand: z.string().optional().describe('The brand of the product, inferred from its name.'),
-      category: z.string().describe('The category of the product.'),
-      subcategory: z.string().optional().describe('The subcategory of the product.'),
-    })
-  ).describe('An array of ALL products extracted from the receipt.'),
-  storeName: z.string().describe('The name of the store.'),
-  date: z.string().describe('The date of the purchase (dd/mm/yyyy).'),
-  cnpj: z.string().describe("The store's CNPJ (Cadastro Nacional da Pessoa Jurídica)."),
-  address: z.string().describe("The full address of the store."),
-  accessKey: z.string().describe("The receipt's access key (Chave de Acesso)."),
-  latitude: z.number().optional().describe("The latitude of the store's location."),
-  longitude: z.number().optional().describe("The longitude of the store's location."),
-  discount: z.number().optional().describe('The total discount amount for the purchase (Descontos R$).'),
+    products: z
+        .array(
+            z.object({
+                barcode: z.string().describe("The product's barcode (Código)."),
+                name: z.string().describe("The name of the product (Descrição)."),
+                quantity: z.number().describe("The quantity of the product (Qtde.)."),
+                volume: z.string().describe("The unit of measurement for the product (UN). Ex: UN, KG, L"),
+                unitPrice: z.number().describe("The unit price of the product (Vl. Unit.)."),
+                price: z.number().describe("The total price of the product (Vl. Total)."),
+                brand: z.string().optional().describe("The brand of the product, inferred from its name."),
+                category: z.string().describe("The category of the product."),
+                subcategory: z.string().optional().describe("The subcategory of the product."),
+            })
+        )
+        .describe("An array of ALL products extracted from the receipt."),
+    storeName: z.string().describe("The name of the store."),
+    date: z.string().describe("The date of the purchase (dd/mm/yyyy)."),
+    cnpj: z.string().describe("The store's CNPJ (Cadastro Nacional da Pessoa Jurídica)."),
+    address: z.string().describe("The full address of the store."),
+    accessKey: z.string().describe("The receipt's access key (Chave de Acesso)."),
+    latitude: z.number().optional().describe("The latitude of the store's location."),
+    longitude: z.number().optional().describe("The longitude of the store's location."),
+    discount: z.number().optional().describe("The total discount amount for the purchase (Descontos R$)."),
 });
 export type ExtractDataFromPdfOutput = z.infer<typeof ExtractDataFromPdfOutputSchema>;
 
-
 export async function extractDataFromPdf(input: ExtractDataFromPdfInput): Promise<ExtractDataFromPdfOutput> {
-  return extractDataFromPdfFlow(input);
+    return extractDataFromPdfFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'extractDataFromPdfPrompt',
-  input: {schema: ExtractDataFromPdfInputSchema},
-  output: {schema: ExtractDataFromPdfOutputSchema},
-  prompt: `You are an expert data extractor specializing in extracting data from Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipts.
+    name: "extractDataFromPdfPrompt",
+    input: { schema: ExtractDataFromPdfInputSchema },
+    output: { schema: ExtractDataFromPdfOutputSchema },
+    prompt: `You are an expert data extractor specializing in extracting data from Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipts.
 
   You will use the information from the provided PDF to extract the store name, purchase date, and a list of all products. It is critical that you extract ALL products listed on the receipt, which may span multiple pages.
 
@@ -97,15 +94,14 @@ const prompt = ai.definePrompt({
   `,
 });
 
-
 const extractDataFromPdfFlow = ai.defineFlow(
-  {
-    name: 'extractDataFromPdfFlow',
-    inputSchema: ExtractDataFromPdfInputSchema,
-    outputSchema: ExtractDataFromPdfOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
+    {
+        name: "extractDataFromPdfFlow",
+        inputSchema: ExtractDataFromPdfInputSchema,
+        outputSchema: ExtractDataFromPdfOutputSchema,
+    },
+    async (input) => {
+        const { output } = await prompt(input);
+        return output!;
+    }
 );

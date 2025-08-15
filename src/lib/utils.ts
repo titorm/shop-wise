@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+    return twMerge(clsx(inputs));
 }
 
 export const getUserInitials = (name: string | null | undefined) => {
@@ -12,4 +12,4 @@ export const getUserInitials = (name: string | null | undefined) => {
         return `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`.toUpperCase();
     }
     return name.charAt(0).toUpperCase();
-}
+};

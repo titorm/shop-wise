@@ -1,4 +1,3 @@
-
 import { Timestamp } from "firebase/firestore";
 
 export interface Notification {
@@ -7,5 +6,5 @@ export interface Notification {
     description: string;
     createdAt: Timestamp;
     read: boolean;
-    type: 'suggestion' | 'alert' | 'info';
+    type: "suggestion" | "alert" | "info";
 }

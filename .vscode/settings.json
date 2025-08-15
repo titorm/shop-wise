@@ -1,0 +1,15 @@
+{
+    "files.readonlyInclude": {
+        "**/routeTree.gen.ts": true
+    },
+    "files.watcherExclude": {
+        "**/routeTree.gen.ts": true
+    },
+    "search.exclude": {
+        "**/routeTree.gen.ts": true
+    },
+    "editor.rulers": [
+        120
+    ],
+    "dart.lineLength": 120
+}

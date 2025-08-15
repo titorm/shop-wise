@@ -1,28 +1,58 @@
-
-"use client";
-
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faSearch, faStore, faShoppingCart, faDollarSign, faLightbulb, faBox, faHashtag, faBarcode, faWeightHanging, faTrash, faPlusCircle, faSave, faPencil, faCheck } from '@fortawesome/free-solid-svg-icons';
-import { faCalendar } from '@fortawesome/free-regular-svg-icons';
-import { useTranslation, Trans } from 'react-i18next';
-import { useAuth } from '@/hooks/use-auth';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy, Timestamp, getDoc, writeBatch, doc } from 'firebase/firestore';
-import { Collections } from '@/lib/enums';
-import { Skeleton } from '@/components/ui/skeleton';
-import { EmptyState } from '@/components/ui/empty-state';
-import { toast } from '@/hooks/use-toast';
-import { updatePurchaseItems } from '@/app/(dashboard)/family/actions';
-import { trackEvent } from '@/services/analytics-service';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faHistory,
+    faSearch,
+    faStore,
+    faShoppingCart,
+    faDollarSign,
+    faLightbulb,
+    faBox,
+    faHashtag,
+    faBarcode,
+    faWeightHanging,
+    faTrash,
+    faPlusCircle,
+    faSave,
+    faPencil,
+    faCheck,
+} from "@fortawesome/free-solid-svg-icons";
+import { faCalendar } from "@fortawesome/free-regular-svg-icons";
+import { useTranslation, Trans } from "react-i18next";
+import { useAuth } from "@/hooks/use-auth";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, query, orderBy, Timestamp, getDoc, writeBatch, doc } from "firebase/firestore";
+import { Collections } from "@/lib/enums";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { toast } from "@/hooks/use-toast";
+import { updatePurchaseItems } from "../../routes/dashboard/family/actions";
+import { trackEvent } from "@/services/analytics-service";
 
 interface PurchaseItem {
     id: string;
@@ -42,60 +72,70 @@ interface Purchase {
     items: PurchaseItem[];
 }
 
-
 export function HistoryTab() {
     const { t } = useTranslation();
     const { profile } = useAuth();
     const [purchases, setPurchases] = useState<Purchase[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedStore, setSelectedStore] = useState('all');
-    const [selectedPeriod, setSelectedPeriod] = useState('all');
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedStore, setSelectedStore] = useState("all");
+    const [selectedPeriod, setSelectedPeriod] = useState("all");
 
     useEffect(() => {
         async function fetchPurchases() {
             if (!profile?.familyId) {
                 setLoading(false);
                 return;
-            };
+            }
 
             setLoading(true);
             try {
                 const purchasesRef = collection(db, Collections.Families, profile.familyId, "purchases");
                 const q = query(purchasesRef, orderBy("date", "desc"));
                 const querySnapshot = await getDocs(q);
-                
-                const allPurchases = await Promise.all(querySnapshot.docs.map(async (purchaseDoc) => {
-                    const purchaseData = purchaseDoc.data();
-                    const itemsRef = collection(db, Collections.Families, profile.familyId!, "purchases", purchaseDoc.id, "purchase_items");
-                    const itemsSnap = await getDocs(itemsRef);
-                    const items = await Promise.all(itemsSnap.docs.map(async (itemDoc) => {
-                        const itemData = itemDoc.data();
-                         if (itemData.productRef) {
-                            const productSnap = await getDoc(itemData.productRef);
-                            if (productSnap.exists()) {
-                                const productData = productSnap.data();
-                                itemData.name = productData.name;
-                                itemData.barcode = productData.barcode;
-                                itemData.volume = productData.volume;
-                            }
-                        }
-                        return {
-                            ...itemData, 
-                            id: itemDoc.id, 
-                            unitPrice: itemData.price, // Assuming 'price' from DB is unit price
-                            price: itemData.totalPrice,
-                        } as PurchaseItem;
-                    }));
 
-                    return {
-                        id: purchaseDoc.id,
-                        storeName: purchaseData.storeName,
-                        date: purchaseData.date,
-                        totalAmount: purchaseData.totalAmount,
-                        items,
-                    } as Purchase;
-                }));
+                const allPurchases = await Promise.all(
+                    querySnapshot.docs.map(async (purchaseDoc) => {
+                        const purchaseData = purchaseDoc.data();
+                        const itemsRef = collection(
+                            db,
+                            Collections.Families,
+                            profile.familyId!,
+                            "purchases",
+                            purchaseDoc.id,
+                            "purchase_items"
+                        );
+                        const itemsSnap = await getDocs(itemsRef);
+                        const items = await Promise.all(
+                            itemsSnap.docs.map(async (itemDoc) => {
+                                const itemData = itemDoc.data();
+                                if (itemData.productRef) {
+                                    const productSnap = await getDoc(itemData.productRef);
+                                    if (productSnap.exists()) {
+                                        const productData = productSnap.data() as any;
+                                        itemData.name = productData.name;
+                                        itemData.barcode = productData.barcode;
+                                        itemData.volume = productData.volume;
+                                    }
+                                }
+                                return {
+                                    ...itemData,
+                                    id: itemDoc.id,
+                                    unitPrice: itemData.price, // Assuming 'price' from DB is unit price
+                                    price: itemData.totalPrice,
+                                } as PurchaseItem;
+                            })
+                        );
+
+                        return {
+                            id: purchaseDoc.id,
+                            storeName: purchaseData.storeName,
+                            date: purchaseData.date,
+                            totalAmount: purchaseData.totalAmount,
+                            items,
+                        } as Purchase;
+                    })
+                );
 
                 setPurchases(allPurchases);
             } catch (error) {
@@ -107,19 +147,19 @@ export function HistoryTab() {
 
         fetchPurchases();
     }, [profile]);
-    
+
     const handleDeletePurchase = async (purchaseId: string) => {
         if (!profile?.familyId) {
-             toast({
-                variant: 'destructive',
-                title: t('toast_error_title'),
-                description: t('error_not_logged_in'),
+            toast({
+                variant: "destructive",
+                title: t("toast_error_title"),
+                description: t("error_not_logged_in"),
             });
             return;
         }
 
         try {
-            const purchaseRef = doc(db, Collections.Families, profile.familyId, 'purchases', purchaseId);
+            const purchaseRef = doc(db, Collections.Families, profile.familyId, "purchases", purchaseId);
             const itemsRef = collection(db, purchaseRef.path, "purchase_items");
 
             const batch = writeBatch(db);
@@ -135,47 +175,55 @@ export function HistoryTab() {
 
             await batch.commit();
 
-            setPurchases((prev) => prev.filter(p => p.id !== purchaseId));
-            
-            toast({
-                title: t('toast_success_title'),
-                description: t('purchase_deleted_successfully'),
-            });
-            trackEvent('purchase_deleted', { purchaseId });
+            setPurchases((prev) => prev.filter((p) => p.id !== purchaseId));
 
+            toast({
+                title: t("toast_success_title"),
+                description: t("purchase_deleted_successfully"),
+            });
+            trackEvent("purchase_deleted", { purchaseId });
         } catch (error) {
             console.error("Error deleting purchase:", error);
             toast({
-                variant: 'destructive',
-                title: t('toast_error_title'),
-                description: t('error_deleting_purchase'),
+                variant: "destructive",
+                title: t("toast_error_title"),
+                description: t("error_deleting_purchase"),
             });
         }
     };
 
+    const filteredPurchases = useMemo(
+        () =>
+            purchases.filter((purchase) => {
+                const lowerSearchTerm = searchTerm.toLowerCase();
+                const matchesSearch =
+                    lowerSearchTerm === "" ||
+                    purchase.storeName.toLowerCase().includes(lowerSearchTerm) ||
+                    purchase.items.some((item) => item.name?.toLowerCase().includes(lowerSearchTerm));
 
-    const filteredPurchases = useMemo(() => purchases.filter(purchase => {
-        const lowerSearchTerm = searchTerm.toLowerCase();
-        const matchesSearch = lowerSearchTerm === '' ||
-            purchase.storeName.toLowerCase().includes(lowerSearchTerm) ||
-            purchase.items.some(item => item.name?.toLowerCase().includes(lowerSearchTerm));
+                const matchesStore = selectedStore === "all" || purchase.storeName === selectedStore;
 
-        const matchesStore = selectedStore === 'all' || purchase.storeName === selectedStore;
-        
-        const now = new Date();
-        const purchaseDate = purchase.date.toDate();
-        
-        const matchesPeriod = selectedPeriod === 'all' ||
-            (selectedPeriod === 'last_month' && purchaseDate > new Date(new Date().setMonth(now.getMonth() - 1))) ||
-            (selectedPeriod === 'last_3_months' && purchaseDate > new Date(new Date().setMonth(now.getMonth() - 3))) ||
-            (selectedPeriod === 'last_6_months' && purchaseDate > new Date(new Date().setMonth(now.getMonth() - 6))) ||
-            (selectedPeriod === 'last_year' && purchaseDate > new Date(new Date().setFullYear(now.getFullYear() - 1)));
+                const now = new Date();
+                const purchaseDate = purchase.date.toDate();
 
-        return matchesSearch && matchesStore && matchesPeriod;
-    }), [purchases, searchTerm, selectedStore, selectedPeriod]);
+                const matchesPeriod =
+                    selectedPeriod === "all" ||
+                    (selectedPeriod === "last_month" &&
+                        purchaseDate > new Date(new Date().setMonth(now.getMonth() - 1))) ||
+                    (selectedPeriod === "last_3_months" &&
+                        purchaseDate > new Date(new Date().setMonth(now.getMonth() - 3))) ||
+                    (selectedPeriod === "last_6_months" &&
+                        purchaseDate > new Date(new Date().setMonth(now.getMonth() - 6))) ||
+                    (selectedPeriod === "last_year" &&
+                        purchaseDate > new Date(new Date().setFullYear(now.getFullYear() - 1)));
+
+                return matchesSearch && matchesStore && matchesPeriod;
+            }),
+        [purchases, searchTerm, selectedStore, selectedPeriod]
+    );
 
     const availableStores = useMemo(() => {
-        const storeSet = new Set(purchases.map(p => p.storeName));
+        const storeSet = new Set(purchases.map((p) => p.storeName));
         return Array.from(storeSet);
     }, [purchases]);
 
@@ -183,15 +231,20 @@ export function HistoryTab() {
         <div className="space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faHistory} className="w-6 h-6"/> {t('purchase_history_title')}</CardTitle>
-                    <CardDescription>{t('purchase_history_description')}</CardDescription>
+                    <CardTitle className="text-2xl font-headline flex items-center gap-2">
+                        <FontAwesomeIcon icon={faHistory} className="w-6 h-6" /> {t("purchase_history_title")}
+                    </CardTitle>
+                    <CardDescription>{t("purchase_history_description")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col md:flex-row gap-4 mb-6">
                         <div className="relative flex-grow">
-                            <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                                placeholder={t('search_by_store_or_product')}
+                            <FontAwesomeIcon
+                                icon={faSearch}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                            />
+                            <Input
+                                placeholder={t("search_by_store_or_product")}
                                 className="pl-10"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -199,50 +252,60 @@ export function HistoryTab() {
                         </div>
                         <Select value={selectedStore} onValueChange={setSelectedStore}>
                             <SelectTrigger className="w-full md:w-[200px]">
-                                <SelectValue placeholder={t('filter_by_store')} />
+                                <SelectValue placeholder={t("filter_by_store")} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">{t('all_stores')}</SelectItem>
-                                {availableStores.map(store => (
-                                    <SelectItem key={store} value={store}>{store}</SelectItem>
+                                <SelectItem value="all">{t("all_stores")}</SelectItem>
+                                {availableStores.map((store) => (
+                                    <SelectItem key={store} value={store}>
+                                        {store}
+                                    </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-                             <SelectTrigger className="w-full md:w-[200px]">
-                                <SelectValue placeholder={t('filter_by_period')} />
+                            <SelectTrigger className="w-full md:w-[200px]">
+                                <SelectValue placeholder={t("filter_by_period")} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">{t('all_periods')}</SelectItem>
-                                <SelectItem value="last_month">{t('last_month')}</SelectItem>
-                                <SelectItem value="last_3_months">{t('last_3_months')}</SelectItem>
-                                <SelectItem value="last_6_months">{t('last_6_months')}</SelectItem>
-                                <SelectItem value="last_year">{t('last_year')}</SelectItem>
+                                <SelectItem value="all">{t("all_periods")}</SelectItem>
+                                <SelectItem value="last_month">{t("last_month")}</SelectItem>
+                                <SelectItem value="last_3_months">{t("last_3_months")}</SelectItem>
+                                <SelectItem value="last_6_months">{t("last_6_months")}</SelectItem>
+                                <SelectItem value="last_year">{t("last_year")}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
-                    
+
                     {loading ? (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {[...Array(3)].map((_, i) => (
                                 <Card key={i}>
-                                    <CardHeader><Skeleton className="h-6 w-3/4" /></CardHeader>
-                                    <CardContent><Skeleton className="h-5 w-1/2" /></CardContent>
+                                    <CardHeader>
+                                        <Skeleton className="h-6 w-3/4" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <Skeleton className="h-5 w-1/2" />
+                                    </CardContent>
                                 </Card>
                             ))}
                         </div>
                     ) : (
                         <>
                             {filteredPurchases.length > 0 ? (
-                                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                    {filteredPurchases.map(purchase => (
-                                        <PurchaseCard key={purchase.id} purchase={purchase} onDelete={handleDeletePurchase} />
+                                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                    {filteredPurchases.map((purchase) => (
+                                        <PurchaseCard
+                                            key={purchase.id}
+                                            purchase={purchase}
+                                            onDelete={handleDeletePurchase}
+                                        />
                                     ))}
                                 </div>
                             ) : (
-                                <EmptyState 
-                                    title={t('empty_state_no_history_title')}
-                                    description={t('empty_state_no_history_desc')}
+                                <EmptyState
+                                    title={t("empty_state_no_history_title")}
+                                    description={t("empty_state_no_history_desc")}
                                 />
                             )}
                         </>
@@ -250,23 +313,24 @@ export function HistoryTab() {
                 </CardContent>
             </Card>
 
-             <Card>
+            <Card>
                 <CardHeader>
-                    <CardTitle className="text-xl font-headline flex items-center gap-2"><FontAwesomeIcon icon={faLightbulb} className="w-5 h-5 text-primary"/> {t('recommendations_title')}</CardTitle>
+                    <CardTitle className="text-xl font-headline flex items-center gap-2">
+                        <FontAwesomeIcon icon={faLightbulb} className="w-5 h-5 text-primary" />{" "}
+                        {t("recommendations_title")}
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <EmptyState
                         icon={faLightbulb}
-                        title={t('empty_state_no_recommendations_title')}
-                        description={t('empty_state_no_recommendations_desc')}
+                        title={t("empty_state_no_recommendations_title")}
+                        description={t("empty_state_no_recommendations_desc")}
                     />
                 </CardContent>
-             </Card>
-
+            </Card>
         </div>
     );
 }
-
 
 function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (id: string) => void }) {
     const { t } = useTranslation();
@@ -275,10 +339,9 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
     const [items, setItems] = useState<PurchaseItem[]>(purchase.items);
     const [isSaving, setIsSaving] = useState(false);
     const [editingItemId, setEditingItemId] = useState<string | null>(null);
-    
+
     const originalItemsJson = useMemo(() => JSON.stringify(purchase.items), [purchase.items]);
     const isDirty = useMemo(() => JSON.stringify(items) !== originalItemsJson, [items, originalItemsJson]);
-
 
     useEffect(() => {
         if (isDialogOpen) {
@@ -287,13 +350,13 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
             setEditingItemId(null);
         }
     }, [isDialogOpen, purchase.items]);
-    
+
     const handleItemChange = (index: number, field: keyof PurchaseItem, value: any) => {
         const newItems = [...items];
         const item = { ...newItems[index], [field]: value };
-        
-        if ((field === 'quantity' || field === 'unitPrice') && item.unitPrice !== undefined) {
-             item.price = item.quantity * item.unitPrice;
+
+        if ((field === "quantity" || field === "unitPrice") && item.unitPrice !== undefined) {
+            item.price = item.quantity * item.unitPrice;
         }
 
         newItems[index] = item;
@@ -305,11 +368,11 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
         const newItem: PurchaseItem = {
             id: newItemId,
             productRef: null,
-            name: '',
+            name: "",
             quantity: 1,
             price: 0,
             unitPrice: 0,
-            volume: 'un',
+            volume: "un",
         };
         setItems([...items, newItem]);
         setEditingItemId(newItemId); // Immediately enter edit mode for the new item
@@ -326,26 +389,26 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
         try {
             await updatePurchaseItems(profile.familyId, purchase.id, items);
             toast({
-                title: t('toast_success_title'),
-                description: t('purchase_updated_successfully'),
+                title: t("toast_success_title"),
+                description: t("purchase_updated_successfully"),
             });
-            trackEvent('purchase_items_updated', { 
+            trackEvent("purchase_items_updated", {
                 purchaseId: purchase.id,
-                itemCount: items.length
+                itemCount: items.length,
             });
             setIsDialogOpen(false);
         } catch (error) {
             console.error("Error updating purchase:", error);
             toast({
-                variant: 'destructive',
-                title: t('toast_error_title'),
-                description: t('error_updating_purchase'),
+                variant: "destructive",
+                title: t("toast_error_title"),
+                description: t("error_updating_purchase"),
             });
         } finally {
             setIsSaving(false);
         }
     };
-    
+
     const totalAmount = useMemo(() => {
         return items.reduce((acc, item) => acc + (item.price || 0), 0);
     }, [items]);
@@ -353,18 +416,25 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-                 <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                     <CardHeader>
-                        <CardTitle className="text-lg truncate flex items-center gap-2"><FontAwesomeIcon icon={faStore} className="w-4 h-4 text-primary"/> {purchase.storeName}</CardTitle>
-                        <CardDescription className="flex items-center gap-2"><FontAwesomeIcon icon={faCalendar} className="w-4 h-4"/> {purchase.date.toDate().toLocaleDateString('pt-BR', {day: '2-digit', month: 'long', year: 'numeric'})}</CardDescription>
+                        <CardTitle className="text-lg truncate flex items-center gap-2">
+                            <FontAwesomeIcon icon={faStore} className="w-4 h-4 text-primary" /> {purchase.storeName}
+                        </CardTitle>
+                        <CardDescription className="flex items-center gap-2">
+                            <FontAwesomeIcon icon={faCalendar} className="w-4 h-4" />{" "}
+                            {purchase.date
+                                .toDate()
+                                .toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="flex justify-between items-center text-sm">
                         <div className="flex items-center gap-2 text-muted-foreground">
-                            <FontAwesomeIcon icon={faShoppingCart} className="w-4 h-4"/>
-                            <span>{t('purchase_card_items', {count: purchase.items.length})}</span>
+                            <FontAwesomeIcon icon={faShoppingCart} className="w-4 h-4" />
+                            <span>{t("purchase_card_items", { count: purchase.items.length })}</span>
                         </div>
                         <div className="flex items-center gap-2 font-bold text-lg text-foreground">
-                            <FontAwesomeIcon icon={faDollarSign} className="w-5 h-5 text-primary"/>
+                            <FontAwesomeIcon icon={faDollarSign} className="w-5 h-5 text-primary" />
                             <span>{purchase.totalAmount.toFixed(2)}</span>
                         </div>
                     </CardContent>
@@ -372,9 +442,9 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
             </DialogTrigger>
             <DialogContent className="max-w-4xl">
                 <DialogHeader>
-                    <DialogTitle>{t('purchase_details_title', { store: purchase.storeName })}</DialogTitle>
+                    <DialogTitle>{t("purchase_details_title", { store: purchase.storeName })}</DialogTitle>
                     <DialogDescription>
-                        {purchase.date.toDate().toLocaleString('pt-BR', {dateStyle: 'full', timeStyle: 'short'})}
+                        {purchase.date.toDate().toLocaleString("pt-BR", { dateStyle: "full", timeStyle: "short" })}
                         <span className="font-bold ml-4">Total: R$ {totalAmount.toFixed(2)}</span>
                     </DialogDescription>
                 </DialogHeader>
@@ -382,28 +452,63 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead><FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" /> {t('table_product')}</TableHead>
-                                <TableHead className="w-[120px]"><FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" /> {t('table_volume')}</TableHead>
-                                <TableHead className="text-center w-[100px]"><FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" /> {t('table_quantity')}</TableHead>
-                                <TableHead className="text-center w-[120px]">{t('table_unit_price')}</TableHead>
-                                <TableHead className="text-right w-[120px]">{t('table_total_price')}</TableHead>
-                                <TableHead className="w-[100px] text-right">{t('table_actions')}</TableHead>
+                                <TableHead>
+                                    <FontAwesomeIcon icon={faBox} className="inline-block mr-1 w-4 h-4" />{" "}
+                                    {t("table_product")}
+                                </TableHead>
+                                <TableHead className="w-[120px]">
+                                    <FontAwesomeIcon icon={faWeightHanging} className="inline-block mr-1 w-4 h-4" />{" "}
+                                    {t("table_volume")}
+                                </TableHead>
+                                <TableHead className="text-center w-[100px]">
+                                    <FontAwesomeIcon icon={faHashtag} className="inline-block mr-1 w-4 h-4" />{" "}
+                                    {t("table_quantity")}
+                                </TableHead>
+                                <TableHead className="text-center w-[120px]">{t("table_unit_price")}</TableHead>
+                                <TableHead className="text-right w-[120px]">{t("table_total_price")}</TableHead>
+                                <TableHead className="w-[100px] text-right">{t("table_actions")}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                             {items.map((item, index) => (
+                            {items.map((item, index) => (
                                 <TableRow key={item.id}>
                                     <TableCell>
-                                        <Input value={item.name} onChange={e => handleItemChange(index, 'name', e.target.value)} placeholder={t('item_name_placeholder')} disabled={editingItemId !== item.id} />
+                                        <Input
+                                            value={item.name}
+                                            onChange={(e) => handleItemChange(index, "name", e.target.value)}
+                                            placeholder={t("item_name_placeholder")}
+                                            disabled={editingItemId !== item.id}
+                                        />
                                     </TableCell>
                                     <TableCell>
-                                        <Input value={item.volume} onChange={e => handleItemChange(index, 'volume', e.target.value)} placeholder="ex: 1kg, 500ml" disabled={editingItemId !== item.id} />
+                                        <Input
+                                            value={item.volume}
+                                            onChange={(e) => handleItemChange(index, "volume", e.target.value)}
+                                            placeholder="ex: 1kg, 500ml"
+                                            disabled={editingItemId !== item.id}
+                                        />
                                     </TableCell>
                                     <TableCell>
-                                        <Input type="number" value={item.quantity} onChange={e => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)} className="text-center" disabled={editingItemId !== item.id} />
+                                        <Input
+                                            type="number"
+                                            value={item.quantity}
+                                            onChange={(e) =>
+                                                handleItemChange(index, "quantity", parseFloat(e.target.value) || 0)
+                                            }
+                                            className="text-center"
+                                            disabled={editingItemId !== item.id}
+                                        />
                                     </TableCell>
-                                     <TableCell>
-                                        <Input type="number" value={item.unitPrice} onChange={e => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)} className="text-center" disabled={editingItemId !== item.id} />
+                                    <TableCell>
+                                        <Input
+                                            type="number"
+                                            value={item.unitPrice}
+                                            onChange={(e) =>
+                                                handleItemChange(index, "unitPrice", parseFloat(e.target.value) || 0)
+                                            }
+                                            className="text-center"
+                                            disabled={editingItemId !== item.id}
+                                        />
                                     </TableCell>
                                     <TableCell className="text-right font-medium">
                                         R$ {(item.price || 0).toFixed(2)}
@@ -411,15 +516,28 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                                     <TableCell>
                                         <div className="flex justify-end gap-1">
                                             {editingItemId === item.id ? (
-                                                <Button variant="ghost" size="icon" onClick={() => setEditingItemId(null)}>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => setEditingItemId(null)}
+                                                >
                                                     <FontAwesomeIcon icon={faCheck} className="h-4 w-4 text-primary" />
                                                 </Button>
                                             ) : (
-                                                <Button variant="ghost" size="icon" onClick={() => setEditingItemId(item.id)}>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => setEditingItemId(item.id)}
+                                                >
                                                     <FontAwesomeIcon icon={faPencil} className="h-4 w-4" />
                                                 </Button>
                                             )}
-                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveItem(index)} disabled={editingItemId === item.id}>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleRemoveItem(index)}
+                                                disabled={editingItemId === item.id}
+                                            >
                                                 <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
                                             </Button>
                                         </div>
@@ -428,34 +546,34 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                             ))}
                         </TableBody>
                     </Table>
-                     <Button variant="outline" className="mt-4" onClick={handleAddItem} disabled={!!editingItemId}>
+                    <Button variant="outline" className="mt-4" onClick={handleAddItem} disabled={!!editingItemId}>
                         <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
-                        {t('add_item_button')}
+                        {t("add_item_button")}
                     </Button>
                 </div>
-                 <DialogFooter className="pt-4 border-t flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4">
+                <DialogFooter className="pt-4 border-t flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4">
                     <div>
-                         <AlertDialog>
+                        <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button variant="destructive-outline">
                                     <FontAwesomeIcon icon={faTrash} className="mr-2 h-4 w-4" />
-                                    {t('delete_purchase_button')}
+                                    {t("delete_purchase_button")}
                                 </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>{t('delete_purchase_confirm_title')}</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        {t('delete_purchase_confirm_desc')}
-                                    </AlertDialogDescription>
+                                    <AlertDialogTitle>{t("delete_purchase_confirm_title")}</AlertDialogTitle>
+                                    <AlertDialogDescription>{t("delete_purchase_confirm_desc")}</AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => {
-                                        onDelete(purchase.id);
-                                        setIsDialogOpen(false);
-                                    }}>
-                                        {t('confirm_delete')}
+                                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() => {
+                                            onDelete(purchase.id);
+                                            setIsDialogOpen(false);
+                                        }}
+                                    >
+                                        {t("confirm_delete")}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
@@ -464,7 +582,7 @@ function PurchaseCard({ purchase, onDelete }: { purchase: Purchase; onDelete: (i
                     <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:gap-4">
                         <Button onClick={handleSaveChanges} disabled={isSaving || !isDirty || !!editingItemId}>
                             <FontAwesomeIcon icon={faSave} className="mr-2 h-4 w-4" />
-                            {isSaving ? t('saving') : t('save_changes_button')}
+                            {isSaving ? t("saving") : t("save_changes_button")}
                         </Button>
                     </div>
                 </DialogFooter>

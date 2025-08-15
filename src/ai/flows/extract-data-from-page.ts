@@ -1,6 +1,3 @@
-
-'use server';
-
 /**
  * @fileOverview This file defines a Genkit flow to extract product data from a single page of a PDF receipt.
  *
@@ -10,46 +7,46 @@
  * - `ExtractDataFromPageOutput`: The output type for the `extractDataFromPage` function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from "@/ai/genkit";
+import { z } from "genkit";
 
 const ExtractDataFromPageInputSchema = z.object({
-  pageDataUri: z
-    .string()
-    .describe(
-      "A single page of a PDF receipt, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:application/pdf;base64,<encoded_data>'."
-    ),
+    pageDataUri: z
+        .string()
+        .describe(
+            "A single page of a PDF receipt, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:application/pdf;base64,<encoded_data>'."
+        ),
 });
 export type ExtractDataFromPageInput = z.infer<typeof ExtractDataFromPageInputSchema>;
 
-
 const ExtractDataFromPageOutputSchema = z.object({
-  products: z.array(
-    z.object({
-      barcode: z.string().describe("The product's barcode (Código)."),
-      name: z.string().describe('The name of the product (Descrição).'),
-      quantity: z.number().describe('The quantity of the product (Qtde.).'),
-      volume: z.string().describe("The unit of measurement for the product (UN). Ex: UN, KG, L"),
-      unitPrice: z.number().describe("The unit price of the product (Vl. Unit.)."),
-      price: z.number().describe('The total price of the product (Vl. Total).'),
-      brand: z.string().optional().describe('The brand of the product, inferred from its name.'),
-      category: z.string().describe('The category of the product.'),
-      subcategory: z.string().optional().describe('The subcategory of the product.'),
-    })
-  ).describe('An array of ALL products extracted from this single page of the receipt.'),
+    products: z
+        .array(
+            z.object({
+                barcode: z.string().describe("The product's barcode (Código)."),
+                name: z.string().describe("The name of the product (Descrição)."),
+                quantity: z.number().describe("The quantity of the product (Qtde.)."),
+                volume: z.string().describe("The unit of measurement for the product (UN). Ex: UN, KG, L"),
+                unitPrice: z.number().describe("The unit price of the product (Vl. Unit.)."),
+                price: z.number().describe("The total price of the product (Vl. Total)."),
+                brand: z.string().optional().describe("The brand of the product, inferred from its name."),
+                category: z.string().describe("The category of the product."),
+                subcategory: z.string().optional().describe("The subcategory of the product."),
+            })
+        )
+        .describe("An array of ALL products extracted from this single page of the receipt."),
 });
 export type ExtractDataFromPageOutput = z.infer<typeof ExtractDataFromPageOutputSchema>;
 
-
 export async function extractDataFromPage(input: ExtractDataFromPageInput): Promise<ExtractDataFromPageOutput> {
-  return extractDataFromPageFlow(input);
+    return extractDataFromPageFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'extractDataFromPagePrompt',
-  input: {schema: ExtractDataFromPageInputSchema},
-  output: {schema: ExtractDataFromPageOutputSchema},
-  prompt: `You are an expert data extractor specializing in extracting product data from a single page of a Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipt.
+    name: "extractDataFromPagePrompt",
+    input: { schema: ExtractDataFromPageInputSchema },
+    output: { schema: ExtractDataFromPageOutputSchema },
+    prompt: `You are an expert data extractor specializing in extracting product data from a single page of a Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipt.
 
   Access the provided PDF page and extract a list of all products. It is critical that you extract ALL products listed on this page. Do not extract store or general purchase information, only the product lines.
 
@@ -81,15 +78,14 @@ const prompt = ai.definePrompt({
   `,
 });
 
-
 const extractDataFromPageFlow = ai.defineFlow(
-  {
-    name: 'extractDataFromPageFlow',
-    inputSchema: ExtractDataFromPageInputSchema,
-    outputSchema: ExtractDataFromPageOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
+    {
+        name: "extractDataFromPageFlow",
+        inputSchema: ExtractDataFromPageInputSchema,
+        outputSchema: ExtractDataFromPageOutputSchema,
+    },
+    async (input) => {
+        const { output } = await prompt(input);
+        return output!;
+    }
 );

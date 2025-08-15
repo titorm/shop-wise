@@ -1,6 +1,3 @@
-
-'use server';
-
 /**
  * @fileOverview This file defines a Genkit flow to extract product data from a scanned receipt QR code.
  *
@@ -10,52 +7,54 @@
  * - `ExtractProductDataOutput`: The output type for the `extractProductData` function, defining the extracted product information.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from "@/ai/genkit";
+import { z } from "genkit";
 
 const ExtractProductDataInputSchema = z.object({
-  receiptImage: z
-    .string()
-    .describe(
-      'A receipt QR code, as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' /* e.g., data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w+bOnUAAAAA//LuF9sRi9gAAAABJRU5ErkJggg== */
-    ),
+    receiptImage: z
+        .string()
+        .describe(
+            "A receipt QR code, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'." /* e.g., data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w+bOnUAAAAA//LuF9sRi9gAAAABJRU5ErkJggg== */
+        ),
 });
 export type ExtractProductDataInput = z.infer<typeof ExtractProductDataInputSchema>;
 
 const ExtractProductDataOutputSchema = z.object({
-  products: z.array(
-    z.object({
-      barcode: z.string().describe("The product's barcode (Código)."),
-      name: z.string().describe('The name of the product (Descrição).'),
-      quantity: z.number().describe('The quantity of the product (Qtde.).'),
-      volume: z.string().describe("The unit of measurement for the product (UN). Ex: UN, KG, L"),
-      unitPrice: z.number().describe("The unit price of the product (Vl. Unit.)."),
-      price: z.number().describe('The total price of the product (Vl. Total).'),
-      brand: z.string().optional().describe('The brand of the product, inferred from its name.'),
-      category: z.string().describe('The category of the product.'),
-      subcategory: z.string().optional().describe('The subcategory of the product.'),
-    })
-  ).describe('An array of ALL products extracted from the receipt.'),
-  storeName: z.string().describe('The name of the store.'),
-  date: z.string().describe('The date of the purchase (dd/mm/yyyy).'),
-  cnpj: z.string().describe("The store's CNPJ (Cadastro Nacional da Pessoa Jurídica)."),
-  address: z.string().describe("The full address of the store."),
-  accessKey: z.string().describe("The receipt's access key (Chave de Acesso)."),
-  latitude: z.number().optional().describe("The latitude of the store's location."),
-  longitude: z.number().optional().describe("The longitude of the store's location."),
-  discount: z.number().optional().describe('The total discount amount for the purchase (Descontos R$).'),
+    products: z
+        .array(
+            z.object({
+                barcode: z.string().describe("The product's barcode (Código)."),
+                name: z.string().describe("The name of the product (Descrição)."),
+                quantity: z.number().describe("The quantity of the product (Qtde.)."),
+                volume: z.string().describe("The unit of measurement for the product (UN). Ex: UN, KG, L"),
+                unitPrice: z.number().describe("The unit price of the product (Vl. Unit.)."),
+                price: z.number().describe("The total price of the product (Vl. Total)."),
+                brand: z.string().optional().describe("The brand of the product, inferred from its name."),
+                category: z.string().describe("The category of the product."),
+                subcategory: z.string().optional().describe("The subcategory of the product."),
+            })
+        )
+        .describe("An array of ALL products extracted from the receipt."),
+    storeName: z.string().describe("The name of the store."),
+    date: z.string().describe("The date of the purchase (dd/mm/yyyy)."),
+    cnpj: z.string().describe("The store's CNPJ (Cadastro Nacional da Pessoa Jurídica)."),
+    address: z.string().describe("The full address of the store."),
+    accessKey: z.string().describe("The receipt's access key (Chave de Acesso)."),
+    latitude: z.number().optional().describe("The latitude of the store's location."),
+    longitude: z.number().optional().describe("The longitude of the store's location."),
+    discount: z.number().optional().describe("The total discount amount for the purchase (Descontos R$)."),
 });
 export type ExtractProductDataOutput = z.infer<typeof ExtractProductDataOutputSchema>;
 
 export async function extractProductData(input: ExtractProductDataInput): Promise<ExtractProductDataOutput> {
-  return extractProductDataFlow(input);
+    return extractProductDataFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'extractProductDataPrompt',
-  input: {schema: ExtractProductDataInputSchema},
-  output: {schema: ExtractProductDataOutputSchema},
-  prompt: `You are an expert data extractor specializing in extracting data from Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipts.
+    name: "extractProductDataPrompt",
+    input: { schema: ExtractProductDataInputSchema },
+    output: { schema: ExtractProductDataOutputSchema },
+    prompt: `You are an expert data extractor specializing in extracting data from Brazilian Nota Fiscal de Consumidor Eletrônica (NFC-e) receipts.
 
   You will use the information from the receipt's QR code to extract the store name, purchase date, and a list of all products. It is critical that you extract ALL products listed on the receipt.
 
@@ -178,13 +177,13 @@ const prompt = ai.definePrompt({
 });
 
 const extractProductDataFlow = ai.defineFlow(
-  {
-    name: 'extractProductDataFlow',
-    inputSchema: ExtractProductDataInputSchema,
-    outputSchema: ExtractProductDataOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
+    {
+        name: "extractProductDataFlow",
+        inputSchema: ExtractProductDataInputSchema,
+        outputSchema: ExtractProductDataOutputSchema,
+    },
+    async (input) => {
+        const { output } = await prompt(input);
+        return output!;
+    }
 );
