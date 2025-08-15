@@ -91,11 +91,9 @@ export function Providers({
     const [i18nLoaded, setI18nLoaded] = useState(false);
 
     useEffect(() => {
-        const initI18n = async () => {
-            await i18n.changeLanguage(i18n.language);
-            setI18nLoaded(true);
-        };
-        initI18n();
+      i18n.init().then(() => {
+        setI18nLoaded(true);
+      });
     }, []);
 
     if (!i18nLoaded) {
