@@ -1,9 +1,61 @@
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow users to read and write only their own profile data
-    match /profile/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    function isUserAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function userFamilyId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.familyId;
+    }
+
+    function belongsToFamily(familyId) {
+      return isUserAuthenticated() && userFamilyId() == familyId;
+    }
+
+    match /users/{userId} {
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isUserAuthenticated();
+    }
+    
+    match /families/{familyId} {
+      allow read, update, delete: if belongsToFamily(familyId);
+      allow create: if isUserAuthenticated();
+
+      match /purchases/{purchaseId} {
+        allow read, create, update, delete: if belongsToFamily(familyId);
+        
+        match /purchase_items/{itemId} {
+           allow read, create, update, delete: if belongsToFamily(familyId);
+        }
+      }
+      
+      match /shopping_lists/{listId} {
+        allow read, create, update, delete: if belongsToFamily(familyId);
+
+        match /items/{itemId} {
+           allow read, create, update, delete: if belongsToFamily(familyId);
+        }
+      }
+
+      match /notifications/{notificationId} {
+        allow read, create, update, delete: if belongsToFamily(familyId);
+      }
+    }
+    
+    match /products/{productId} {
+      allow read, create: if isUserAuthenticated();
+    }
+    
+    match /stores/{storeId} {
+       allow read, create: if isUserAuthenticated();
     }
   }
 }

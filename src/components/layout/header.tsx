@@ -1,95 +1,72 @@
 
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from "next/link";
-import { Bell, LogOut, ShoppingCart, User, Users, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Logo } from "@/components/icons";
+import { ShopWiseLogo } from "@/components/icons";
 import { useAuth } from "@/hooks/use-auth";
-import { auth } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
-import { useRouter } from "next/navigation";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserInitials } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
+import { collection, query, onSnapshot, writeBatch, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { Collections } from '@/lib/enums';
+import type { Notification } from '@/lib/types';
+import { NotificationPopover } from './notification-popover';
+import { ShoppingListPopover } from './shopping-list-popover';
+import { useSidebar } from '../ui/sidebar';
+import { cn } from '@/lib/utils';
 
 export function Header() {
-  const { user } = useAuth();
-  const router = useRouter();
+  const { t } = useTranslation();
+  const { profile } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/');
-  }
+  useEffect(() => {
+    if (!profile?.familyId) return;
+
+    // Fetch notifications
+    const notifsRef = collection(db, Collections.Families, profile.familyId, 'notifications');
+    const qNotifs = query(notifsRef);
+    const notifUnsubscribe = onSnapshot(qNotifs, (snapshot) => {
+        const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+        setNotifications(notifs);
+    });
+
+    return () => {
+        notifUnsubscribe();
+    };
+  }, [profile]);
+
+  const unreadNotifications = notifications.filter(n => !n.read);
+
+  const markAllAsRead = async () => {
+    if (!profile?.familyId || unreadNotifications.length === 0) return;
+    const batch = writeBatch(db);
+    unreadNotifications.forEach(notif => {
+        const notifRef = doc(db, Collections.Families, profile.familyId!, 'notifications', notif.id);
+        batch.update(notifRef, { read: true });
+    });
+    await batch.commit();
+  };
+
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
-      <div className="flex items-center gap-2 md:hidden">
-        <SidebarTrigger />
-      </div>
-      <div className="hidden items-center gap-2 md:flex">
-        <Link href="/dashboard">
-            <Logo className="h-7 w-7 text-primary" />
-        </Link>
-        <span className="text-xl font-bold font-headline">ShopWise</span>
-      </div>
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-card px-4 md:px-6">
+       <div className="flex items-center gap-2">
+            <SidebarTrigger className="h-8 w-8 shrink-0" />
+            <ShopWiseLogo className="hidden h-7 w-auto md:flex" />
+        </div>
+      
       <div className="flex w-full items-center justify-end gap-2">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/list">
-            <span>
-              <ShoppingCart className="h-5 w-5" />
-              <span className="sr-only">Lista de Compras Ativa</span>
-            </span>
-          </Link>
-        </Button>
-        <Button variant="ghost" size="icon">
-          <Bell className="h-5 w-5" />
-          <span className="sr-only">Notificações</span>
-        </Button>
-        {user && (
-           <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src={user?.photoURL ?? ""} alt={user?.displayName ?? "User Avatar"} />
-                      <AvatarFallback>{getUserInitials(user?.displayName)}</AvatarFallback>
-                    </Avatar>
-                  </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuLabel>
-                      <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium leading-none">{user.displayName}</p>
-                          <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                      </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <Link href="/settings?tab=profile">
-                      <DropdownMenuItem>
-                          <User className="mr-2 h-4 w-4" />
-                          <span>Perfil</span>
-                      </DropdownMenuItem>
-                  </Link>
-                   <Link href="/settings?tab=preferences">
-                      <DropdownMenuItem>
-                          <Users className="mr-2 h-4 w-4" />
-                          <span>Preferências</span>
-                      </DropdownMenuItem>
-                  </Link>
-                  <Link href="/settings?tab=privacy">
-                      <DropdownMenuItem>
-                          <Shield className="mr-2 h-4 w-4" />
-                          <span>Dados e Privacidade</span>
-                      </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Sair</span>
-                  </DropdownMenuItem>
-              </DropdownMenuContent>
-          </DropdownMenu>
+        <ShoppingListPopover />
+        
+        {notifications.length > 0 && (
+          <NotificationPopover 
+            notifications={notifications} 
+            unreadCount={unreadNotifications.length} 
+            onMarkAllAsRead={markAllAsRead} 
+          />
         )}
       </div>
     </header>

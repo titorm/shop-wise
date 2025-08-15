@@ -1,7 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, initializeAuth, indexedDBLocalPersistence } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
+import { getPerformance } from "firebase/performance";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -10,16 +12,21 @@ const firebaseConfig = {
   projectId: "shopwise-90uxt",
   storageBucket: "shopwise-90uxt.firebasestorage.app",
   messagingSenderId: "995876205002",
-  appId: "1:995876205002:web:d2ed7ef1984360e3579f33"
+  appId: "1:995876205002:web:d2ed7ef1984360e3579f33",
+  measurementId: "G-KFXNRR3QJL"
 };
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
-const auth = initializeAuth(app, {
-  persistence: indexedDBLocalPersistence
-});
-
+const auth = getAuth(app);
 const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
-export { app, auth, db };
+
+// Initialize Analytics and Performance Monitoring on the client side
+if (typeof window !== 'undefined') {
+    getAnalytics(app);
+    getPerformance(app);
+}
+
+export { app, auth, db, googleProvider };

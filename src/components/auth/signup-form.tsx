@@ -24,23 +24,31 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
-  email: z.string().email({ message: "Por favor, insira um email válido." }),
-  password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }),
-});
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
+import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { doc, setDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { Collections } from "@/lib/enums";
+import { useTranslation } from "react-i18next";
+import { trackEvent } from "@/services/analytics-service";
 
 export function SignupForm() {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
+
+  const formSchema = z.object({
+    name: z.string().min(2, { message: t('error_name_min_length') }),
+    email: z.string().email({ message: t('error_invalid_email') }),
+    password: z.string().min(6, { message: t('error_password_min_length') }),
+  });
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,15 +62,40 @@ export function SignupForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      // 1. Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, { displayName: values.name });
+      const user = userCredential.user;
+      
+      if (user) {
+        // 2. Update Auth profile
+        await updateProfile(user, { displayName: values.name });
+
+        // 3. Create a new family for the user
+        const familyRef = await addDoc(collection(db, Collections.Families), {
+            familyName: `Família de ${values.name}`,
+            createdAt: serverTimestamp(),
+            ownerId: user.uid,
+        });
+
+        // 4. Create the user document in Firestore
+        const userRef = doc(db, Collections.Users, user.uid);
+        await setDoc(userRef, {
+            displayName: values.name,
+            email: values.email,
+            familyId: familyRef.id,
+            isAdmin: true, // The user who creates the family is an admin
+            settings: {
+                theme: "system",
+                notifications: true,
+            }
+        });
+        trackEvent('sign_up', { method: 'email' });
+        router.push('/dashboard');
       }
-      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Erro ao criar conta",
+        title: t('signup_error_title'),
         description: error.message,
       });
     }
@@ -71,12 +104,34 @@ export function SignupForm() {
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        
+        // TODO: Check if user already exists in Firestore before creating new family
+        
+        const familyRef = await addDoc(collection(db, Collections.Families), {
+            familyName: `Família de ${user.displayName}`,
+            createdAt: serverTimestamp(),
+            ownerId: user.uid,
+        });
+
+        const userRef = doc(db, Collections.Users, user.uid);
+        await setDoc(userRef, {
+            displayName: user.displayName,
+            email: user.email,
+            familyId: familyRef.id,
+            isAdmin: true,
+            settings: {
+                theme: "system",
+                notifications: true,
+            }
+        }, { merge: true }); // Merge to avoid overwriting existing data if they sign up differently before
+        trackEvent('sign_up', { method: 'google' });
         router.push('/dashboard');
     } catch (error: any) {
         toast({
             variant: "destructive",
-            title: "Erro de Login com Google",
+            title: t("error_google_login"),
             description: error.message,
         });
     }
@@ -87,9 +142,9 @@ export function SignupForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-headline">Crie sua conta</CardTitle>
+        <CardTitle className="text-2xl font-headline">{t('signup_title')}</CardTitle>
         <CardDescription>
-          É rápido e fácil. Comece a economizar hoje mesmo!
+          {t('signup_description')}
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -101,9 +156,9 @@ export function SignupForm() {
                     name="name"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Nome</FormLabel>
+                        <FormLabel>{t('name_label')}</FormLabel>
                         <FormControl>
-                        <Input placeholder="Seu nome" {...field} />
+                        <Input placeholder={t('name_placeholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -114,7 +169,7 @@ export function SignupForm() {
                     name="email"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{t('email_label')}</FormLabel>
                         <FormControl>
                         <Input placeholder="seu@email.com" {...field} />
                         </FormControl>
@@ -127,7 +182,7 @@ export function SignupForm() {
                     name="password"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Senha</FormLabel>
+                        <FormLabel>{t('password_label')}</FormLabel>
                         <div className="relative">
                             <FormControl>
                             <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
@@ -140,12 +195,12 @@ export function SignupForm() {
                                 onClick={() => setShowPassword(!showPassword)}
                                 >
                                 {showPassword ? (
-                                    <EyeOff className="h-4 w-4" aria-hidden="true" />
+                                    <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" aria-hidden="true" />
                                 ) : (
-                                    <Eye className="h-4 w-4" aria-hidden="true" />
+                                    <FontAwesomeIcon icon={faEye} className="h-4 w-4" aria-hidden="true" />
                                 )}
                                 <span className="sr-only">
-                                    {showPassword ? "Hide password" : "Show password"}
+                                    {showPassword ? t('hide_password') : t('show_password')}
                                 </span>
                             </Button>
                         </div>
@@ -155,28 +210,28 @@ export function SignupForm() {
                 />
             </div>
             <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
-              Criar Conta
+              {t('create_account')}
             </Button>
              <div className="relative">
               <Separator />
-              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">OU</p>
+              <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">{t('or_upper')}</p>
             </div>
             <div className="space-y-2">
                  <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn}>
-                    <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.222 0-9.657-3.298-11.303-8H6.306C9.656 39.663 16.318 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.012 35.853 44 30.338 44 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
-                    Criar com Google
+                    <FontAwesomeIcon icon={faGoogle} className="mr-2 h-4 w-4" />
+                    {t('signup_with_google')}
                 </Button>
                 <Button variant="outline" className="w-full" type="button">
-                    <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24"><path fill="currentColor" d="M17.34 16.86c-1.16 1.03-2.64 1.6-4.2 1.6c-1.76 0-3.37-.68-4.59-1.9c-1.22-1.21-1.89-2.83-1.89-4.58c0-1.79.69-3.43 1.94-4.66c1.25-1.23 2.92-1.89 4.67-1.89c1.45 0 2.8.49 3.89 1.48l-1.63 1.56c-.7-.69-1.63-1.07-2.6-1.07c-1.12 0-2.14.44-2.88 1.18c-.74.74-1.15 1.74-1.15 2.79s.41 2.05 1.15 2.79c.74.74 1.76 1.18 2.88 1.18c1.07 0 1.91-.39 2.54-1.1l1.63 1.56zM20.92 11.12c0-.12 0-.23-.02-.34c-.04-.2-.08-.39-.14-.58c-.06-.2-.13-.39-.22-.58c-.09-.19-.2-.37-.31-.54c-.11-.17-.24-.33-.37-.48c-.14-.15-.28-.29-.44-.42c-.16-.13-.33-.25-.5-.36c-.18-.11-.36-.21-.56-.29c-.2-.08-.4-.15-.62-.21c-.22-.06-.44-.1-.67-.13c-.23-.03-.46-.05-.7-.05h-2.14v3.5h1.79c.25 0 .49-.02.72-.05c.23-.03.46-.08.67-.14c.22-.06.42-.14.61-.24c.19-.1.37-.22.53-.35c.16-.13.31-.28.45-.45c.14-.17.26-.35.36-.55c.1-.2.18-.41.25-.63c.07-.22.12-.44.15-.67c.03-.23.05-.46.05-.7v-.01zM12.01 22C6.49 22 2 17.51 2 12S6.49 2 12.01 2C17.53 2 22 6.49 22 12s-4.47 10-9.99 10z"/></svg>
-                    Criar com Apple
+                    <FontAwesomeIcon icon={faApple} className="mr-2 h-4 w-4" />
+                    {t('signup_with_apple')}
                 </Button>
             </div>
           </CardContent>
           <CardFooter>
             <p className="text-sm text-muted-foreground">
-              Já tem uma conta?{" "}
+              {t('already_have_account')}{" "}
               <Link href="/login" passHref>
-                <Button variant="link" className="px-0 h-auto">Entrar</Button>
+                <Button variant="link" className="px-0 h-auto">{t('login')}</Button>
               </Link>
             </p>
           </CardFooter>
@@ -185,5 +240,3 @@ export function SignupForm() {
     </Card>
   );
 }
-
-    

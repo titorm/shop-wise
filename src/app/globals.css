@@ -4,103 +4,121 @@
 
 @layer base {
   :root {
-    --background: 224 71% 95%; /* M3 Light Surface */
-    --foreground: 224 10% 10%; /* M3 Light On Surface */
-    --card: 224 71% 99%; /* M3 Light Surface Container */
-    --card-foreground: 224 10% 10%;
-    --popover: 224 71% 99%;
-    --popover-foreground: 224 10% 10%;
-    --primary: 142 76% 36%; /* M3 Light Primary - Green */
-    --primary-foreground: 0 0% 100%; /* M3 Light On Primary */
-    --secondary: 142 47% 85%; /* M3 Light Secondary Container */
-    --secondary-foreground: 142 20% 30%; /* M3 Light On Secondary Container */
-    --muted: 224 20% 90%;
-    --muted-foreground: 224 10% 45%;
-    --accent: 142 55% 60%; /* M3 Light Tertiary - Green */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 240 10% 4%; /* #212121 */
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 240 10% 4%; /* #212121 */
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    --primary: 122 46% 34%; /* #2E7D32 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 100% 51%; /* #FFC107 */
+    --secondary-foreground: 240 10% 4%;
+    --muted: 220 14% 90%; /* #E0E0E0 */
+    --muted-foreground: 0 0% 38%; /* #616161 */
+    --accent: 212 92% 51%; /* #1976D2 - Azul Confiável */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 224 20% 80%; /* M3 Light Outline Variant */
-    --input: 224 20% 88%;
-    --ring: 142 76% 36%;
+    --destructive: 0 63% 49%; /* #D32F2F */
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 88%; /* #E0E0E0 */
+    --input: 0 0% 88%;
+    --ring: 122 46% 34%;
     --radius: 0.8rem;
 
-    --category-hortifruti: 122 33% 75%;
-    --category-hortifruti-foreground: 120 25% 25%;
-    --category-acougue: 0 71% 77%;
-    --category-acougue-foreground: 0 50% 30%;
-    --category-padaria: 45 100% 76%;
-    --category-padaria-foreground: 35 50% 30%;
-    --category-laticinios: 211 89% 77%;
-    --category-laticinios-foreground: 210 50% 30%;
-    --category-mercearia: 30 100% 75%;
-    --category-mercearia-foreground: 25 50% 30%;
-    --category-matinais: 341 81% 77%;
-    --category-matinais-foreground: 340 50% 30%;
-    --category-congelados: 185 78% 71%;
-    --category-congelados-foreground: 185 50% 30%;
-    --category-bebidas: 265 56% 79%;
-    --category-bebidas-foreground: 265 30% 30%;
-    --category-limpeza: 174 44% 71%;
-    --category-limpeza-foreground: 175 30% 30%;
-    --category-higiene: 291 59% 81%;
-    --category-higiene-foreground: 290 30% 30%;
-    --category-bebes: 57 100% 80%;
-    --category-bebes-foreground: 55 50% 30%;
-    --category-pet: 20 25% 76%;
-    --category-pet-foreground: 20 20% 30%;
-    --category-utilidades: 200 25% 80%;
-    --category-utilidades-foreground: 200 20% 30%;
+    --sidebar: 220 14% 96%; /* #F5F5F5 */
+    --sidebar-foreground: 240 10% 4%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-accent: 122 46% 95%; /* Lighter green */
+    --sidebar-accent-foreground: 122 46% 24%; /* Darker green */
+    --sidebar-ring: 122 46% 34%;
+    
+    --color-category-produce-and-eggs: 122 33% 84%; /* #A5D6A7 */
+    --color-category-produce-and-eggs-foreground: 120 25% 25%;
+    --color-category-meat-and-seafood: 0 71% 80%; /* #EF9A9A */
+    --color-category-meat-and-seafood-foreground: 0 50% 30%;
+    --color-category-bakery-and-deli: 45 100% 75%; /* #FFE082 */
+    --color-category-bakery-and-deli-foreground: 35 50% 30%;
+    --color-category-dairy-and-chilled: 211 89% 78%; /* #90CAF9 */
+    --color-category-dairy-and-chilled-foreground: 210 50% 30%;
+    --color-category-pantry-and-dry-goods: 30 100% 75%; /* #FFCC80 */
+    --color-category-pantry-and-dry-goods-foreground: 25 50% 30%;
+    --color-category-breakfast-and-snacks: 341 81% 77%; /* #F48FB1 */
+    --color-category-breakfast-and-snacks-foreground: 340 50% 30%;
+    --color-category-frozen-foods: 185 60% 88%; /* #D9F7F5 */
+    --color-category-frozen-foods-foreground: 185 30% 35%;
+    --color-category-beverages: 265 56% 79%; /* #B39DDB */
+    --color-category-beverages-foreground: 265 30% 30%;
+    --color-category-cleaning-and-household: 174 44% 71%; /* #80CBC4 */
+    --color-category-cleaning-and-household-foreground: 175 30% 30%;
+    --color-category-personal-care: 291 59% 81%; /* #CE93D8 */
+    --color-category-personal-care-foreground: 290 30% 30%;
+    --color-category-baby-and-child-care: 57 100% 80%; /* #FFF59D */
+    --color-category-baby-and-child-care-foreground: 55 50% 30%;
+    --color-category-pet-supplies: 20 25% 76%; /* #BCAAA4 */
+    --color-category-pet-supplies-foreground: 20 20% 30%;
+    --color-category-home-and-general: 200 25% 80%; /* #B0BEC5 */
+    --color-category-home-and-general-foreground: 200 20% 30%;
+    --color-category-pharmacy: 174 44% 78%; /* #B2DFDB */
+    --color-category-pharmacy-foreground: 175 30% 30%;
   }
 
   .dark {
-    --background: 0 0% 7%; /* #121212 */
-    --foreground: 0 0% 100%; /* #FFFFFF */
-    --card: 0 0% 12%; /* #1E1E1E */
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 142 65% 75%; /* M3 Dark Primary - Green */
-    --primary-foreground: 142 20% 20%; /* M3 Dark On Primary */
-    --secondary: 142 30% 35%; /* M3 Dark Secondary Container */
-    --secondary-foreground: 142 15% 85%; /* M3 Dark On Secondary Container */
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 74%; /* #BDBDBD */
-    --accent: 142 50% 70%; /* M3 Dark Tertiary - Green */
-    --accent-foreground: 142 15% 15%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 20%; /* #333333 */
-    --input: 0 0% 20%;
-    --ring: 142 65% 75%;
+    --background: 224 71% 4%; /* #020817 */
+    --foreground: 210 40% 98%; /* #F8FAFC */
+    --card: 224 71% 4%; /* #020817 */
+    --card-foreground: 210 40% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 122 46% 44%; /* Lighter green for dark mode */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 45 100% 51%; /* #FFC107 */
+    --secondary-foreground: 240 10% 4%;
+    --muted: 215 28% 17%; /* #27272A */
+    --muted-foreground: 215 20% 65%; /* #A1A1AA */
+    --accent: 212 92% 61%; /* Lighter blue for dark mode */
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 70% 45%; /* Softer Red for Dark Mode */
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 122 46% 44%;
     --radius: 0.8rem;
 
-    --category-hortifruti: 122 39% 64%;
-    --category-hortifruti-foreground: 120 70% 95%;
-    --category-acougue: 0 65% 68%;
-    --category-acougue-foreground: 0 70% 95%;
-    --category-padaria: 45 100% 66%;
-    --category-padaria-foreground: 45 70% 95%;
-    --category-laticinios: 211 85% 68%;
-    --category-laticinios-foreground: 210 70% 95%;
-    --category-mercearia: 30 100% 65%;
-    --category-mercearia-foreground: 30 70% 95%;
-    --category-matinais: 341 81% 69%;
-    --category-matinais-foreground: 340 70% 95%;
-    --category-congelados: 185 70% 60%;
-    --category-congelados-foreground: 185 70% 95%;
-    --category-bebidas: 265 58% 72%;
-    --category-bebidas-foreground: 265 70% 95%;
-    --category-limpeza: 174 45% 58%;
-    --category-limpeza-foreground: 175 70% 95%;
-    --category-higiene: 291 49% 70%;
-    --category-higiene-foreground: 290 70% 95%;
-    --category-bebes: 56 94% 72%;
-    --category-bebes-foreground: 55 70% 95%;
-    --category-pet: 20 20% 63%;
-    --category-pet-foreground: 20 70% 95%;
-    --category-utilidades: 200 17% 65%;
-    --category-utilidades-foreground: 200 70% 95%;
+    --sidebar: 224 71% 4%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 215 28% 17%;
+    --sidebar-accent: 122 46% 18%; /* Darker green */
+    --sidebar-accent-foreground: 122 46% 78%; /* Lighter green */
+    --sidebar-ring: 122 46% 44%;
+
+    --color-category-produce-and-eggs: 122 39% 30%;
+    --color-category-produce-and-eggs-foreground: 120 25% 15%;
+    --color-category-meat-and-seafood: 0 65% 33%;
+    --color-category-meat-and-seafood-foreground: 0 50% 18%;
+    --color-category-bakery-and-deli: 45 100% 30%;
+    --color-category-bakery-and-deli-foreground: 35 50% 15%;
+    --color-category-dairy-and-chilled: 211 85% 32%;
+    --color-category-dairy-and-chilled-foreground: 210 50% 18%;
+    --color-category-pantry-and-dry-goods: 30 100% 30%;
+    --color-category-pantry-and-dry-goods-foreground: 25 50% 15%;
+    --color-category-breakfast-and-snacks: 341 81% 34%;
+    --color-category-breakfast-and-snacks-foreground: 340 50% 18%;
+    --color-category-frozen-foods: 185 78% 71%;
+    --color-category-frozen-foods-foreground: 185 40% 25%;
+    --color-category-beverages: 265 58% 36%;
+    --color-category-beverages-foreground: 265 30% 18%;
+    --color-category-cleaning-and-household: 174 45% 23%;
+    --color-category-cleaning-and-household-foreground: 175 30% 15%;
+    --color-category-personal-care: 291 49% 35%;
+    --color-category-personal-care-foreground: 290 30% 18%;
+    --color-category-baby-and-child-care: 56 94% 37%;
+    --color-category-baby-and-child-care-foreground: 55 50% 18%;
+    --color-category-pet-supplies: 20 20% 28%;
+    --color-category-pet-supplies-foreground: 20 20% 15%;
+    --color-category-home-and-general: 200 17% 30%;
+    --color-category-home-and-general-foreground: 200 20% 15%;
+    --color-category-pharmacy: 174 45% 23%;
+    --color-category-pharmacy-foreground: 175 30% 15%;
   }
 }
 
@@ -110,35 +128,5 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-}
-
-@layer utilities {
-  .aurora-sm {
-    background-image: conic-gradient(
-      from 90deg at 40% 50%,
-      hsl(var(--primary) / 0.3),
-      hsl(var(--accent) / 0.3),
-      hsl(var(--primary) / 0.3)
-    );
-    animation: aurora-sm 20s linear infinite;
-  }
-  .aurora-md {
-    background-image: conic-gradient(
-      from 90deg at 40% 50%,
-      hsl(var(--primary) / 0.4),
-      hsl(var(--accent) / 0.4),
-      hsl(var(--primary) / 0.4)
-    );
-    animation: aurora-md 20s linear infinite;
-  }
-  .aurora-lg {
-    background-image: conic-gradient(
-      from 90deg at 40% 50%,
-      hsl(var(--primary) / 0.5),
-      hsl(var(--accent) / 0.5),
-      hsl(var(--primary) / 0.5)
-    );
-    animation: aurora-lg 20s linear infinite;
   }
 }

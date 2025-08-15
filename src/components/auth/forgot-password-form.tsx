@@ -23,12 +23,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-
-const formSchema = z.object({
-  email: z.string().email({ message: "Por favor, insira um email válido." }),
-});
+import { useTranslation } from "react-i18next";
 
 export function ForgotPasswordForm() {
+  const { t } = useTranslation();
+
+  const formSchema = z.object({
+    email: z.string().email({ message: t('error_invalid_email') }),
+  });
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,9 +50,9 @@ export function ForgotPasswordForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-headline">Recuperar Senha</CardTitle>
+        <CardTitle className="text-2xl font-headline">{t('forgot_password_title')}</CardTitle>
         <CardDescription>
-          Insira seu email e enviaremos um link para redefinir sua senha.
+          {t('forgot_password_description')}
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -60,7 +63,7 @@ export function ForgotPasswordForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('email_label')}</FormLabel>
                   <FormControl>
                     <Input placeholder="seu@email.com" {...field} />
                   </FormControl>
@@ -69,14 +72,14 @@ export function ForgotPasswordForm() {
               )}
             />
             <Button type="submit" className="w-full" disabled={!isDirty || !isValid || isSubmitting}>
-              Enviar Link de Recuperação
+              {t('forgot_password_send_link')}
             </Button>
           </CardContent>
           <CardFooter>
             <p className="text-sm text-muted-foreground w-full text-center">
-              Lembrou sua senha?{" "}
+              {t('remembered_password')}{" "}
               <Link href="/login" passHref>
-                <Button variant="link" className="px-0 h-auto">Entrar</Button>
+                <Button variant="link" className="px-0 h-auto">{t('login')}</Button>
               </Link>
             </p>
           </CardFooter>

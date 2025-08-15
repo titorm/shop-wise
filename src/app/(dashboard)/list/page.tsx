@@ -1,13 +1,18 @@
+
+"use client";
+
 import { ShoppingListComponent } from "@/components/list/shopping-list-component";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 export default function ListPage() {
+    const { t } = useTranslation();
     return (
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-2xl font-headline">Lista de Compras</CardTitle>
-                    <CardDescription>Planeje suas compras de forma eficiente e inteligente.</CardDescription>
+                    <CardTitle className="text-2xl font-headline">{t('shopping_list_title')}</CardTitle>
+                    <CardDescription>{t('shopping_list_description')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ShoppingListComponent />
@@ -16,3 +21,5 @@ export default function ListPage() {
         </div>
     );
 }
+
+    
