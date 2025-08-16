@@ -1,0 +1,72 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2025-08-15 21:50-0300\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+
+#: src/routes/index.tsx:24
+msgid "create_account"
+msgstr "create_account"
+
+#: src/routes/index.tsx:69
+msgid "feature_camera_register_description"
+msgstr "feature_camera_register_description"
+
+#: src/routes/index.tsx:68
+msgid "feature_camera_register_title"
+msgstr "feature_camera_register_title"
+
+#: src/routes/index.tsx:79
+msgid "feature_full_control_description"
+msgstr "feature_full_control_description"
+
+#: src/routes/index.tsx:78
+msgid "feature_full_control_title"
+msgstr "feature_full_control_title"
+
+#: src/routes/index.tsx:74
+msgid "feature_smart_lists_description"
+msgstr "feature_smart_lists_description"
+
+#: src/routes/index.tsx:73
+msgid "feature_smart_lists_title"
+msgstr "feature_smart_lists_title"
+
+#: src/routes/index.tsx:64
+msgid "feature_visual_insights_description"
+msgstr "feature_visual_insights_description"
+
+#: src/routes/index.tsx:63
+msgid "feature_visual_insights_title"
+msgstr "feature_visual_insights_title"
+
+#: src/routes/index.tsx:42
+msgid "home_description"
+msgstr "home_description"
+
+#: src/routes/index.tsx:39
+msgid "home_subtitle"
+msgstr "home_subtitle"
+
+#: src/routes/index.tsx:37
+msgid "home_title"
+msgstr "home_title"
+
+#: src/routes/index.tsx:21
+msgid "Login"
+msgstr "Login"
+
+#: src/routes/index.tsx:56
+msgid "powerful_features"
+msgstr "powerful_features"
+
+#: src/routes/index.tsx:58
+msgid "powerful_features_description"
+msgstr "powerful_features_description"
+
+#: src/routes/index.tsx:46
+msgid "start_now_free"
+msgstr "start_now_free"

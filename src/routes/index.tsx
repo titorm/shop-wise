@@ -1,17 +1,15 @@
 import { Button } from "@/components/ui/button";
+import { t } from "@lingui/core/macro";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ShopWiseLogo } from "@/components/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faQrcode, faShoppingCart, faSliders } from "@fortawesome/free-solid-svg-icons";
-import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/")({
     component: Home,
 });
 
 function Home() {
-    const { t } = useTranslation();
-
     return (
         <div className="flex flex-col min-h-screen bg-background">
             <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -20,10 +18,10 @@ function Home() {
                 </div>
                 <nav className="flex items-center gap-2">
                     <Link to="/login">
-                        <Button variant="ghost">{t("login")}</Button>
+                        <Button variant="ghost">{t`Login`}</Button>
                     </Link>
                     <Link to="/signup">
-                        <Button>{t("create_account")}</Button>
+                        <Button>{t`Create Account`}</Button>
                     </Link>
                 </nav>
             </header>
@@ -36,16 +34,16 @@ function Home() {
                     />
                     <div className="max-w-3xl mx-auto">
                         <h2 className="text-4xl md:text-6xl font-bold font-headline text-foreground tracking-tight">
-                            {t("home_title")}
+                            {t`Smarter Purchases,`}
                             <br />
-                            <span className="text-primary">{t("home_subtitle")}</span>
+                            <span className="text-primary">{t`A Fuller Life.`}</span>
                         </h2>
                         <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                            {t("home_description")}
+                            {t`ShopWise transforms your receipts into powerful insights, helping you save money, optimize your shopping list, and control your family's finances effortlessly.`}
                         </p>
                         <div className="mt-8 flex justify-center gap-4">
                             <Link to="/signup">
-                                <Button size="lg">{t("start_now_free")}</Button>
+                                <Button size="lg">{t`Start Now for Free`}</Button>
                             </Link>
                         </div>
                     </div>
@@ -55,30 +53,30 @@ function Home() {
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-12">
                             <h3 className="text-3xl md:text-4xl font-bold font-headline text-foreground">
-                                {t("powerful_features")}
+                                {t`Powerful Features`}
                             </h3>
-                            <p className="mt-4 text-lg text-muted-foreground">{t("powerful_features_description")}</p>
+                            <p className="mt-4 text-lg text-muted-foreground">{t`powerful_features_description`}</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             <FeatureCard
                                 icon={<FontAwesomeIcon icon={faChartSimple} className="w-10 h-10 text-primary" />}
-                                title={t("feature_visual_insights_title")}
-                                description={t("feature_visual_insights_description")}
+                                title={t`feature_visual_insights_title`}
+                                description={t`feature_visual_insights_description`}
                             />
                             <FeatureCard
                                 icon={<FontAwesomeIcon icon={faQrcode} className="w-10 h-10 text-primary" />}
-                                title={t("feature_camera_register_title")}
-                                description={t("feature_camera_register_description")}
+                                title={t`feature_camera_register_title`}
+                                description={t`feature_camera_register_description`}
                             />
                             <FeatureCard
                                 icon={<FontAwesomeIcon icon={faShoppingCart} className="w-10 h-10 text-primary" />}
-                                title={t("feature_smart_lists_title")}
-                                description={t("feature_smart_lists_description")}
+                                title={t`feature_smart_lists_title`}
+                                description={t`feature_smart_lists_description`}
                             />
                             <FeatureCard
                                 icon={<FontAwesomeIcon icon={faSliders} className="w-10 h-10 text-primary" />}
-                                title={t("feature_full_control_title")}
-                                description={t("feature_full_control_description")}
+                                title={t`feature_full_control_title`}
+                                description={t`feature_full_control_description`}
                             />
                         </div>
                     </div>
@@ -87,7 +85,7 @@ function Home() {
 
             <footer className="bg-secondary/50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-muted-foreground">
-                    <p>{t("copyright", { year: new Date().getFullYear() })}</p>
+                    {/* <p>{t`copyright`, { year: new Date().getFullYear() })}</p> */}
                 </div>
             </footer>
         </div>

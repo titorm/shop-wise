@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import react from "@vitejs/plugin-react";
+import { lingui } from "@lingui/vite-plugin";
 
 export default defineConfig({
     server: {
@@ -15,6 +16,11 @@ export default defineConfig({
             target: "react",
             autoCodeSplitting: true,
         }),
-        react(),
+        react({
+            babel: {
+                plugins: ["@lingui/babel-plugin-lingui-macro"],
+            },
+        }),
+        lingui(),
     ],
 });
