@@ -36,7 +36,7 @@ const AuthContext = createContext<AuthContextType>({
     user: null,
     profile: null,
     loading: true,
-    reloadUser: async () => {},
+    reloadUser: async () => { },
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             const userRef = doc(db, Collections.Users, user.uid);
             const docSnap = await getDoc(userRef);
+            console.log({ docSnap });
             if (docSnap.exists()) {
                 const userData = docSnap.data();
                 const familyIdString =

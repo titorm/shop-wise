@@ -14,6 +14,7 @@ import { Route as LoginRouteRouteImport } from './routes/login/route'
 import { Route as ForgotPasswordRouteRouteImport } from './routes/forgot-password/route'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardSettingsRouteRouteImport } from './routes/dashboard/settings/route'
 import { Route as DashboardScanRouteRouteImport } from './routes/dashboard/scan/route'
 import { Route as DashboardListRouteRouteImport } from './routes/dashboard/list/route'
@@ -53,6 +54,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardSettingsRouteRoute = DashboardSettingsRouteRouteImport.update({
   id: '/settings',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/list': typeof DashboardListRouteRoute
   '/dashboard/scan': typeof DashboardScanRouteRoute
   '/dashboard/settings': typeof DashboardSettingsRouteRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/audit': typeof DashboardAdminAuditRouteRoute
   '/dashboard/admin/logs': typeof DashboardAdminLogsRouteRoute
   '/dashboard/admin/market-insights': typeof DashboardAdminMarketInsightsRouteRoute
@@ -155,7 +162,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRouteRoute
   '/login': typeof LoginRouteRoute
   '/signup': typeof SignupRouteRoute
@@ -165,6 +171,7 @@ export interface FileRoutesByTo {
   '/dashboard/list': typeof DashboardListRouteRoute
   '/dashboard/scan': typeof DashboardScanRouteRoute
   '/dashboard/settings': typeof DashboardSettingsRouteRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/dashboard/admin/audit': typeof DashboardAdminAuditRouteRoute
   '/dashboard/admin/logs': typeof DashboardAdminLogsRouteRoute
   '/dashboard/admin/market-insights': typeof DashboardAdminMarketInsightsRouteRoute
@@ -187,6 +194,7 @@ export interface FileRoutesById {
   '/dashboard/list': typeof DashboardListRouteRoute
   '/dashboard/scan': typeof DashboardScanRouteRoute
   '/dashboard/settings': typeof DashboardSettingsRouteRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/audit': typeof DashboardAdminAuditRouteRoute
   '/dashboard/admin/logs': typeof DashboardAdminLogsRouteRoute
   '/dashboard/admin/market-insights': typeof DashboardAdminMarketInsightsRouteRoute
@@ -210,6 +218,7 @@ export interface FileRouteTypes {
     | '/dashboard/list'
     | '/dashboard/scan'
     | '/dashboard/settings'
+    | '/dashboard/'
     | '/dashboard/admin/audit'
     | '/dashboard/admin/logs'
     | '/dashboard/admin/market-insights'
@@ -221,7 +230,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
     | '/forgot-password'
     | '/login'
     | '/signup'
@@ -231,6 +239,7 @@ export interface FileRouteTypes {
     | '/dashboard/list'
     | '/dashboard/scan'
     | '/dashboard/settings'
+    | '/dashboard'
     | '/dashboard/admin/audit'
     | '/dashboard/admin/logs'
     | '/dashboard/admin/market-insights'
@@ -252,6 +261,7 @@ export interface FileRouteTypes {
     | '/dashboard/list'
     | '/dashboard/scan'
     | '/dashboard/settings'
+    | '/dashboard/'
     | '/dashboard/admin/audit'
     | '/dashboard/admin/logs'
     | '/dashboard/admin/market-insights'
@@ -306,6 +316,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/settings': {
       id: '/dashboard/settings'
@@ -441,6 +458,7 @@ interface DashboardRouteRouteChildren {
   DashboardListRouteRoute: typeof DashboardListRouteRoute
   DashboardScanRouteRoute: typeof DashboardScanRouteRoute
   DashboardSettingsRouteRoute: typeof DashboardSettingsRouteRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
@@ -450,6 +468,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardListRouteRoute: DashboardListRouteRoute,
   DashboardScanRouteRoute: DashboardScanRouteRoute,
   DashboardSettingsRouteRoute: DashboardSettingsRouteRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
