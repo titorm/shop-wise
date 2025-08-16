@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { useTranslation } from "react-i18next";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,6 +16,7 @@ import { useState } from "react";
 import { Separator } from "../ui/separator";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
+import { useLingui } from '@lingui/react/macro';
 
 const marketSchema = z.object({
     name: z.string().min(2, "market_form_error_name_min"),
@@ -49,7 +50,7 @@ const allStores: (MarketData & { id: string })[] = [
 export function MarketsForm() {
     const { profile } = useAuth();
     const { toast } = useToast();
-    const { t } = useTranslation();
+    const { t } = useLingui();
 
     // In a real app, these would be populated from the family document in Firestore
     const [favoriteStores, setFavoriteStores] = useState([allStores[0], allStores[1]]);
@@ -75,8 +76,8 @@ export function MarketsForm() {
         setFavoriteStores([...favoriteStores, newStore]);
         form.reset();
         toast({
-            title: t("market_form_toast_added_title"),
-            description: t("market_form_toast_added_desc", { marketName: values.name }),
+            title: t`Estabelecimento Adicionado`,
+            description: t`\${name} foi adicionado aos seus favoritos.`,
         });
     };
 
@@ -84,8 +85,8 @@ export function MarketsForm() {
         setFavoriteStores(favoriteStores.filter((s) => s.id !== store.id));
         setIgnoredStores([...ignoredStores, store]);
         toast({
-            title: t("market_form_toast_moved_ignored_title"),
-            description: t("market_form_toast_moved_ignored_desc", { marketName: store.name }),
+            title: t`Movido para Ignorados`,
+            description: t`\${name} agora será ignorado nas comparações de preços.`,
         });
     };
 
@@ -93,8 +94,8 @@ export function MarketsForm() {
         setIgnoredStores(ignoredStores.filter((s) => s.id !== store.id));
         setFavoriteStores([...favoriteStores, store]);
         toast({
-            title: t("market_form_toast_moved_favorites_title"),
-            description: t("market_form_toast_moved_favorites_desc", { marketName: store.name }),
+            title: t`Movido para Favoritos`,
+            description: t`\${name} agora é um estabelecimento favorito.`,
         });
     };
 
@@ -104,7 +105,7 @@ export function MarketsForm() {
         } else {
             setIgnoredStores(ignoredStores.filter((s) => s.id !== storeId));
         }
-        toast({ title: t("market_form_toast_removed_title"), description: t("market_form_toast_removed_desc") });
+        toast({ title: t`Estabelecimento Removido`, description: t`O estabelecimento foi removido de suas listas.` });
     };
 
     return (
@@ -113,8 +114,8 @@ export function MarketsForm() {
                 <form onSubmit={form.handleSubmit(handleAddMarket)}>
                     <Card>
                         <CardHeader>
-                            <CardTitle>{t("market_form_add_new_title")}</CardTitle>
-                            <CardDescription>{t("market_form_add_new_desc")}</CardDescription>
+                            <CardTitle>{t`Adicionar Novo Estabelecimento`}</CardTitle>
+                            <CardDescription>{t`Adicione um novo mercado, atacado ou feira à sua lista de locais preferidos.`}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -123,9 +124,9 @@ export function MarketsForm() {
                                     name="name"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t("market_form_name_label")}</FormLabel>
+                                            <FormLabel>{t`Nome do Estabelecimento`}</FormLabel>
                                             <FormControl>
-                                                <Input placeholder={t("market_form_name_placeholder")} {...field} />
+                                                <Input placeholder={t`ex: Supermercado Central`} {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -136,7 +137,7 @@ export function MarketsForm() {
                                     name="cnpj"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t("market_form_cnpj_label")}</FormLabel>
+                                            <FormLabel>{t`CNPJ (Opcional)`}</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="00.000.000/0001-00" {...field} />
                                             </FormControl>
@@ -149,9 +150,9 @@ export function MarketsForm() {
                                     name="address"
                                     render={({ field }) => (
                                         <FormItem className="col-span-1 md:col-span-2">
-                                            <FormLabel>{t("market_form_address_label")}</FormLabel>
+                                            <FormLabel>{t`Endereço (Opcional)`}</FormLabel>
                                             <FormControl>
-                                                <Input placeholder={t("market_form_address_placeholder")} {...field} />
+                                                <Input placeholder={t`ex: Rua das Flores, 123, São Paulo`} {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -162,7 +163,7 @@ export function MarketsForm() {
                                     name="type"
                                     render={({ field }) => (
                                         <FormItem className="col-span-1 md:col-span-2 space-y-3">
-                                            <FormLabel>{t("market_form_type_label")}</FormLabel>
+                                            <FormLabel>{t`Tipo de Estabelecimento`}</FormLabel>
                                             <FormControl>
                                                 <RadioGroup
                                                     onValueChange={field.onChange}
@@ -205,7 +206,7 @@ export function MarketsForm() {
                         <CardFooter>
                             <Button type="submit">
                                 <FontAwesomeIcon icon={faPlusCircle} className="mr-2 h-4 w-4" />
-                                {t("market_form_add_to_favorites_button")}
+                                {t`Adicionar aos Favoritos`}
                             </Button>
                         </CardFooter>
                     </Card>
@@ -215,26 +216,26 @@ export function MarketsForm() {
             <Separator />
 
             <MarketList
-                title={t("market_form_favorites_title")}
-                description={t("market_form_favorites_desc")}
+                title={t`Estabelecimentos Favoritos`}
+                description={t`Estas são as lojas onde você compra com mais frequência. Nós as usaremos para gerar insights personalizados.`}
                 icon={faThumbsUp}
                 stores={favoriteStores}
                 onAction={moveToIgnored}
                 onRemove={removeFromFamily}
                 actionIcon={faThumbsDown}
-                actionTooltip={t("market_form_tooltip_move_to_ignored")}
+                actionTooltip={t`Mover para ignorados`}
                 listType="favorite"
             />
 
             <MarketList
-                title={t("market_form_ignored_title")}
-                description={t("market_form_ignored_desc")}
+                title={t`Estabelecimentos Ignorados`}
+                description={t`Não usaremos dados dessas lojas para gerar insights de comparação de preços.`}
                 icon={faThumbsDown}
                 stores={ignoredStores}
                 onAction={moveToFavorites}
                 onRemove={removeFromFamily}
                 actionIcon={faThumbsUp}
-                actionTooltip={t("market_form_tooltip_move_to_favorites")}
+                actionTooltip={t`Mover para favoritos`}
                 listType="ignored"
             />
         </div>
@@ -264,7 +265,7 @@ function MarketList({
     actionTooltip,
     listType,
 }: MarketListProps) {
-    const { t } = useTranslation();
+    const { t } = useLingui();
     return (
         <Card>
             <CardHeader>
@@ -281,12 +282,12 @@ function MarketList({
                             <TableRow>
                                 <TableHead>
                                     <FontAwesomeIcon icon={faStore} className="mr-2 h-4 w-4" />{" "}
-                                    {t("market_table_header_name")}
+                                    {t`Nome`}
                                 </TableHead>
-                                <TableHead>{t("market_table_header_type")}</TableHead>
-                                <TableHead>{t("market_table_header_address")}</TableHead>
+                                <TableHead>{t`Tipo`}</TableHead>
+                                <TableHead>{t`Endereço`}</TableHead>
                                 <TableHead className="w-[120px] text-right">
-                                    {t("market_table_header_actions")}
+                                    {t`Ações`}
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
@@ -294,7 +295,7 @@ function MarketList({
                             {stores.length === 0 && (
                                 <TableRow>
                                     <TableCell colSpan={4} className="text-center h-24">
-                                        {t("market_table_empty_list")}
+                                        {t`Esta lista está vazia.`}
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -316,7 +317,7 @@ function MarketList({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                title={t("market_form_tooltip_remove_from_family")}
+                                                title={t`Remover das minhas listas`}
                                                 onClick={() => onRemove(store.id, listType)}
                                             >
                                                 <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />

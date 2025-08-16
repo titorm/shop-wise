@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { PdfImportComponent } from "@/components/scan/pdf-import-component";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslation } from "react-i18next";
+
 import { useAuth } from '@/hooks/use-auth';
 import { savePurchase } from "./actions";
 import type { ExtractProductDataOutput } from '@/ai/flows/extract-product-data';
@@ -12,13 +12,14 @@ import { faKeyboard, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/services/analytics-service";
+import { useLingui } from '@lingui/react/macro';
 
 export const Route = createFileRoute('/dashboard/scan')({
   component: ScanPage,
 })
 
 function ScanPage() {
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const { user, profile } = useAuth();
     const { toast } = useToast();
 
@@ -26,8 +27,8 @@ function ScanPage() {
         if (!user || !profile || !profile.familyId) {
             toast({
                 variant: 'destructive',
-                title: t('toast_error_title'),
-                description: t('error_not_logged_in'),
+                title: t`Erro`,
+                description: t`Você precisa estar logado para realizar esta ação.`,
             });
             return;
         }
@@ -37,13 +38,13 @@ function ScanPage() {
         if (result.error) {
              toast({
                 variant: 'destructive',
-                title: t('toast_error_saving'),
+                title: t`Erro ao Salvar`,
                 description: result.error,
             });
         } else {
              toast({
-                title: t('toast_success_title'),
-                description: t('purchase_saved_successfully'),
+                title: t`Sucesso!`,
+                description: t`Compra salva com sucesso!`,
             });
             trackEvent('purchase_saved', { 
                 method: entryMethod,
@@ -58,16 +59,16 @@ function ScanPage() {
         <div className="container mx-auto py-8">
             <Card>
                  <CardHeader>
-                    <CardTitle className="text-2xl font-headline">{t('add_purchase_title')}</CardTitle>
+                    <CardTitle className="text-2xl font-headline">{t`Adicionar Nova Compra`}</CardTitle>
                     <CardDescription>
-                        {t('add_purchase_description')}
+                        {t`Você pode importar uma compra de um cupom fiscal em PDF ou inserir os detalhes manualmente.`}
                     </CardDescription>
                 </CardHeader>
                 <div className="p-6 pt-0">
                     <Tabs defaultValue="scan" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="scan"><FontAwesomeIcon icon={faFilePdf} className="mr-2 h-4 w-4" /> {t('import_from_pdf_tab')}</TabsTrigger>
-                            <TabsTrigger value="manual"><FontAwesomeIcon icon={faKeyboard} className="mr-2 h-4 w-4" /> {t('manual_entry_tab')}</TabsTrigger>
+                            <TabsTrigger value="scan"><FontAwesomeIcon icon={faFilePdf} className="mr-2 h-4 w-4" /> {t`Importar PDF`}</TabsTrigger>
+                            <TabsTrigger value="manual"><FontAwesomeIcon icon={faKeyboard} className="mr-2 h-4 w-4" /> {t`Entrada Manual`}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="scan" className="mt-6">
                             <PdfImportComponent onSave={(data, prods) => handleSavePurchase(data, prods, 'import')} />

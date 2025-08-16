@@ -15,8 +15,9 @@ import { Collections } from "@/lib/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { useTranslation } from "react-i18next";
+
 import { trackEvent } from "@/services/analytics-service";
+import { useLingui } from '@lingui/react/macro';
 
 const profileSchema = z.object({
     displayName: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres." }),
@@ -31,7 +32,7 @@ const passwordSchema = z.object({
 export function ProfileForm() {
     const { user, reloadUser } = useAuth();
     const { toast } = useToast();
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [linkedProviders, setLinkedProviders] = useState<string[]>([]);
@@ -83,14 +84,14 @@ export function ProfileForm() {
             await reloadUser();
             profileForm.reset(values); // Resets the dirty state
             toast({
-                title: t("toast_success_title"),
-                description: t("profile_form_success_update"),
+                title: t`Sucesso!`,
+                description: t`Seu perfil foi atualizado.`,
             });
             trackEvent("profile_updated");
         } catch (error: any) {
             toast({
                 variant: "destructive",
-                title: t("profile_form_error_update"),
+                title: t`Erro ao atualizar o perfil.`,
                 description: error.message,
             });
         }
@@ -108,13 +109,13 @@ export function ProfileForm() {
             await linkWithPopup(auth.currentUser, provider);
             await reloadUser();
             toast({
-                title: t("profile_form_success_account_linked_title"),
-                description: t("profile_form_success_account_linked_desc"),
+                title: t`Conta Vinculada`,
+                description: t`Sua conta foi vinculada com sucesso.`,
             });
         } catch (error: any) {
             toast({
                 variant: "destructive",
-                title: t("profile_form_error_account_linked_title"),
+                title: t`Erro ao Vincular Conta`,
                 description: error.message,
             });
         }
@@ -135,8 +136,8 @@ export function ProfileForm() {
         <div className="space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>{t("profile_form_info_title")}</CardTitle>
-                    <CardDescription>{t("profile_form_info_desc")}</CardDescription>
+                    <CardTitle>{t`Informações do Perfil`}</CardTitle>
+                    <CardDescription>{t`Atualize seus dados pessoais.`}</CardDescription>
                 </CardHeader>
                 <Form {...profileForm}>
                     <form onSubmit={profileForm.handleSubmit(onProfileSubmit)}>
@@ -146,7 +147,7 @@ export function ProfileForm() {
                                 name="displayName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("profile_form_name_label")}</FormLabel>
+                                        <FormLabel>{t`Nome de Exibição`}</FormLabel>
                                         <FormControl>
                                             <Input {...field} />
                                         </FormControl>
@@ -159,11 +160,11 @@ export function ProfileForm() {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("email_label")}</FormLabel>
+                                        <FormLabel>{t`Email`}</FormLabel>
                                         <FormControl>
                                             <Input type="email" {...field} disabled />
                                         </FormControl>
-                                        <p className="text-xs text-muted-foreground">{t("profile_form_email_note")}</p>
+                                        <p className="text-xs text-muted-foreground">{t`Seu endereço de email não pode ser alterado.`}</p>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -171,7 +172,7 @@ export function ProfileForm() {
                         </CardContent>
                         <CardFooter>
                             <Button type="submit" disabled={!isProfileDirty || !isProfileValid || isProfileSubmitting}>
-                                {t("save_changes")}
+                                {t`Salvar Alterações`}
                             </Button>
                         </CardFooter>
                     </form>
@@ -180,8 +181,8 @@ export function ProfileForm() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>{t("profile_form_linked_accounts_title")}</CardTitle>
-                    <CardDescription>{t("profile_form_linked_accounts_desc")}</CardDescription>
+                    <CardTitle>{t`Contas Vinculadas`}</CardTitle>
+                    <CardDescription>{t`Conecte outras contas para um login mais rápido.`}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -194,7 +195,7 @@ export function ProfileForm() {
                             disabled={linkedProviders.includes("google.com")}
                             onClick={() => handleLinkAccount(googleProvider)}
                         >
-                            {linkedProviders.includes("google.com") ? t("connected") : t("connect")}
+                            {linkedProviders.includes("google.com") ? t`Conectado` : t`Conectar`}
                         </Button>
                     </div>
                     <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -207,7 +208,7 @@ export function ProfileForm() {
                             disabled={linkedProviders.includes("apple.com")}
                             onClick={() => handleLinkAccount(new OAuthProvider("apple.com"))}
                         >
-                            {linkedProviders.includes("apple.com") ? t("connected") : t("connect")}
+                            {linkedProviders.includes("apple.com") ? t`Conectado` : t`Conectar`}
                         </Button>
                     </div>
                 </CardContent>
@@ -215,8 +216,8 @@ export function ProfileForm() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>{t("profile_form_change_password_title")}</CardTitle>
-                    <CardDescription>{t("profile_form_change_password_desc")}</CardDescription>
+                    <CardTitle>{t`Alterar Senha`}</CardTitle>
+                    <CardDescription>{t`Escolha uma senha nova e forte.`}</CardDescription>
                 </CardHeader>
                 <Form {...passwordForm}>
                     <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}>
@@ -226,7 +227,7 @@ export function ProfileForm() {
                                 name="currentPassword"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("profile_form_current_password_label")}</FormLabel>
+                                        <FormLabel>{t`Senha Atual`}</FormLabel>
                                         <div className="relative">
                                             <FormControl>
                                                 <Input type={showCurrentPassword ? "text" : "password"} {...field} />
@@ -252,7 +253,7 @@ export function ProfileForm() {
                                                     />
                                                 )}
                                                 <span className="sr-only">
-                                                    {showCurrentPassword ? t("hide_password") : t("show_password")}
+                                                    {showCurrentPassword ? t`Hide password` : t`Show password`}
                                                 </span>
                                             </Button>
                                         </div>
@@ -265,7 +266,7 @@ export function ProfileForm() {
                                 name="newPassword"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("profile_form_new_password_label")}</FormLabel>
+                                        <FormLabel>{t`Nova Senha`}</FormLabel>
                                         <div className="relative">
                                             <FormControl>
                                                 <Input type={showNewPassword ? "text" : "password"} {...field} />
@@ -291,7 +292,7 @@ export function ProfileForm() {
                                                     />
                                                 )}
                                                 <span className="sr-only">
-                                                    {showNewPassword ? t("hide_password") : t("show_password")}
+                                                    {showNewPassword ? t`Hide password` : t`Show password`}
                                                 </span>
                                             </Button>
                                         </div>
@@ -305,7 +306,7 @@ export function ProfileForm() {
                                 type="submit"
                                 disabled={!isPasswordDirty || !isPasswordValid || isPasswordSubmitting}
                             >
-                                {t("profile_form_change_password_button")}
+                                {t`Alterar Senha`}
                             </Button>
                         </CardFooter>
                     </form>

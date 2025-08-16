@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import GooglePayButton from "@google-pay/button-react";
 import { useToast } from "@/hooks/use-toast";
-import { useTranslation } from "react-i18next";
+
 import type { BillingCycle } from "./plan-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faApple } from "@fortawesome/free-brands-svg-icons";
 import { Button } from "../ui/button";
+import { useLingui } from '@lingui/react/macro';
 
 interface PaymentButtonsProps {
     billingCycle: BillingCycle;
@@ -18,7 +19,7 @@ const planPrices = {
 };
 
 export function PaymentButtons({ billingCycle, onPaymentSuccess }: PaymentButtonsProps) {
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const { toast } = useToast();
     const [canMakeApplePay, setCanMakeApplePay] = useState(false);
 
@@ -36,7 +37,7 @@ export function PaymentButtons({ billingCycle, onPaymentSuccess }: PaymentButton
         //     merchantCapabilities: ["supports3DS"],
         //     supportedNetworks: ["visa", "masterCard", "elo"],
         //     total: {
-        //         label: t("plan_form_premium_title"),
+        //         label: t`Premium`,
         //         amount: price.toFixed(2),
         //     },
         // };
@@ -93,7 +94,7 @@ export function PaymentButtons({ billingCycle, onPaymentSuccess }: PaymentButton
         },
         transactionInfo: {
             totalPriceStatus: "FINAL",
-            totalPriceLabel: t("total_label"),
+            totalPriceLabel: t`Total`,
             totalPrice: planPrices[billingCycle].toFixed(2),
             currencyCode: "BRL",
             countryCode: "BR",

@@ -11,7 +11,8 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Collections } from "@/lib/enums";
-import { useTranslation } from "react-i18next";
+import { useLingui } from '@lingui/react/macro';
+
 
 const familyCompositionSchema = z.object({
     adults: z.coerce.number().min(1, { message: "Pelo menos um adulto é necessário." }),
@@ -24,7 +25,7 @@ type FamilyCompositionData = z.infer<typeof familyCompositionSchema>;
 export function FamilyCompositionForm() {
     const { profile, reloadUser } = useAuth();
     const { toast } = useToast();
-    const { t } = useTranslation();
+    const { t } = useLingui();
 
     const form = useForm<FamilyCompositionData>({
         resolver: zodResolver(familyCompositionSchema),
@@ -50,8 +51,8 @@ export function FamilyCompositionForm() {
         if (!profile?.familyId) {
             toast({
                 variant: "destructive",
-                title: t("toast_error_title"),
-                description: t("preferences_form_error_not_logged_in"),
+                title: t`Erro`,
+                description: t`Você precisa estar logado para salvar as preferências.`,
             });
             return;
         }
@@ -62,13 +63,13 @@ export function FamilyCompositionForm() {
             await reloadUser();
             form.reset(values);
             toast({
-                title: t("toast_success_title"),
-                description: t("preferences_form_success_message"),
+                title: t`Sucesso!`,
+                description: t`Suas preferências foram salvas.`,
             });
         } catch (error: any) {
             toast({
                 variant: "destructive",
-                title: t("toast_error_saving"),
+                title: t`Erro ao Salvar`,
                 description: t("preferences_form_error_generic"),
             });
         }
@@ -79,8 +80,8 @@ export function FamilyCompositionForm() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>{t("preferences_form_family_size_title")}</CardTitle>
-                <CardDescription>{t("preferences_form_family_size_desc")}</CardDescription>
+                <CardTitle>{t`Composição Familiar`}</CardTitle>
+                <CardDescription>{t`Ajude nossa IA a fornecer sugestões melhores nos informando sobre sua família.`}</CardDescription>
             </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -91,7 +92,7 @@ export function FamilyCompositionForm() {
                                 name="adults"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("preferences_form_adults")}</FormLabel>
+                                        <FormLabel>{t`Adultos`}</FormLabel>
                                         <FormControl>
                                             <Input type="number" min="1" {...field} />
                                         </FormControl>
@@ -104,7 +105,7 @@ export function FamilyCompositionForm() {
                                 name="children"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("preferences_form_children")}</FormLabel>
+                                        <FormLabel>{t`Crianças`}</FormLabel>
                                         <FormControl>
                                             <Input type="number" min="0" {...field} />
                                         </FormControl>
@@ -117,7 +118,7 @@ export function FamilyCompositionForm() {
                                 name="pets"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("preferences_form_pets")}</FormLabel>
+                                        <FormLabel>{t`Pets`}</FormLabel>
                                         <FormControl>
                                             <Input type="number" min="0" {...field} />
                                         </FormControl>
@@ -129,7 +130,7 @@ export function FamilyCompositionForm() {
                     </CardContent>
                     <CardFooter>
                         <Button type="submit" disabled={!isDirty || !isValid || isSubmitting}>
-                            {isSubmitting ? t("saving") : t("preferences_form_save_button")}
+                            {isSubmitting ? t`Salvando...` : t`Salvar Preferências`}
                         </Button>
                     </CardFooter>
                 </form>

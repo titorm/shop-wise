@@ -13,8 +13,9 @@ import { db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "../ui/separator";
 import { Collections } from "@/lib/enums";
-import { useTranslation } from "react-i18next";
+
 import { trackEvent } from "@/services/analytics-service";
+import { useLingui } from '@lingui/react/macro';
 
 const preferencesSchema = z.object({
     theme: z.enum(["system", "light", "dark"]),
@@ -26,7 +27,7 @@ type PreferencesData = z.infer<typeof preferencesSchema>;
 export function PreferencesForm() {
     const { user, profile, reloadUser } = useAuth();
     const { toast } = useToast();
-    const { t } = useTranslation();
+    const { t } = useLingui();
 
     const form = useForm<PreferencesData>({
         resolver: zodResolver(preferencesSchema),
@@ -50,8 +51,8 @@ export function PreferencesForm() {
         if (!user) {
             toast({
                 variant: "destructive",
-                title: t("toast_error_title"),
-                description: t("preferences_form_error_not_logged_in"),
+                title: t`Erro`,
+                description: t`Você precisa estar logado para salvar as preferências.`,
             });
             return;
         }
@@ -62,14 +63,14 @@ export function PreferencesForm() {
             await reloadUser();
             form.reset(values);
             toast({
-                title: t("toast_success_title"),
-                description: t("preferences_form_success_message"),
+                title: t`Sucesso!`,
+                description: t`Suas preferências foram salvas.`,
             });
             trackEvent("preferences_updated", values);
         } catch (error: any) {
             toast({
                 variant: "destructive",
-                title: t("toast_error_saving"),
+                title: t`Erro ao Salvar`,
                 description: t("preferences_form_error_generic"),
             });
         }
@@ -80,35 +81,35 @@ export function PreferencesForm() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>{t("preferences_form_title")}</CardTitle>
-                <CardDescription>{t("preferences_form_description")}</CardDescription>
+                <CardTitle>{t`Preferências`}</CardTitle>
+                <CardDescription>{t`Personalize a aparência e o comportamento do aplicativo.`}</CardDescription>
             </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <CardContent className="space-y-6">
                         <div>
-                            <h4 className="text-base font-medium mb-2">{t("preferences_form_appearance_title")}</h4>
+                            <h4 className="text-base font-medium mb-2">{t`Aparência`}</h4>
                             <FormField
                                 control={form.control}
                                 name="theme"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("preferences_form_theme")}</FormLabel>
+                                        <FormLabel>{t`Tema`}</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue
-                                                        placeholder={t("preferences_form_theme_placeholder")}
+                                                        placeholder={t`Selecione um tema`}
                                                     />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectItem value="light">
-                                                    {t("preferences_form_theme_light")}
+                                                    {t`Claro`}
                                                 </SelectItem>
-                                                <SelectItem value="dark">{t("preferences_form_theme_dark")}</SelectItem>
+                                                <SelectItem value="dark">{t`Escuro`}</SelectItem>
                                                 <SelectItem value="system">
-                                                    {t("preferences_form_theme_system")}
+                                                    {t`Sistema`}
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -121,7 +122,7 @@ export function PreferencesForm() {
                         <Separator />
 
                         <div>
-                            <h4 className="text-base font-medium mb-2">{t("preferences_form_notifications_title")}</h4>
+                            <h4 className="text-base font-medium mb-2">{t`Notificações`}</h4>
                             <FormField
                                 control={form.control}
                                 name="notifications"
@@ -129,10 +130,10 @@ export function PreferencesForm() {
                                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                         <div className="space-y-0.5">
                                             <FormLabel className="text-base">
-                                                {t("preferences_form_push_notifications")}
+                                                {t`Ativar notificações push`}
                                             </FormLabel>
                                             <p className="text-sm text-muted-foreground">
-                                                {t("preferences_form_push_notifications_desc")}
+                                                {t`Receba atualizações e sugestões.`}
                                             </p>
                                         </div>
                                         <FormControl>
@@ -145,7 +146,7 @@ export function PreferencesForm() {
                     </CardContent>
                     <CardFooter>
                         <Button type="submit" disabled={!isDirty || !isValid || isSubmitting}>
-                            {isSubmitting ? t("saving") : t("preferences_form_save_button")}
+                            {isSubmitting ? t`Salvando...` : t`Salvar Preferências`}
                         </Button>
                     </CardFooter>
                 </form>

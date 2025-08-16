@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faWandMagicSparkles, faPlus, faShareNodes, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
+import { useLingui } from '@lingui/react/macro';
 import {
     collection,
     query,
@@ -24,7 +25,7 @@ import {
     limit,
 } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
-import { useTranslation } from "react-i18next";
+
 import { trackEvent } from "@/services/analytics-service";
 
 interface ListItem {
@@ -36,7 +37,7 @@ interface ListItem {
 }
 
 export function ShoppingListComponent() {
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const { profile } = useAuth();
     const [items, setItems] = useState<ListItem[]>([]);
     const [activeListId, setActiveListId] = useState<string | null>(null);
@@ -61,7 +62,7 @@ export function ShoppingListComponent() {
                 return listDoc.id;
             } else {
                 const newListRef = await addDoc(listsRef, {
-                    name: t("default_shopping_list_name"),
+                    name: t`Lista de Compras Principal`,
                     createdAt: new Date(),
                     createdBy: userId,
                     status: "active",
@@ -166,8 +167,8 @@ export function ShoppingListComponent() {
             console.error("Failed to get suggestions:", error);
             toast({
                 variant: "destructive",
-                title: t("error_getting_suggestions"),
-                description: error.message || t("error_getting_suggestions_desc"),
+                title: t`Erro ao buscar sugestões`,
+                description: error.message || t`Houve um problema ao contatar a IA. Por favor, tente novamente mais tarde.`,
             });
         } finally {
             setIsLoadingSuggestions(false);
@@ -195,7 +196,7 @@ export function ShoppingListComponent() {
                 <Input
                     value={newItemName}
                     onChange={(e) => setNewItemName(e.target.value)}
-                    placeholder={t("add_item_placeholder")}
+                    placeholder={t`Adicionar novo item...`}
                     className="flex-grow"
                     onKeyDown={handleKeyDown}
                 />
@@ -204,14 +205,14 @@ export function ShoppingListComponent() {
                         type="number"
                         value={newItemQty}
                         onChange={(e) => setNewItemQty(e.target.value)}
-                        placeholder={t("quantity_placeholder")}
+                        placeholder={t`Qtd.`}
                         className="w-20"
                         min="1"
                         onKeyDown={handleKeyDown}
                     />
                     <Select value={newItemUnit} onValueChange={setNewItemUnit}>
                         <SelectTrigger className="w-24">
-                            <SelectValue placeholder={t("unit_placeholder")} />
+                            <SelectValue placeholder={t`Unid.`} />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="un">un</SelectItem>
@@ -223,12 +224,12 @@ export function ShoppingListComponent() {
                     </Select>
                 </div>
                 <Button onClick={handleAddItem} className="w-full sm:w-auto mt-2 sm:mt-0">
-                    <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" /> {t("add_button")}
+                    <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" /> {t`Adicionar`}
                 </Button>
             </div>
 
             <div className="space-y-2">
-                {loading && <p>{t("loading_list")}</p>}
+                {loading && <p>{t`Carregando lista...`}</p>}
                 {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50">
                         <Checkbox
@@ -264,15 +265,15 @@ export function ShoppingListComponent() {
             <div>
                 <Button onClick={handleGetSuggestions} disabled={isLoadingSuggestions}>
                     <FontAwesomeIcon icon={faWandMagicSparkles} className="mr-2 h-4 w-4" />
-                    {isLoadingSuggestions ? t("suggesting_items") : t("suggest_items_ai")}
+                    {isLoadingSuggestions ? t`Sugerindo itens...` : t`Sugerir Itens com IA`}
                 </Button>
 
                 {suggestedItems.length > 0 && (
                     <Alert className="mt-4">
                         <FontAwesomeIcon icon={faWandMagicSparkles} className="h-4 w-4" />
-                        <AlertTitle>{t("smart_suggestions")}</AlertTitle>
+                        <AlertTitle>{t`Sugestões Inteligentes`}</AlertTitle>
                         <AlertDescription>
-                            <p className="mb-2">{t("suggestions_based_on_history")}</p>
+                            <p className="mb-2">{t`Baseado no seu histórico de compras, você talvez precise de:`}</p>
                             <div className="flex flex-wrap gap-2">
                                 {suggestedItems.map((name) => (
                                     <Button
@@ -294,10 +295,10 @@ export function ShoppingListComponent() {
 
             <div className="flex gap-2">
                 <Button variant="outline">
-                    <FontAwesomeIcon icon={faShareNodes} className="mr-2 h-4 w-4" /> {t("share")}
+                    <FontAwesomeIcon icon={faShareNodes} className="mr-2 h-4 w-4" /> {t`Compartilhar`}
                 </Button>
                 <Button variant="outline">
-                    <FontAwesomeIcon icon={faDownload} className="mr-2 h-4 w-4" /> {t("export_pdf")}
+                    <FontAwesomeIcon icon={faDownload} className="mr-2 h-4 w-4" /> {t`Exportar PDF`}
                 </Button>
             </div>
         </div>

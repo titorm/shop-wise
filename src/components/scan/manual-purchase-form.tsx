@@ -14,7 +14,8 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle, faTrash, faSave, faCalendarAlt, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { useTranslation } from "react-i18next";
+import { useLingui } from '@lingui/react/macro';
+
 
 const itemSchema = z.object({
     name: z.string().min(1, "Nome é obrigatório"),
@@ -39,7 +40,7 @@ interface ManualPurchaseFormProps {
 }
 
 export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const [isSaving, setIsSaving] = useState(false);
 
     const form = useForm<PurchaseData>({
@@ -83,7 +84,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>{t("manual_entry_purchase_details_title")}</CardTitle>
+                        <CardTitle>{t`Detalhes da Compra`}</CardTitle>
                     </CardHeader>
                     <CardContent className="grid md:grid-cols-2 gap-6">
                         <FormField
@@ -91,9 +92,9 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
                             name="storeName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t("store_name_label")}</FormLabel>
+                                    <FormLabel>{t`Nome da Loja`}</FormLabel>
                                     <FormControl>
-                                        <Input placeholder={t("store_name_placeholder")} {...field} />
+                                        <Input placeholder={t`ex: Supermercado do Bairro`} {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -104,7 +105,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
                             name="date"
                             render={({ field }) => (
                                 <FormItem className="flex flex-col">
-                                    <FormLabel>{t("date_label")}</FormLabel>
+                                    <FormLabel>{t`Data`}</FormLabel>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <FormControl>
@@ -118,7 +119,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
                                                     {field.value ? (
                                                         format(field.value, "PPP", { locale: ptBR })
                                                     ) : (
-                                                        <span>{t("date_placeholder")}</span>
+                                                        <span>{t`Selecione uma data`}</span>
                                                     )}
                                                     <FontAwesomeIcon
                                                         icon={faCalendarAlt}
@@ -146,17 +147,17 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>{t("manual_entry_items_title")}</CardTitle>
+                        <CardTitle>{t`Itens`}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-auto">{t("table_product")}</TableHead>
-                                    <TableHead className="w-[140px]">{t("table_volume")}</TableHead>
-                                    <TableHead className="w-[100px] text-center">{t("table_quantity_short")}</TableHead>
-                                    <TableHead className="w-[140px] text-center">{t("table_unit_price")}</TableHead>
-                                    <TableHead className="w-[50px] text-right">{t("table_actions")}</TableHead>
+                                    <TableHead className="w-auto">{t`Produto`}</TableHead>
+                                    <TableHead className="w-[140px]">{t`Volume`}</TableHead>
+                                    <TableHead className="w-[100px] text-center">{t`Qtd.`}</TableHead>
+                                    <TableHead className="w-[140px] text-center">{t`Preço Unit.`}</TableHead>
+                                    <TableHead className="w-[50px] text-right">{t`Ações`}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -171,7 +172,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
                                                         <FormControl>
                                                             <Input
                                                                 {...field}
-                                                                placeholder={t("item_name_placeholder")}
+                                                                placeholder={t`Nome do item`}
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -255,12 +256,12 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
                                 append({ name: "", quantity: 1, unitPrice: 0, price: 0, barcode: "", volume: "" })
                             }
                         >
-                            <FontAwesomeIcon icon={faPlusCircle} className="mr-2" /> {t("add_item_button")}
+                            <FontAwesomeIcon icon={faPlusCircle} className="mr-2" /> {t`Adicionar Item`}
                         </Button>
                     </CardContent>
                     <CardFooter className="flex justify-end font-bold text-lg">
                         <span>
-                            {t("total_label")}: R$ {totalAmount.toFixed(2)}
+                            {t`Total`}: R$ {totalAmount.toFixed(2)}
                         </span>
                     </CardFooter>
                 </Card>
@@ -272,7 +273,7 @@ export function ManualPurchaseForm({ onSave }: ManualPurchaseFormProps) {
                         ) : (
                             <FontAwesomeIcon icon={faSave} className="mr-2" />
                         )}
-                        {isSaving ? t("saving") : t("save_purchase_button")}
+                        {isSaving ? t`Salvando...` : t`Salvar Compra`}
                     </Button>
                 </div>
             </form>

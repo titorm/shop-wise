@@ -7,6 +7,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useLingui } from '@lingui/react/macro';
 import {
     ChartContainer,
     ChartTooltip,
@@ -15,8 +16,7 @@ import {
     ChartLegendContent,
 } from "@/components/ui/chart";
 import { Pie, PieChart as RechartsPieChart, Cell, ResponsiveContainer } from "recharts";
-import { useTranslation } from "react-i18next";
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 import { EmptyState } from "../ui/empty-state";
 import {
     faStore,
@@ -65,14 +65,14 @@ export function InsightModal({
     onOpen,
     isPremium,
 }: InsightModalProps) {
-    const { t } = useTranslation();
+    const { t } = useLingui();
 
     const renderContent = () => {
         if (type !== "consumptionAnalysis" && (!data || data.length === 0)) {
             return (
                 <EmptyState
-                    title={t("empty_state_no_modal_data_title")}
-                    description={t("empty_state_no_modal_data_desc")}
+                    title={t`Sem Dados para Exibir`}
+                    description={t`Não há dados disponíveis para o insight selecionado. Comece a adicionar compras para ver seus dados aqui.`}
                 />
             );
         }
@@ -90,11 +90,11 @@ export function InsightModal({
                                     <TableRow>
                                         <TableHead>
                                             <FontAwesomeIcon icon={faStore} className="mr-2 h-4 w-4" />
-                                            {t("table_store")}
+                                            {t`Loja`}
                                         </TableHead>
                                         <TableHead className="text-right">
                                             <FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />
-                                            {t("table_amount_spent")}
+                                            {t`Valor Gasto`}
                                         </TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -157,15 +157,15 @@ export function InsightModal({
                             <TableRow>
                                 <TableHead>
                                     <FontAwesomeIcon icon={faBox} className="mr-2 h-4 w-4" />
-                                    {t("table_product")}
+                                    {t`Produto`}
                                 </TableHead>
                                 <TableHead>
                                     <FontAwesomeIcon icon={faCalendar} className="mr-2 h-4 w-4" />
-                                    {t("table_purchase_date")}
+                                    {t`Data da Compra`}
                                 </TableHead>
                                 <TableHead className="text-right">
                                     <FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />
-                                    {t("table_price")}
+                                    {t`Preço`}
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
@@ -189,11 +189,11 @@ export function InsightModal({
                                     <TableRow>
                                         <TableHead>
                                             <FontAwesomeIcon icon={faTags} className="mr-2 h-4 w-4" />
-                                            {t("table_category")}
+                                            {t`Categoria`}
                                         </TableHead>
                                         <TableHead className="text-right">
                                             <FontAwesomeIcon icon={faDollarSign} className="mr-2 h-4 w-4" />
-                                            {t("table_amount_spent")}
+                                            {t`Valor Gasto`}
                                         </TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -238,10 +238,10 @@ export function InsightModal({
                             <TableRow>
                                 <TableHead>
                                     <FontAwesomeIcon icon={faBox} className="mr-2 h-4 w-4" />
-                                    {t("table_product")}
+                                    {t`Produto`}
                                 </TableHead>
-                                <TableHead>{t("table_cheaper_at")}</TableHead>
-                                <TableHead className="text-right">{t("table_potential_saving")}</TableHead>
+                                <TableHead>{t`Mais Barato em`}</TableHead>
+                                <TableHead className="text-right">{t`Economia Potencial`}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -263,13 +263,13 @@ export function InsightModal({
                         <Alert className="border-primary/50 text-center">
                             <FontAwesomeIcon icon={faGem} className="h-5 w-5 text-primary" />
                             <AlertTitle className="text-lg font-bold text-primary">
-                                {t("premium_feature_title")}
+                                {t`Recurso Premium`}
                             </AlertTitle>
-                            <DialogDescription>{t("premium_feature_desc_consumption")}</DialogDescription>
+                            <DialogDescription>{t`Desbloqueie análises detalhadas de consumo e insights personalizados atualizando para nosso plano Premium.`}</DialogDescription>
                             <Button asChild className="mt-4">
                                 <Link to="/dashboard/family" search={{ tab: 'plan' }}>
                                     <FontAwesomeIcon icon={faRocket} className="mr-2" />
-                                    {t("upgrade_plan_button")}
+                                    {t`Atualize seu Plano`}
                                 </Link>
                             </Button>
                         </Alert>
@@ -280,7 +280,7 @@ export function InsightModal({
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <FontAwesomeIcon icon={faWandMagicSparkles} className="h-5 w-5 animate-pulse" />
-                                <p>{t("modal_analysis_loading")}</p>
+                                <p>{t`Nossa IA está analisando seus dados... isso pode levar um momento.`}</p>
                             </div>
                             <Skeleton className="h-6 w-3/4" />
                             <Skeleton className="h-4 w-full" />
@@ -299,8 +299,8 @@ export function InsightModal({
 
                 return (
                     <EmptyState
-                        title={t("empty_state_no_analysis_title")}
-                        description={t("empty_state_no_analysis_desc")}
+                        title={t`No Analysis Available`}
+                        description={t`We couldn't generate an analysis for this dataset. Try again later or add more purchase data.`}
                     />
                 );
             default:

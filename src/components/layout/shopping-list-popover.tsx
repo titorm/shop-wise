@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { collection, query, where, limit, onSnapshot, getDocs, doc, updateDoc } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
-import { useTranslation } from "react-i18next";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
@@ -13,6 +13,7 @@ import { Checkbox } from "../ui/checkbox";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { Link } from "@tanstack/react-router";
+import { useLingui } from '@lingui/react/macro';
 
 interface ListItem {
     id: string;
@@ -21,7 +22,7 @@ interface ListItem {
 }
 
 export function ShoppingListPopover() {
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const { profile } = useAuth();
     const [items, setItems] = useState<ListItem[]>([]);
     const [activeListId, setActiveListId] = useState<string | null>(null);
@@ -102,14 +103,14 @@ export function ShoppingListPopover() {
             <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon">
                     <FontAwesomeIcon icon={faShoppingCart} className="h-5 w-5" />
-                    <span className="sr-only">{t("active_shopping_list")}</span>
+                    <span className="sr-only">{t`Lista de compras ativa`}</span>
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80">
                 <div className="flex flex-col space-y-4">
                     <div className="space-y-2">
                         <h4 className="font-medium leading-none">{listName}</h4>
-                        <p className="text-sm text-muted-foreground">{t("active_list_popover_desc")}</p>
+                        <p className="text-sm text-muted-foreground">{t`Sua lista de compras ativa no momento.`}</p>
                     </div>
                     <Separator />
                     <ScrollArea className="h-64">
@@ -138,13 +139,13 @@ export function ShoppingListPopover() {
                         <Button variant="outline" asChild>
                             <a href={generateGoogleKeepLink()} target="_blank" rel="noopener noreferrer">
                                 <FontAwesomeIcon icon={faGoogle} className="mr-2 h-4 w-4" />
-                                {t("export_google_keep")}
+                                {t`Exportar para Google Keep`}
                             </a>
                         </Button>
                         {/* <Button variant="secondary" asChild>
                             <Link to="/list">
                                 <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-2 h-4 w-4" />
-                                {t("view_full_list")}
+                                {t`Ver lista completa`}
                             </Link>
                         </Button> */}
                     </div>

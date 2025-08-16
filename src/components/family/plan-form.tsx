@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useTranslation } from "react-i18next";
+
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,6 +18,7 @@ import { Badge } from "../ui/badge";
 import { differenceInDays } from "date-fns";
 import { PaymentButtons } from "./payment-buttons";
 import { trackEvent } from "@/services/analytics-service";
+import { useLingui } from '@lingui/react/macro';
 
 const planSchema = z.object({
     plan: z.enum(["free", "premium"]).default("free"),
@@ -29,7 +30,7 @@ export type BillingCycle = "monthly" | "annually";
 export function PlanForm() {
     const { profile, reloadUser } = useAuth();
     const { toast } = useToast();
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const [isSaving, setIsSaving] = useState(false);
     const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
 
@@ -76,8 +77,8 @@ export function PlanForm() {
         await new Promise((res) => setTimeout(res, 1500));
         setIsSaving(false);
         toast({
-            title: t("toast_success_title"),
-            description: t("plan_form_upgrade_success"),
+            title: t`Sucesso!`,
+            description: t`Plano atualizado com sucesso!`,
         });
         trackEvent("plan_changed", {
             newPlan: values.plan,
@@ -98,8 +99,8 @@ export function PlanForm() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>{t("plan_form_title")}</CardTitle>
-                <CardDescription>{t("plan_form_description")}</CardDescription>
+                <CardTitle>{t`Gerenciar seu Plano`}</CardTitle>
+                <CardDescription>{t`Escolha o plano que melhor se adapta às suas necessidades.`}</CardDescription>
             </CardHeader>
             <Form {...form}>
                 <form className="space-y-8">
@@ -126,12 +127,12 @@ export function PlanForm() {
                                             >
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center justify-between">
-                                                        <span>{t("plan_form_free_title")}</span>
+                                                        <span>{t`Grátis`}</span>
                                                         <span className="text-lg font-bold">
                                                             {t("plan_free_price")}
                                                         </span>
                                                     </CardTitle>
-                                                    <CardDescription>{t("plan_form_free_desc")}</CardDescription>
+                                                    <CardDescription>{t`Para pessoas e famílias pequenas que estão começando.`}</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="space-y-2 text-sm">
                                                     {planFeatures.free.map((feature) => (
@@ -165,7 +166,7 @@ export function PlanForm() {
                                                                 icon={faGem}
                                                                 className="w-5 h-5 text-primary"
                                                             />
-                                                            {t("plan_form_premium_title")}
+                                                            {t`Premium`}
                                                         </span>
                                                         <span className="text-lg font-bold">
                                                             {billingCycle === "monthly"
@@ -173,7 +174,7 @@ export function PlanForm() {
                                                                 : t("plan_premium_price_annually")}
                                                         </span>
                                                     </CardTitle>
-                                                    <CardDescription>{t("plan_form_premium_desc")}</CardDescription>
+                                                    <CardDescription>{t`Para quem deseja insights avançados e recursos de IA.`}</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="space-y-4 text-sm">
                                                     <Tabs
@@ -227,7 +228,7 @@ export function PlanForm() {
                             >
                                 <FontAwesomeIcon icon={faRocket} className="mr-2 h-4 w-4" />
                                 {isSaving
-                                    ? t("processing")
+                                    ? t`Processando...`
                                     : currentPlanIsPremium
                                     ? t("plan_form_current_plan_button")
                                     : t("plan_form_select_plan_button")}

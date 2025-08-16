@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faEnvelopeOpen } from "@fortawesome/free-regular-svg-icons";
+import { useLingui } from '@lingui/react/macro';
 import {
     faCheckDouble,
     faWandMagicSparkles,
@@ -11,7 +12,7 @@ import {
     faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import type { Notification } from "@/lib/types";
-import { useTranslation } from "react-i18next";
+
 import { cn } from "@/lib/utils";
 import { timeAgo } from "@/lib/time";
 
@@ -34,7 +35,7 @@ const typeColors = {
 };
 
 export function NotificationPopover({ notifications, unreadCount, onMarkAllAsRead }: NotificationPopoverProps) {
-    const { t } = useTranslation();
+    const { t } = useLingui();
 
     const sortedNotifications = [...notifications].sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
 
@@ -51,16 +52,16 @@ export function NotificationPopover({ notifications, unreadCount, onMarkAllAsRea
                             {unreadCount}
                         </Badge>
                     )}
-                    <span className="sr-only">{t("notifications")}</span>
+                    <span className="sr-only">{t`Notificações`}</span>
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 p-0">
                 <div className="flex items-center justify-between p-3 border-b">
-                    <h4 className="font-medium text-sm">{t("notifications")}</h4>
+                    <h4 className="font-medium text-sm">{t`Notificações`}</h4>
                     {unreadCount > 0 && (
                         <Button variant="link" size="sm" className="h-auto p-0" onClick={onMarkAllAsRead}>
                             <FontAwesomeIcon icon={faCheckDouble} className="mr-1.5 h-3 w-3" />
-                            {t("mark_all_as_read")}
+                            {t`Marcar todas como lidas`}
                         </Button>
                     )}
                 </div>
@@ -94,14 +95,14 @@ export function NotificationPopover({ notifications, unreadCount, onMarkAllAsRea
                     ) : (
                         <div className="text-center p-8 text-muted-foreground">
                             <FontAwesomeIcon icon={faEnvelopeOpen} className="h-10 w-10 mb-4" />
-                            <p className="text-sm font-medium">{t("no_notifications_title")}</p>
-                            <p className="text-xs">{t("no_notifications_desc")}</p>
+                            <p className="text-sm font-medium">{t`Tudo em dia!`}</p>
+                            <p className="text-xs">{t`Você não tem nenhuma nova notificação.`}</p>
                         </div>
                     )}
                 </ScrollArea>
                 <div className="p-2 text-center border-t">
                     <Button variant="link" size="sm" className="w-full text-xs">
-                        {t("view_all_notifications")}
+                        {t`Ver todas as notificações`}
                     </Button>
                 </div>
             </PopoverContent>

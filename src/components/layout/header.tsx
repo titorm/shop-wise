@@ -2,16 +2,17 @@ import { useState, useEffect } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ShopWiseLogo } from "@/components/icons";
 import { useAuth } from "@/hooks/use-auth";
-import { useTranslation } from "react-i18next";
+
 import { collection, query, onSnapshot, writeBatch, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Collections } from "@/lib/enums";
 import type { Notification } from "@/lib/types";
 import { NotificationPopover } from "./notification-popover";
 import { ShoppingListPopover } from "./shopping-list-popover";
+import { useLingui } from '@lingui/react/macro';
 
 export function Header() {
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const { profile } = useAuth();
     const [notifications, setNotifications] = useState<Notification[]>([]);
 

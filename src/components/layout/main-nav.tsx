@@ -2,6 +2,7 @@ import { SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSid
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useLingui } from '@lingui/react/macro';
 import {
     faChartColumn,
     faCog,
@@ -20,7 +21,7 @@ import {
 import { faFileLines, faMessage } from "@fortawesome/free-regular-svg-icons";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { useTranslation } from "react-i18next";
+
 import {
     AlertDialog,
     AlertDialogAction,
@@ -62,7 +63,7 @@ const adminMenuItems = [
 export function MainNav() {
     const router = useRouter();
     const { profile } = useAuth();
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const isAdmin = profile?.isAdmin || false;
     const { state } = useSidebar();
 
@@ -108,7 +109,7 @@ export function MainNav() {
                         state === "collapsed" ? "opacity-0 h-0" : "opacity-100 h-auto"
                     )}
                 >
-                    {t("settings_section_title")}
+                    {t`Configurações`}
                 </p>
                 {settingsMenuItems.map((item) => (
                     <SidebarMenuItem key={item.href}>
@@ -130,7 +131,7 @@ export function MainNav() {
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <SidebarMenuItem>
-                            <SidebarMenuButton tooltip={t("logout")} asChild={false}>
+                            <SidebarMenuButton tooltip={t`Sair`} asChild={false}>
                                 <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5" />
                                 <span
                                     className={cn(
@@ -138,20 +139,20 @@ export function MainNav() {
                                         state === "collapsed" ? "opacity-0 w-0" : "opacity-100"
                                     )}
                                 >
-                                    {t("logout")}
+                                    {t`Sair`}
                                 </span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>{t("logout_confirm_title")}</AlertDialogTitle>
-                            <AlertDialogDescription>{t("logout_confirm_desc")}</AlertDialogDescription>
+                            <AlertDialogTitle>{t`Você tem certeza que quer sair?`}</AlertDialogTitle>
+                            <AlertDialogDescription>{t`Você será redirecionado para a página inicial.`}</AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                            <AlertDialogCancel>{t`Cancelar`}</AlertDialogCancel>
                             <AlertDialogAction asChild>
-                                <Button onClick={handleSignOut}>{t("logout_confirm_button")}</Button>
+                                <Button onClick={handleSignOut}>{t`Sim, sair`}</Button>
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
@@ -165,7 +166,7 @@ export function MainNav() {
                                 state === "collapsed" ? "opacity-0 h-0" : "opacity-100 h-auto"
                             )}
                         >
-                            {t("admin_section_title")}
+                            {t`Administração`}
                         </p>
                         {adminMenuItems.map((item) => (
                             <SidebarMenuItem key={item.href}>

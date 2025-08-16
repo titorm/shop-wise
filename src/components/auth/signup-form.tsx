@@ -15,20 +15,21 @@ import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { faApple, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { doc, setDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Collections } from "@/lib/enums";
-import { useTranslation } from "react-i18next";
+
 import { trackEvent } from "@/services/analytics-service";
 import { Link, useRouter } from "@tanstack/react-router";
+import { useLingui } from '@lingui/react/macro';
 
 export function SignupForm() {
     const router = useRouter();
     const { toast } = useToast();
-    const { t } = useTranslation();
+    const { t } = useLingui();
     const [showPassword, setShowPassword] = useState(false);
 
     const formSchema = z.object({
-        name: z.string().min(2, { message: t("error_name_min_length") }),
-        email: z.string().email({ message: t("error_invalid_email") }),
-        password: z.string().min(6, { message: t("error_password_min_length") }),
+        name: z.string().min(2, { message: t`Please enter at least two caracters.` }),
+        email: z.string().email({ message: t`Please enter a valid email.` }),
+        password: z.string().min(6, { message: t`Password must have at least 6 characters.` }),
     });
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -76,7 +77,7 @@ export function SignupForm() {
         } catch (error: any) {
             toast({
                 variant: "destructive",
-                title: t("signup_error_title"),
+                title: t`Erro ao Criar Conta`,
                 description: error.message,
             });
         }
@@ -116,7 +117,7 @@ export function SignupForm() {
         } catch (error: any) {
             toast({
                 variant: "destructive",
-                title: t("error_google_login"),
+                title: t`Error with Google Sign-In`,
                 description: error.message,
             });
         }
@@ -127,8 +128,8 @@ export function SignupForm() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="text-2xl font-headline">{t("signup_title")}</CardTitle>
-                <CardDescription>{t("signup_description")}</CardDescription>
+                <CardTitle className="text-2xl font-headline">{t`Create Your Account`}</CardTitle>
+                <CardDescription>{t`Join thousands of families who are transforming their financial lives.`}</CardDescription>
             </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -139,9 +140,9 @@ export function SignupForm() {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("name_label")}</FormLabel>
+                                        <FormLabel>{t`Name`}</FormLabel>
                                         <FormControl>
-                                            <Input placeholder={t("name_placeholder")} {...field} />
+                                            <Input placeholder={t`Your Name`} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -152,7 +153,7 @@ export function SignupForm() {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("email_label")}</FormLabel>
+                                        <FormLabel>{t`Email`}</FormLabel>
                                         <FormControl>
                                             <Input placeholder="seu@email.com" {...field} />
                                         </FormControl>
@@ -165,7 +166,7 @@ export function SignupForm() {
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t("password_label")}</FormLabel>
+                                        <FormLabel>{t`Password`}</FormLabel>
                                         <div className="relative">
                                             <FormControl>
                                                 <Input
@@ -195,7 +196,7 @@ export function SignupForm() {
                                                     />
                                                 )}
                                                 <span className="sr-only">
-                                                    {showPassword ? t("hide_password") : t("show_password")}
+                                                    {showPassword ? t`Hide password` : t`Show password`}
                                                 </span>
                                             </Button>
                                         </div>
@@ -205,31 +206,31 @@ export function SignupForm() {
                             />
                         </div>
                         <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
-                            {t("create_account")}
+                            {t`Create Account`}
                         </Button>
                         <div className="relative">
                             <Separator />
                             <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">
-                                {t("or_upper")}
+                                {t`OR`}
                             </p>
                         </div>
                         <div className="space-y-2">
                             <Button variant="outline" className="w-full" type="button" onClick={handleGoogleSignIn}>
                                 <FontAwesomeIcon icon={faGoogle} className="mr-2 h-4 w-4" />
-                                {t("signup_with_google")}
+                                {t`Sign up with Google`}
                             </Button>
                             <Button variant="outline" className="w-full" type="button">
                                 <FontAwesomeIcon icon={faApple} className="mr-2 h-4 w-4" />
-                                {t("signup_with_apple")}
+                                {t`Sign up with Apple`}
                             </Button>
                         </div>
                     </CardContent>
                     <CardFooter>
                         <p className="text-sm text-muted-foreground">
-                            {t("already_have_account")}{" "}
+                            {t`Already have an account?`}{" "}
                             <Link to="/login">
                                 <Button variant="link" className="px-0 h-auto">
-                                    {t("login")}
+                                    {t`Login`}
                                 </Button>
                             </Link>
                         </p>

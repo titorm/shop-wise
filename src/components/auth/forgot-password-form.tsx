@@ -5,14 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslation } from "react-i18next";
+
 import { Link } from "@tanstack/react-router";
+import { useLingui } from '@lingui/react/macro';
 
 export function ForgotPasswordForm() {
-    const { t } = useTranslation();
+    const { t } = useLingui();
 
     const formSchema = z.object({
-        email: z.string().email({ message: t("error_invalid_email") }),
+        email: z.string().email({ message: t`Please enter a valid email.` }),
     });
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -33,8 +34,8 @@ export function ForgotPasswordForm() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="text-2xl font-headline">{t("forgot_password_title")}</CardTitle>
-                <CardDescription>{t("forgot_password_description")}</CardDescription>
+                <CardTitle className="text-2xl font-headline">{t`Forgot Your Password?`}</CardTitle>
+                <CardDescription>{t`No problem. Enter your email and we'll send you a link to reset it.`}</CardDescription>
             </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -44,7 +45,7 @@ export function ForgotPasswordForm() {
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>{t("email_label")}</FormLabel>
+                                    <FormLabel>{t`Email`}</FormLabel>
                                     <FormControl>
                                         <Input placeholder="seu@email.com" {...field} />
                                     </FormControl>
@@ -53,15 +54,15 @@ export function ForgotPasswordForm() {
                             )}
                         />
                         <Button type="submit" className="w-full" disabled={!isDirty || !isValid || isSubmitting}>
-                            {t("forgot_password_send_link")}
+                            {t`Send Reset Link`}
                         </Button>
                     </CardContent>
                     <CardFooter>
                         <p className="text-sm text-muted-foreground w-full text-center">
-                            {t("remembered_password")}{" "}
+                            {t`Remembered your password?`}{" "}
                             <Link to="/login">
                                 <Button variant="link" className="px-0 h-auto">
-                                    {t("login")}
+                                    {t`Login`}
                                 </Button>
                             </Link>
                         </p>

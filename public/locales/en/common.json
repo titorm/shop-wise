@@ -49,5 +49,6 @@
     "remembered_password": "Remembered your password?",
     "error_invalid_email": "Please enter a valid email.",
     "error_login": "Login Error",
-    "error_google_login": "Error with Google Sign-In"
+    "error_google_login": "Error with Google Sign-In",
+    "privacy_delete_account_confirm_title": "Are you absolutely sure?"
 }
